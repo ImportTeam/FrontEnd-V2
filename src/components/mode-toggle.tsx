@@ -7,7 +7,7 @@ import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 
 export function ModeToggle() {
-  const { setTheme, theme } = useTheme()
+  const { setTheme, resolvedTheme } = useTheme()
 
   return (
     <Button
@@ -15,8 +15,8 @@ export function ModeToggle() {
       size="icon"
       className="cursor-pointer"
       onClick={() => {
-        console.log("Theme toggle clicked");
-        setTheme(theme === "light" ? "dark" : "light");
+        console.log("Theme toggle clicked. Current:", resolvedTheme);
+        setTheme(resolvedTheme === "dark" ? "light" : "dark");
       }}
     >
       <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

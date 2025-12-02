@@ -32,7 +32,7 @@ export default function LoginPage() {
                 animate="show"
                 className="w-full"
             >
-                <motion.div variants={item} className="flex flex-col space-y-2 text-center mb-6">
+                <motion.div variants={item} className="flex flex-col space-y-2 text-center mb-8">
                     <h1 className="text-2xl font-bold tracking-tight">로그인</h1>
                     <p className="text-sm text-muted-foreground">
                         이메일과 비밀번호를 입력하여 로그인해주세요
@@ -41,7 +41,7 @@ export default function LoginPage() {
 
                 <div className="grid gap-6">
                     <form>
-                        <div className="grid gap-4">
+                        <div className="grid gap-5">
                             <motion.div variants={item} className="grid gap-2">
                                 <Label htmlFor="email">이메일 주소</Label>
                                 <Input
@@ -51,48 +51,51 @@ export default function LoginPage() {
                                     autoCapitalize="none"
                                     autoComplete="email"
                                     autoCorrect="off"
-                                    className="border-0 bg-secondary/40 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:bg-secondary/60 h-12"
+                                    className="h-12 border-0 bg-secondary/50 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:bg-secondary/80"
                                 />
                             </motion.div>
                             <motion.div variants={item} className="grid gap-2">
-                                <div className="flex items-center justify-between">
-                                    <Label htmlFor="password">비밀번호</Label>
+                                <Label htmlFor="password">비밀번호</Label>
+                                <Input 
+                                    id="password" 
+                                    type="password" 
+                                    placeholder="비밀번호를 입력해주세요"
+                                    className="h-12 border-0 bg-secondary/50 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:bg-secondary/80" 
+                                />
+                                <div className="flex justify-end">
                                     <Link
                                         href="#"
-                                        className="text-sm font-medium text-primary hover:underline"
+                                        className="text-sm font-medium text-primary hover:underline underline-offset-4"
                                     >
                                         비밀번호를 잊으셨나요?
                                     </Link>
                                 </div>
-                                <Input 
-                                    id="password" 
-                                    type="password" 
-                                    className="border-0 bg-secondary/40 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:bg-secondary/60 h-12" 
-                                />
                             </motion.div>
-                            <motion.div variants={item}>
-                                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold h-11">로그인</Button>
+                            <motion.div variants={item} className="pt-2">
+                                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold h-12 text-base shadow-md hover:shadow-lg transition-all">
+                                    로그인
+                                </Button>
                             </motion.div>
                         </div>
                     </form>
 
-                    <motion.div variants={item} className="relative">
+                    <motion.div variants={item} className="relative my-2">
                         <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
+                            <span className="w-full border-t border-border/50" />
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
                             <span className="bg-background px-2 text-muted-foreground">
-                                다른 소셜 계정으로 로그인하기
+                                또는 소셜 계정으로 로그인
                             </span>
                         </div>
                     </motion.div>
 
-                    <motion.div variants={item} className="grid gap-2">
-                        <Button variant="outline" type="button" className="gap-2 h-12">
+                    <motion.div variants={item} className="grid gap-3">
+                        <Button variant="outline" type="button" className="gap-2 h-12 border-border/50 hover:bg-secondary/50 hover:text-foreground transition-colors">
                             <GoogleIcon />
                             구글로 로그인하기
                         </Button>
-                        <Button variant="outline" type="button" className="gap-2 h-12">
+                        <Button variant="outline" type="button" className="gap-2 h-12 border-border/50 hover:bg-secondary/50 hover:text-foreground transition-colors">
                             <KakaoIcon className="text-[#3A1D1D] bg-[#FEE500] rounded p-0.5" />
                             카카오톡으로 로그인하기
                         </Button>

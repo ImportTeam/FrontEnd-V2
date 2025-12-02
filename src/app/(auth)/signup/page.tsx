@@ -13,53 +13,67 @@ export default function SignupPage() {
                     사용할 사용자 이름과 비밀번호 등을 알맞게 넣어주세요!
                 </p>
             </div>
-            <div className="grid gap-6">
-                <form>
-                    <div className="grid gap-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="name">사용자 이름</Label>
-                            <Input id="name" placeholder="홍길동" type="text" className="border-0 bg-secondary/40 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:bg-secondary/60 h-12" />
+                <div className="grid gap-6">
+                    <form>
+                        <div className="grid gap-5">
+                            <div className="grid gap-2">
+                                <Label htmlFor="name">사용자 이름</Label>
+                                <Input 
+                                    id="name" 
+                                    placeholder="홍길동" 
+                                    type="text" 
+                                    className="h-12 border-0 bg-secondary/50 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:bg-secondary/80" 
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="email">이메일 주소</Label>
+                                <Input
+                                    id="email"
+                                    placeholder="name@example.com"
+                                    type="email"
+                                    autoCapitalize="none"
+                                    autoComplete="email"
+                                    autoCorrect="off"
+                                    className="h-12 border-0 bg-secondary/50 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:bg-secondary/80"
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="password">비밀번호</Label>
+                                <Input 
+                                    id="password" 
+                                    type="password" 
+                                    placeholder="비밀번호를 입력해주세요"
+                                    className="h-12 border-0 bg-secondary/50 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:bg-secondary/80" 
+                                />
+                            </div>
+                            <div className="pt-2">
+                                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold h-12 text-base shadow-md hover:shadow-lg transition-all">
+                                    회원가입
+                                </Button>
+                            </div>
                         </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">이메일 주소</Label>
-                            <Input
-                                id="email"
-                                placeholder="name@example.com"
-                                type="email"
-                                autoCapitalize="none"
-                                autoComplete="email"
-                                autoCorrect="off"
-                                className="border-0 bg-secondary/40 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:bg-secondary/60 h-12"
-                            />
+                    </form>
+                    <div className="relative my-2">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-border/50" />
                         </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">비밀번호</Label>
-                            <Input id="password" type="password" className="border-0 bg-secondary/40 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:bg-secondary/60 h-12" />
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-background px-2 text-muted-foreground">
+                                또는 소셜 계정으로 회원가입
+                            </span>
                         </div>
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold h-11">회원가입</Button>
                     </div>
-                </form>
-                <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-background px-2 text-muted-foreground">
-                            다른 소셜 계정으로 회원가입하기
-                        </span>
+                    <div className="grid gap-3">
+                        <Button variant="outline" type="button" className="gap-2 h-12 border-border/50 hover:bg-secondary/50 hover:text-foreground transition-colors">
+                            <GoogleIcon />
+                            구글로 가입하기
+                        </Button>
+                        <Button variant="outline" type="button" className="gap-2 h-12 border-border/50 hover:bg-secondary/50 hover:text-foreground transition-colors">
+                            <KakaoIcon className="text-[#3A1D1D] bg-[#FEE500] rounded p-0.5" />
+                            카카오톡으로 가입하기
+                        </Button>
                     </div>
                 </div>
-                <div className="grid gap-2">
-                    <Button variant="outline" type="button" className="gap-2 h-12">
-                        <GoogleIcon />
-                        구글로 가입하기
-                    </Button>
-                    <Button variant="outline" type="button" className="gap-2 h-12">
-                        <KakaoIcon className="text-[#3A1D1D] bg-[#FEE500] rounded p-0.5" />
-                        카카오톡으로 가입하기
-                    </Button>
-                </div>
-            </div>
         </AuthLayout>
     );
 }
