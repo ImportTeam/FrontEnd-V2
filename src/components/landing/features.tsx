@@ -1,49 +1,119 @@
-import { CreditCard, Zap, BarChart3, ShieldCheck } from "lucide-react";
+"use client";
 
-const features = [
-    {
-        icon: Zap,
-        title: "실시간 혜택 비교",
-        description: "결제 페이지에 진입하는 순간, 보유한 카드 중 가장 혜택이 좋은 카드를 자동으로 찾아줍니다.",
-    },
-    {
-        icon: BarChart3,
-        title: "AI 소비 분석",
-        description: "지난달 소비 패턴을 분석하여 놓친 혜택을 계산하고, 더 나은 결제 습관을 제안합니다.",
-    },
-    {
-        icon: CreditCard,
-        title: "모든 결제수단 통합",
-        description: "신용카드, 체크카드, 간편결제(네이버페이, 카카오페이 등) 모든 혜택을 한곳에서 관리하세요.",
-    },
-    {
-        icon: ShieldCheck,
-        title: "안전한 데이터 관리",
-        description: "개인 금융 정보는 암호화되어 안전하게 저장되며, 결제 정보는 마케팅에 활용되지 않습니다.",
-    },
-];
+import { motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
 
 export function Features() {
     return (
-        <section id="features" className="bg-muted/30 py-20 md:py-32">
-            <div className="container mx-auto px-4">
-                <div className="mx-auto max-w-2xl text-center mb-16">
-                    <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">주요 기능 소개</h2>
-                    <p className="mt-4 text-lg text-muted-foreground">
-                        온라인 결제 상품 결제 전, PicSel이 더 스마트하게 비교합니다.
-                    </p>
-                </div>
-                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-                    {features.map((feature, index) => (
-                        <div key={index} className="flex flex-col items-center text-center p-6 rounded-2xl bg-background border shadow-sm hover:shadow-md transition-shadow">
-                            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                <feature.icon className="h-6 w-6" />
+        <section className="py-24 overflow-hidden">
+            <div className="container mx-auto px-4 md:px-6 space-y-32">
+                
+                {/* Section 1: Image 0 - Text Left, Image Right */}
+                <div className="grid gap-12 lg:grid-cols-2 items-center">
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                        className="space-y-6"
+                    >
+                        <div className="space-y-2">
+                            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">주요 기능 소개</h2>
+                            <div className="inline-block rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
+                                무료 브라우저 확장 프로그램
                             </div>
-                            <h3 className="mb-2 font-semibold">{feature.title}</h3>
-                            <p className="text-sm text-muted-foreground">{feature.description}</p>
                         </div>
-                    ))}
+                        <h3 className="text-4xl font-bold leading-tight bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-600">
+                            온라인 결제 상품 결제 전,<br />
+                            PicSel이 더 스마트하게 비교합니다.
+                        </h3>
+                        <p className="text-lg text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                            여러 결제 페이지에서 고민하지 마세요.<br />
+                            PicSel이 카드 혜택부터 적립 혜택까지 자동 분석해,<br />
+                            한눈에 가장 유리한 결제수단을 추천합니다.<br />
+                            전체 정보를 자동 파악하고, 더 많은 포인트와 캐시백까지 챙기세요.
+                        </p>
+                    </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                        className="relative aspect-square lg:aspect-[4/3] bg-zinc-200 dark:bg-zinc-800 rounded-3xl overflow-hidden shadow-2xl"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-br from-zinc-100 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900" />
+                    </motion.div>
                 </div>
+
+                {/* Section 2: Image 3 - Image Left, Text Right */}
+                <div className="grid gap-12 lg:grid-cols-2 items-center">
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                        className="order-2 lg:order-1 relative aspect-square lg:aspect-[4/3] bg-zinc-200 dark:bg-zinc-800 rounded-3xl overflow-hidden shadow-2xl"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-br from-zinc-100 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900" />
+                    </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                        className="order-1 lg:order-2 space-y-6"
+                    >
+                        <div className="inline-block rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                            AI 기반 소비 분석 리포트
+                        </div>
+                        <h3 className="text-4xl font-bold leading-tight">
+                            매일 가격 확인도, 계산도 이제 그만.<br />
+                            PicSel이 당신의 결제 데이터를<br />
+                            자동으로 분석합니다.
+                        </h3>
+                        <p className="text-lg text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                            PicSel은 카드와 간편결제 데이터를 실시간으로 분석해<br />
+                            놓친 혜택, 절약 가능한 금액, 내 효율적인 결제 습관을 한눈에 보여드립니다.<br />
+                            매주 업데이트되는 AI 리포트로<br />
+                            당신의 소비 습관에 맞는 절약 방법을 추천해드립니다.
+                        </p>
+                    </motion.div>
+                </div>
+
+                {/* Section 3: Image 1 - Text Left, Image Right */}
+                <div className="grid gap-12 lg:grid-cols-2 items-center">
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                        className="space-y-6"
+                    >
+                        <div className="inline-block rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
+                            전 혜택 자동 추적 및 알림 기능
+                        </div>
+                        <h3 className="text-4xl font-bold leading-tight">
+                            놓치는 혜택 없이,<br />
+                            <span className="text-purple-600 dark:text-purple-400">당신의 결제가 더 알뜰해집니다.</span>
+                        </h3>
+                        <p className="text-lg text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                            매월 제공되는 구독 혜택부터 은행 캐시백까지<br />
+                            PicSel이 모든 카드·페이 혜택을 자동으로 추적합니다.<br />
+                            시작일부터 만료 닿은 혜택을 알림으로 알려주고,<br />
+                            곧 만료될 포인트 미리 챙겨드립니다.
+                        </p>
+                    </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                        className="relative aspect-square lg:aspect-[4/3] bg-zinc-200 dark:bg-zinc-800 rounded-3xl overflow-hidden shadow-2xl"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-br from-zinc-100 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900" />
+                    </motion.div>
+                </div>
+
             </div>
         </section>
     );
