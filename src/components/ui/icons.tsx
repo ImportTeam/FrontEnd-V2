@@ -18,3 +18,10 @@ export function KakaoIcon(props: React.SVGProps<SVGSVGElement>) {
         </svg>
     );
 }
+export function NaverIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg" {...props}>
+            <path fill="#03C75A" d="M16.273 12.845 7.376 0H0v24h7.726V11.156l8.896 12.844H24V0h-7.727v12.845z" />
+        </svg>
+    );
+}

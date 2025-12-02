@@ -3,69 +3,78 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { GoogleIcon, KakaoIcon } from "@/components/ui/icons";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { GoogleIcon, KakaoIcon, NaverIcon } from "@/components/ui/icons";
 import { motion } from "framer-motion";
 
 export default function SignupPage() {
     return (
-        <div 
-            className="w-full h-full flex flex-col relative overflow-hidden bg-zinc-800 text-white rounded-[2rem]"
-            style={{ transform: "rotateY(180deg)" }} // Correct orientation for back face
+        <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="w-full space-y-8"
         >
-            {/* Magnetic Strip */}
-            <div className="w-full h-16 bg-black mt-8 mb-8" />
+            <div className="text-center space-y-2">
+                <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">회원가입</h1>
+                <p className="text-zinc-500 dark:text-zinc-400">
+                    PicSel과 함께 스마트한 소비를 시작하세요.
+                </p>
+            </div>
 
-            <div className="px-8 pb-8 flex-1 flex flex-col">
-                <div className="flex items-center justify-between mb-6">
-                    <div className="w-16 h-8 bg-white/20 rounded flex items-center justify-center text-xs text-white/50 font-mono">
-                        CVC
-                    </div>
-                    <div className="text-right">
-                        <h1 className="text-xl font-bold tracking-tight">SIGN UP</h1>
-                        <p className="text-xs text-white/50">New Member Registration</p>
-                    </div>
+            <div className="flex gap-4 justify-center">
+                <Button variant="outline" className="w-12 h-12 rounded-full p-0 border-zinc-200 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900">
+                    <GoogleIcon className="w-5 h-5" />
+                </Button>
+                <Button variant="outline" className="w-12 h-12 rounded-full p-0 border-zinc-200 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900">
+                    <KakaoIcon className="w-5 h-5" />
+                </Button>
+                <Button variant="outline" className="w-12 h-12 rounded-full p-0 border-zinc-200 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900">
+                    <NaverIcon className="w-4 h-4" />
+                </Button>
+            </div>
+
+            <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-zinc-200 dark:border-zinc-800" />
                 </div>
-
-                {/* Signature Panel Style Inputs */}
-                <div className="bg-white/90 text-black p-6 rounded-lg space-y-4 shadow-inner mb-6 flex-1">
-                    <div className="space-y-1">
-                        <Label className="text-xs text-zinc-500 font-mono">FULL NAME</Label>
-                        <Input 
-                            className="bg-transparent border-0 border-b border-zinc-300 rounded-none px-0 h-8 focus-visible:ring-0 focus-visible:border-blue-500 placeholder:text-zinc-300 font-handwriting text-lg"
-                            placeholder="Sign here..."
-                        />
-                    </div>
-                    <div className="space-y-1">
-                        <Label className="text-xs text-zinc-500 font-mono">EMAIL</Label>
-                        <Input 
-                            className="bg-transparent border-0 border-b border-zinc-300 rounded-none px-0 h-8 focus-visible:ring-0 focus-visible:border-blue-500 placeholder:text-zinc-300 font-mono"
-                            placeholder="email@address.com"
-                        />
-                    </div>
-                    <div className="space-y-1">
-                        <Label className="text-xs text-zinc-500 font-mono">PASSWORD</Label>
-                        <Input 
-                            type="password"
-                            className="bg-transparent border-0 border-b border-zinc-300 rounded-none px-0 h-8 focus-visible:ring-0 focus-visible:border-blue-500 placeholder:text-zinc-300 font-mono"
-                            placeholder="••••••••"
-                        />
-                    </div>
-                </div>
-
-                <div className="space-y-4">
-                    <Button className="w-full h-12 bg-blue-600 hover:bg-blue-500 text-white font-bold tracking-wider shadow-lg">
-                        CONFIRM REGISTRATION
-                    </Button>
-
-                    <div className="text-center">
-                        <Link href="/login" className="text-sm text-white/60 hover:text-white transition-colors flex items-center justify-center gap-2 group">
-                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Back to Login
-                        </Link>
-                    </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white dark:bg-zinc-900 px-2 text-zinc-500">Or register with email</span>
                 </div>
             </div>
-        </div>
+
+            <form className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="name">이름</Label>
+                    <Input 
+                        id="name"
+                        type="text" 
+                        placeholder="홍길동"
+                        className="h-12 bg-zinc-50 border-zinc-200 focus:ring-blue-500 dark:bg-zinc-800/50 dark:border-zinc-800"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="email">이메일</Label>
+                    <Input 
+                        id="email"
+                        type="email" 
+                        placeholder="name@example.com"
+                        className="h-12 bg-zinc-50 border-zinc-200 focus:ring-blue-500 dark:bg-zinc-800/50 dark:border-zinc-800"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="password">비밀번호</Label>
+                    <Input 
+                        id="password"
+                        type="password"
+                        placeholder="••••••••"
+                        className="h-12 bg-zinc-50 border-zinc-200 focus:ring-blue-500 dark:bg-zinc-800/50 dark:border-zinc-800"
+                    />
+                </div>
+
+                <Button className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg rounded-xl shadow-lg shadow-blue-600/20 mt-4">
+                    계정 만들기
+                </Button>
+            </form>
+        </motion.div>
     );
 }
