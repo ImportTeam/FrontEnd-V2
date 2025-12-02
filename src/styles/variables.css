@@ -1,0 +1,85 @@
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    /* Brand Colors */
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+
+    /* UI Colors */
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+
+    /* Fonts */
+    --font-sans: var(--font-inter);
+
+    /* Container */
+    --container-center: true;
+    --container-padding: 2rem;
+}
+
+:root {
+    /* Base - Light Mode */
+    --background: #ffffff;
+    --foreground: #1a1a1a;
+
+    /* Primary - Blue/Purple from reference */
+    --primary: #2563eb;
+    --primary-foreground: #ffffff;
+
+    /* Secondary - Dark Grey/Black */
+    --secondary: #1a1a1a;
+    --secondary-foreground: #ffffff;
+
+    /* Accent */
+    --accent: #f3f4f6;
+    --accent-foreground: #1a1a1a;
+
+    /* Muted */
+    --muted: #f3f4f6;
+    --muted-foreground: #6b7280;
+
+    /* Card */
+    --card: #ffffff;
+    --card-foreground: #1a1a1a;
+
+    /* Borders */
+    --border: #e5e7eb;
+    --input: #e5e7eb;
+
+    /* Radius */
+    --radius: 0.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #0a0a0a;
+        --foreground: #ededed;
+
+        --primary: #3b82f6;
+        --primary-foreground: #ffffff;
+
+        --secondary: #ededed;
+        --secondary-foreground: #0a0a0a;
+
+        --accent: #262626;
+        --accent-foreground: #ededed;
+
+        --muted: #262626;
+        --muted-foreground: #a3a3a3;
+
+        --card: #0a0a0a;
+        --card-foreground: #ededed;
+
+        --border: #262626;
+        --input: #262626;
+    }
+}
