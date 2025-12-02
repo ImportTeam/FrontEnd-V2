@@ -26,7 +26,7 @@ const features = [
 export function Features() {
     return (
         <section id="features" className="bg-muted/30 py-20 md:py-32">
-            <div className="container">
+            <div className="container mx-auto px-4">
                 <div className="mx-auto max-w-2xl text-center mb-16">
                     <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">주요 기능 소개</h2>
                     <p className="mt-4 text-lg text-muted-foreground">

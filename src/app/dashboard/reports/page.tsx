@@ -9,7 +9,7 @@ export default function ReportsPage() {
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight">소비 분석 리포트</h1>
                     <p className="text-muted-foreground">
-                        AI가 분석한 월간 소비 패턴과 절약 인사이트입니다.
+                        AI가 분석한 이번 달 소비 패턴과 절약 팁을 확인하세요.
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -50,7 +50,7 @@ export default function ReportsPage() {
                         <div className="p-4 rounded-lg bg-green-50 border border-green-100">
                             <h4 className="font-semibold text-green-900 mb-1">배달앱 할인 카드 추천</h4>
                             <p className="text-sm text-green-700">
-                                배달의민족 이용 빈도가 높습니다. '삼성카드 taptap O'를 사용하면 월 최대 5,000원 할인이 가능합니다.
+                                배달의민족 이용 빈도가 높습니다. &apos;삼성카드 taptap O&apos;를 사용하면 월 최대 5,000원 할인이 가능합니다.
                             </p>
                         </div>
                     </CardContent>
