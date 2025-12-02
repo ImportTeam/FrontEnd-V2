@@ -6,11 +6,7 @@ import { GoogleIcon, KakaoIcon } from "@/components/ui/icons";
 
 export default function SignupPage() {
     return (
-        <AuthLayout
-            title="환영합니다!"
-            subtitle="PicSel과 함께 스마트한 소비를 시작하세요."
-            isSignup={true}
-        >
+        <AuthLayout isSignup={true}>
             <div className="flex flex-col space-y-2 text-center">
                 <h1 className="text-2xl font-bold tracking-tight">회원가입</h1>
                 <p className="text-sm text-muted-foreground">

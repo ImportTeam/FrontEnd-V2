@@ -25,10 +25,7 @@ export default function LoginPage() {
     };
 
     return (
-        <AuthLayout
-            title="가입하여 시작해보세요!"
-            subtitle="혹시 계정이 이미 있으신가요?"
-        >
+        <AuthLayout>
             <motion.div
                 variants={container}
                 initial="hidden"
