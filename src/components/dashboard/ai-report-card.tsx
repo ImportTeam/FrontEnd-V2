@@ -3,7 +3,7 @@ import { Sparkles } from "lucide-react";
 
 export function AIReportCard() {
     return (
-        <Card className="bg-zinc-900 text-white border-zinc-800">
+        <Card className="bg-card border-border">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-zinc-300">AI 추천 혜택</CardTitle>
                 <Sparkles className="h-4 w-4 text-yellow-400" />

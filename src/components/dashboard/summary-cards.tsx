@@ -16,7 +16,7 @@ export function SummaryCards() {
                     </p>
                 </CardContent>
             </Card>
-            <Card className="bg-white text-black border-zinc-200">
+            <Card className="bg-card border-border">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium text-zinc-600">가장 많이 쓴 쇼핑몰</CardTitle>
                     <ShoppingBag className="h-4 w-4 text-zinc-400" />
@@ -28,7 +28,7 @@ export function SummaryCards() {
                     </p>
                 </CardContent>
             </Card>
-            <Card className="bg-white text-black border-zinc-200">
+            <Card className="bg-card border-border">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium text-zinc-600">최다 사용 결제수단</CardTitle>
                     <CreditCard className="h-4 w-4 text-zinc-400" />
