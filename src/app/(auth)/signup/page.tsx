@@ -18,7 +18,7 @@ export default function SignupPage() {
                     <div className="grid gap-4">
                         <div className="grid gap-2">
                             <Label htmlFor="name">사용자 이름</Label>
-                            <Input id="name" placeholder="홍길동" type="text" className="bg-muted/50" />
+                            <Input id="name" placeholder="홍길동" type="text" className="border-0 bg-secondary/40 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:bg-secondary/60 h-12" />
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="email">이메일 주소</Label>
@@ -29,14 +29,14 @@ export default function SignupPage() {
                                 autoCapitalize="none"
                                 autoComplete="email"
                                 autoCorrect="off"
-                                className="bg-muted/50"
+                                className="border-0 bg-secondary/40 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:bg-secondary/60 h-12"
                             />
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="password">비밀번호</Label>
-                            <Input id="password" type="password" className="bg-muted/50" />
+                            <Input id="password" type="password" className="border-0 bg-secondary/40 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:bg-secondary/60 h-12" />
                         </div>
-                        <Button className="w-full bg-slate-600 hover:bg-slate-700">회원가입</Button>
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold h-11">회원가입</Button>
                     </div>
                 </form>
                 <div className="relative">

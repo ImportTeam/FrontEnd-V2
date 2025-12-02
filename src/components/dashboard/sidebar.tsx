@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import type { Route } from "next";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import type { LucideIcon } from "lucide-react";
 import {
     LayoutDashboard,
     CreditCard,
@@ -12,30 +14,36 @@ import {
     LogOut,
 } from "lucide-react";
 
-const sidebarItems = [
+type SidebarItem = {
+    title: string;
+    href: Route;
+    icon: LucideIcon;
+};
+
+const sidebarItems: SidebarItem[] = [
     {
         title: "대시보드",
-        href: "/dashboard",
+        href: "/dashboard" as Route,
         icon: LayoutDashboard,
     },
     {
         title: "결제수단 관리",
-        href: "/dashboard/cards",
+        href: "/dashboard/cards" as Route,
         icon: CreditCard,
     },
     {
         title: "소비 분석 리포트",
-        href: "/dashboard/reports",
+        href: "/dashboard/reports" as Route,
         icon: PieChart,
     },
     {
         title: "내 프로필",
-        href: "/dashboard/profile",
+        href: "/dashboard/profile" as Route,
         icon: User,
     },
     {
         title: "설정",
-        href: "/dashboard/settings",
+        href: "/dashboard/settings" as Route,
         icon: Settings,
     },
 ];

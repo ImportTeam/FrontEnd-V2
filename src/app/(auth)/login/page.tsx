@@ -51,7 +51,7 @@ export default function LoginPage() {
                                     autoCapitalize="none"
                                     autoComplete="email"
                                     autoCorrect="off"
-                                    className="bg-muted/50"
+                                    className="border-0 bg-secondary/40 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:bg-secondary/60 h-12"
                                 />
                             </motion.div>
                             <motion.div variants={item} className="grid gap-2">
@@ -64,10 +64,14 @@ export default function LoginPage() {
                                         비밀번호를 잊으셨나요?
                                     </Link>
                                 </div>
-                                <Input id="password" type="password" className="bg-muted/50" />
+                                <Input 
+                                    id="password" 
+                                    type="password" 
+                                    className="border-0 bg-secondary/40 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:bg-secondary/60 h-12" 
+                                />
                             </motion.div>
                             <motion.div variants={item}>
-                                <Button className="w-full bg-slate-600 hover:bg-slate-700">로그인</Button>
+                                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold h-11">로그인</Button>
                             </motion.div>
                         </div>
                     </form>

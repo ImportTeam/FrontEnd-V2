@@ -26,19 +26,28 @@ export function AuthLayout({ children, isSignup = false }: AuthLayoutProps) {
                     </Link>
                 </div>
                 
-                <div className="relative z-10 max-w-md">
+                <div className="relative z-10 max-w-md space-y-8">
+                     {/* Hero Image Placeholder */}
+                    <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-white/5 shadow-2xl backdrop-blur-sm">
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20" />
+                        <div className="flex h-full items-center justify-center text-sm text-zinc-500">
+                           {/* Replace with actual dashboard screenshot or illustration */}
+                           <span className="font-medium">Service Dashboard Preview</span>
+                        </div>
+                    </div>
+
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2, duration: 0.5 }}
                     >
-                        <h1 className="text-4xl font-bold leading-tight tracking-tight mb-4">
+                        <h1 className="text-3xl font-bold leading-tight tracking-tight mb-4">
                             {isSignup ? "스마트한 소비의 시작" : "다시 오셨군요!"}
                         </h1>
                         <p className="text-lg text-zinc-400 leading-relaxed">
                             {isSignup 
-                                ? "PicSel과 함께 당신의 모든 결제 순간을\n가장 현명한 선택으로 만들어보세요." 
-                                : "PicSel이 분석한 당신만의 혜택이\n기다리고 있습니다."}
+                                ? "PicSel에서 수많은 혜택을 한눈에 비교하고,\n당신에게 딱 맞는 최저가를 찾아보세요." 
+                                : "PicSel이 분석한 당신만의 맞춤 혜택이\n기다리고 있습니다."}
                         </p>
                     </motion.div>
                 </div>
@@ -49,7 +58,7 @@ export function AuthLayout({ children, isSignup = false }: AuthLayoutProps) {
             </div>
 
             {/* Right Side (Form) */}
-            <div className="flex w-full flex-col items-center justify-center p-8 lg:w-1/2 bg-background relative">
+            <div className="flex w-full flex-col items-center justify-center p-8 lg:w-1/2 bg-muted/30 relative">
                 <div className="absolute left-4 top-4 md:left-8 md:top-8">
                     <Link
                         href="/"
@@ -73,9 +82,15 @@ export function AuthLayout({ children, isSignup = false }: AuthLayoutProps) {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.4, ease: "easeOut" }}
-                    className="w-full max-w-sm space-y-6"
+                    className="w-full max-w-md"
                 >
-                    {children}
+                    <div className="bg-card text-card-foreground rounded-xl border shadow-sm p-8">
+                        <div className="flex flex-col space-y-2 text-center mb-6">
+                             {/* Title/Subtitle will be rendered by children if needed, or we can move it here if we pass props back. 
+                                 For now, keeping it flexible as children. */}
+                        </div>
+                        {children}
+                    </div>
                 </motion.div>
             </div>
         </div>
