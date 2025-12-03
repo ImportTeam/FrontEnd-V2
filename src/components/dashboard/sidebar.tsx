@@ -53,7 +53,7 @@ export function Sidebar() {
 
     return (
         <aside className="hidden w-64 flex-col border-r border-zinc-200 bg-white md:flex dark:bg-zinc-900 dark:border-zinc-800">
-            <div className="flex h-20 items-center border-b border-zinc-200 px-8 dark:border-zinc-800">
+            <div className="flex h-16 items-center border-b border-zinc-200 px-8 dark:border-zinc-800">
                 <Link href="/" className="flex items-center gap-2 font-bold text-2xl text-zinc-900 dark:text-white">
                     PicSel
                 </Link>
