@@ -16,7 +16,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 
 export function DashboardHeader() {
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 bg-white/80 px-6 backdrop-blur-xl dark:bg-zinc-950/80">
+    <header className="sticky top-0 z-50 flex h-16 items-center gap-4 bg-white px-6 backdrop-blur-xl dark:bg-zinc-950 shadow-sm">
       <div className="flex-1" />
       <div className="flex items-center gap-2 md:gap-4">
         <ModeToggle />

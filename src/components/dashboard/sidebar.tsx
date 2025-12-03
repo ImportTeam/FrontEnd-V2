@@ -52,7 +52,17 @@ export function Sidebar() {
     const pathname = usePathname();
 
     return (
-        <aside className="hidden w-64 flex-col bg-white md:flex dark:bg-zinc-900">
+        <>
+            {/* Mobile sidebar backdrop */}
+            <div 
+                className={cn(
+                    "fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden transition-opacity",
+                    pathname ? "opacity-0 pointer-events-none" : "opacity-0 pointer-events-none"
+                )}
+            />
+            
+            {/* Desktop Sidebar */}
+            <aside className="hidden w-64 flex-col bg-white md:flex dark:bg-zinc-900">
             <div className="flex h-16 items-center px-8">
                 <Link href="/" className="flex items-center gap-2 font-bold text-2xl text-zinc-900 dark:text-white">
                     PicSel
@@ -90,5 +100,6 @@ export function Sidebar() {
                 </Link>
             </div>
         </aside>
+        </>
     );
 }

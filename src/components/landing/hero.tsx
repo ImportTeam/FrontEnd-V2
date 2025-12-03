@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 
 export function Hero() {
     return (
@@ -61,7 +62,7 @@ export function Hero() {
                         </div>
                     </div>
 
-                    {/* Right Visual - 3 columns */}
+                    {/* Right Visual - 3 columns - Real Cards */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -74,27 +75,22 @@ export function Hero() {
                             
                             {/* Main Visual Container */}
                             <div className="relative w-full h-full perspective-1000">
-                                {/* Floating Cards Composition */}
+                                {/* Real Card 1 - Floating */}
                                 <motion.div 
-                                    className="absolute top-[10%] right-[10%] w-[70%] aspect-[1.586] rounded-2xl bg-gradient-to-br from-zinc-900 to-zinc-800 shadow-2xl border border-white/10 p-4 sm:p-6 flex flex-col justify-between z-20"
+                                    className="absolute top-[10%] right-[10%] w-[70%] aspect-[1.586] rounded-2xl shadow-2xl overflow-hidden z-20"
                                     animate={{ y: [0, -20, 0], rotateY: [-5, 5, -5] }}
                                     transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                                 >
-                                    <div className="flex justify-between items-start">
-                                        <div className="w-10 h-6 sm:w-12 sm:h-8 rounded bg-yellow-500/80" />
-                                        <div className="text-white/50 font-mono text-xs sm:text-sm">PicSel Card</div>
-                                    </div>
-                                    <div className="space-y-2 sm:space-y-4">
-                                        <div className="flex gap-2">
-                                            <div className="w-10 h-1.5 sm:w-12 sm:h-2 rounded-full bg-white/20" />
-                                            <div className="w-6 h-1.5 sm:w-8 sm:h-2 rounded-full bg-white/20" />
-                                        </div>
-                                        <div className="flex justify-between items-end">
-                                            <div className="text-white text-base sm:text-xl font-mono tracking-widest">**** **** **** 1234</div>
-                                        </div>
-                                    </div>
+                                    <Image
+                                        src="/assets/card/shinhanCard.svg"
+                                        alt="Shinhan Card"
+                                        fill
+                                        className="object-cover"
+                                        priority
+                                    />
                                 </motion.div>
 
+                                {/* Real Card 2 - Benefits Display */}
                                 <motion.div 
                                     className="absolute bottom-[20%] left-[5%] w-[60%] aspect-[1.586] rounded-2xl bg-white dark:bg-zinc-100 shadow-xl border border-zinc-200 p-4 sm:p-6 flex flex-col justify-between z-10"
                                     animate={{ y: [0, 20, 0], rotate: [-10, -5, -10] }}

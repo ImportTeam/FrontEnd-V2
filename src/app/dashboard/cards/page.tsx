@@ -80,10 +80,10 @@ export default function CardsPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
             결제수단 관리
           </h1>
-          <p className="text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-sm md:text-base text-zinc-500 dark:text-zinc-400 mt-2">
             등록된 카드와 계좌를 한눈에 관리하세요.
           </p>
         </div>
@@ -126,18 +126,18 @@ export default function CardsPage() {
             </div>
 
             {/* Card Details */}
-            <div className="px-1 space-y-2">
-                <div className="flex justify-between items-center text-sm">
-                    <span className="text-zinc-500 dark:text-zinc-400">이번 달 사용금액</span>
-                    <span className="font-bold text-zinc-900 dark:text-zinc-100">{card.balance}원</span>
+            <div className="space-y-3 mt-4">
+                <div className="flex justify-between items-center">
+                    <span className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400">이번 달 사용금액</span>
+                    <span className="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100">{card.balance}원</span>
                 </div>
-                <div className="h-1.5 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                     <div 
                         className="h-full bg-zinc-900 dark:bg-zinc-100 rounded-full" 
                         style={{ width: '45%' }}
                     />
                 </div>
-                <div className="flex justify-between items-center text-xs text-zinc-400">
+                <div className="flex justify-between items-center text-xs text-zinc-400 dark:text-zinc-500">
                     <span>한도 {card.limit}</span>
                     <span>45% 사용</span>
                 </div>
