@@ -52,8 +52,8 @@ export function Sidebar() {
     const pathname = usePathname();
 
     return (
-        <aside className="hidden w-64 flex-col border-r border-zinc-200 bg-white md:flex dark:bg-zinc-900 dark:border-zinc-800">
-            <div className="flex h-16 items-center border-b border-zinc-200 px-8 dark:border-zinc-800">
+        <aside className="hidden w-64 flex-col bg-white md:flex dark:bg-zinc-900">
+            <div className="flex h-16 items-center px-8">
                 <Link href="/" className="flex items-center gap-2 font-bold text-2xl text-zinc-900 dark:text-white">
                     PicSel
                 </Link>
@@ -80,7 +80,7 @@ export function Sidebar() {
                     })}
                 </nav>
             </div>
-            <div className="border-t border-zinc-200 p-6 dark:border-zinc-800">
+            <div className="p-6">
                 <Link
                     href="/"
                     className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
