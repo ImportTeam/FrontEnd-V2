@@ -8,7 +8,7 @@ export function DashboardCharts() {
   return (
     <div className="grid gap-6 md:grid-cols-7">
       {/* Chart Section (Left 4/7) */}
-      <Card className="col-span-4 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm">
+      <Card className="col-span-4 bg-white dark:bg-zinc-900 border-0 shadow-sm">
         <CardHeader>
           <CardTitle className="text-lg font-bold text-zinc-900 dark:text-zinc-100">월간 절약 변화 추이</CardTitle>
           <CardDescription className="text-zinc-500 dark:text-zinc-400">AI가 분석한 지난 6개월간의 혜택 적용 내역입니다.</CardDescription>
@@ -26,7 +26,7 @@ export function DashboardCharts() {
       </Card>
 
       {/* Top 3 List Section (Right 3/7) */}
-      <Card className="col-span-3 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm">
+      <Card className="col-span-3 bg-white dark:bg-zinc-900 border-0 shadow-sm">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-yellow-500 fill-yellow-500 dark:text-yellow-400 dark:fill-yellow-400" />
@@ -37,7 +37,7 @@ export function DashboardCharts() {
         <CardContent>
           <div className="space-y-4">
             {/* Item 1 */}
-            <div className="flex items-center p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/30 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+            <div className="flex items-center p-4 rounded-xl bg-zinc-50/50 dark:bg-zinc-800/30 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold text-sm mr-4">
                     1
                 </div>
@@ -49,7 +49,7 @@ export function DashboardCharts() {
             </div>
 
             {/* Item 2 */}
-            <div className="flex items-center p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/20 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors">
+            <div className="flex items-center p-4 rounded-xl bg-white dark:bg-zinc-800/20 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold text-sm mr-4">
                     2
                 </div>
@@ -60,7 +60,7 @@ export function DashboardCharts() {
             </div>
 
             {/* Item 3 */}
-            <div className="flex items-center p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/20 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors">
+            <div className="flex items-center p-4 rounded-xl bg-white dark:bg-zinc-800/20 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold text-sm mr-4">
                     3
                 </div>

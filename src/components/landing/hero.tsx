@@ -9,13 +9,14 @@ export function Hero() {
     return (
         <section className="relative min-h-[90vh] w-full overflow-hidden bg-zinc-50 dark:bg-zinc-950 flex items-center">
             {/* Background Gradients */}
-            <div className="absolute top-0 right-0 w-[50%] h-full bg-gradient-to-l from-blue-50 to-transparent dark:from-blue-950/20 dark:to-transparent" />
+            <div className="absolute top-0 right-0 w-[40%] h-full bg-gradient-to-l from-blue-50 to-transparent dark:from-blue-950/20 dark:to-transparent" />
             <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-white to-transparent dark:from-zinc-950 dark:to-transparent" />
 
             <div className="container relative z-10 mx-auto px-4 md:px-6">
-                <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
-                    {/* Left Content */}
-                    <div className="flex flex-col justify-center space-y-8">
+                {/* Changed from lg:grid-cols-2 to custom 7:3 ratio */}
+                <div className="grid gap-12 lg:grid-cols-10 lg:gap-8 items-center">
+                    {/* Left Content - 7 columns */}
+                    <div className="lg:col-span-7 flex flex-col justify-center space-y-8">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -60,14 +61,14 @@ export function Hero() {
                         </div>
                     </div>
 
-                    {/* Right Visual - 3D Card Composition */}
+                    {/* Right Visual - 3 columns */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.7 }}
-                        className="relative lg:h-[800px] flex items-center justify-center"
+                        className="lg:col-span-3 relative lg:h-[600px] flex items-center justify-center"
                     >
-                        <div className="relative w-full max-w-[600px] aspect-square">
+                        <div className="relative w-full max-w-[400px] aspect-square">
                             {/* Abstract Background Blobs */}
                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-br from-blue-100/50 to-purple-100/50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-full blur-3xl" />
                             

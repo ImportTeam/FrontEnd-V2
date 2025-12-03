@@ -5,7 +5,7 @@ import { ShoppingBag } from "lucide-react";
 
 export function RecentTransactions() {
   return (
-    <Card className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm">
+    <Card className="bg-white dark:bg-zinc-900 border-0 shadow-sm">
       <CardHeader>
         <CardTitle className="text-lg font-bold text-zinc-900 dark:text-zinc-100">최근 이용 사이트별 결제수단</CardTitle>
         <CardDescription className="text-zinc-500 dark:text-zinc-400">최근 30일간의 결제 내역과 적용된 혜택입니다.</CardDescription>

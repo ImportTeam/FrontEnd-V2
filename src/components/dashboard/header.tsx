@@ -1,8 +1,7 @@
 "use client";
 
-import { Bell, Search, User, Settings, LogOut } from "lucide-react";
+import { Bell, User, Settings, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,18 +17,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 export function DashboardHeader() {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-zinc-200 bg-white/80 px-6 backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-950/80">
-      <div className="w-full flex-1">
-        <form>
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500 dark:text-zinc-400" />
-            <Input
-              type="search"
-              placeholder="검색..."
-              className="w-full bg-zinc-50 pl-9 md:w-[300px] lg:w-[400px] dark:bg-zinc-900 dark:border-zinc-800"
-            />
-          </div>
-        </form>
-      </div>
+      <div className="flex-1" />
       <div className="flex items-center gap-2 md:gap-4">
         <ModeToggle />
         
