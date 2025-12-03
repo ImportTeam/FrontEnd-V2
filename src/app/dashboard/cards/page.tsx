@@ -92,7 +92,7 @@ export default function CardsPage() {
       </div>
 
       {/* Cards Grid */}
-      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
         {MOCK_CARDS.map((card) => (
           <div key={card.id} className="group relative flex flex-col gap-4">
             {/* Card Visual */}

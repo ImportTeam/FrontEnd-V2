@@ -7,9 +7,9 @@ import { Sparkles } from "lucide-react";
 
 export function DashboardCharts() {
   return (
-    <div className="grid gap-6 md:grid-cols-7">
+    <div className="grid gap-6 lg:grid-cols-7">
       {/* Chart Section (Left 4/7) */}
-      <DashboardCard className="col-span-4">
+      <DashboardCard className="col-span-full lg:col-span-4">
         <CardHeader>
           <CardTitle className="text-lg font-bold">월간 절약 변화 추이</CardTitle>
           <CardDescription>AI가 분석한 지난 6개월간의 혜택 적용 내역입니다.</CardDescription>
@@ -27,7 +27,7 @@ export function DashboardCharts() {
       </DashboardCard>
 
       {/* Top 3 List Section (Right 3/7) */}
-      <DashboardCard className="col-span-3">
+      <DashboardCard className="col-span-full lg:col-span-3">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-yellow-500 fill-yellow-500 dark:text-yellow-400 dark:fill-yellow-400" />

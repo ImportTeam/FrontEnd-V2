@@ -8,7 +8,16 @@ const nextConfig: NextConfig = {
         ignoreBuildErrors: false,
     },
     experimental: {
-        optimizePackageImports: ["lucide-react", "framer-motion", "recharts"],
+        optimizePackageImports: [
+            "lucide-react", 
+            "framer-motion", 
+            "recharts",
+            "@radix-ui/react-avatar",
+            "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-label",
+            "@radix-ui/react-slot",
+            "@radix-ui/react-switch"
+        ],
     },
     typedRoutes: true,
     turbopack: {
