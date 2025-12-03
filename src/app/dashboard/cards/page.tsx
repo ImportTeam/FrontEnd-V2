@@ -16,18 +16,19 @@ const MOCK_CARDS = [
     bankName: "Shinhan Card",
     cardName: "Deep Dream",
     cardNumber: "1234",
-    colorFrom: "#3b82f6", // blue-500
-    colorTo: "#1d4ed8",   // blue-700
+    imageSrc: "/assets/card/shinhanCard.svg",
     balance: "350,000",
     limit: "500,000",
+    textColor: "text-white", // Assuming dark card
   },
   {
     id: 2,
     bankName: "Naver Financial",
     cardName: "Naver Pay Point",
     cardNumber: "5678",
-    colorFrom: "#22c55e", // green-500
-    colorTo: "#15803d",   // green-700
+    // No image for this one in the list, use gradient
+    colorFrom: "#22c55e", 
+    colorTo: "#15803d",
     balance: "12,500 P",
     limit: "Auto-Charge",
   },
@@ -36,32 +37,40 @@ const MOCK_CARDS = [
     bankName: "Hyundai Card",
     cardName: "ZERO Edition2",
     cardNumber: "9012",
-    colorFrom: "#f4f4f5", // zinc-100 (White card)
-    colorTo: "#e4e4e7",   // zinc-200
-    textColor: "text-zinc-900",
+    imageSrc: "/assets/card/hyundaiCard.svg",
     balance: "890,000",
     limit: "2,000,000",
+    textColor: "text-white",
   },
   {
     id: 4,
     bankName: "Samsung Card",
     cardName: "taptap O",
     cardNumber: "3456",
-    colorFrom: "#6366f1", // indigo-500
-    colorTo: "#4338ca",   // indigo-700
+    imageSrc: "/assets/card/samsungCard.svg",
     balance: "150,000",
     limit: "1,500,000",
+    textColor: "text-white",
   },
   {
     id: 5,
-    bankName: "Kakao Bank",
-    cardName: "Kakao Mini",
+    bankName: "KB Kookmin",
+    cardName: "KB Card",
     cardNumber: "7890",
-    colorFrom: "#facc15", // yellow-400
-    colorTo: "#eab308",   // yellow-500
-    textColor: "text-zinc-900",
+    imageSrc: "/assets/card/kbCard.svg",
     balance: "45,000",
     limit: "Check Card",
+    textColor: "text-zinc-900",
+  },
+  {
+    id: 6,
+    bankName: "Woori Card",
+    cardName: "Woori Card",
+    cardNumber: "1122",
+    imageSrc: "/assets/card/wooriCard.svg",
+    balance: "210,000",
+    limit: "1,000,000",
+    textColor: "text-white",
   },
 ];
 
@@ -91,18 +100,19 @@ export default function CardsPage() {
             {/* Card Visual */}
             <div className="relative">
                 <CreditCardVisual
-                bankName={card.bankName}
-                cardName={card.cardName}
-                cardNumber={card.cardNumber}
-                colorFrom={card.colorFrom}
-                colorTo={card.colorTo}
-                className={card.textColor ? card.textColor : "text-white"}
+                    bankName={card.bankName}
+                    cardName={card.cardName}
+                    cardNumber={card.cardNumber}
+                    colorFrom={card.colorFrom}
+                    colorTo={card.colorTo}
+                    imageSrc={card.imageSrc}
+                    className={card.textColor}
                 />
                 {/* Edit Menu */}
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/30 text-white shadow-sm">
+                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-black/20 backdrop-blur-md hover:bg-black/40 text-white shadow-sm border-none">
                                 <MoreHorizontal className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
@@ -134,6 +144,8 @@ export default function CardsPage() {
             </div>
           </div>
         ))}
+        
+        {/* Add New Placeholder (Optional, if user wants it back, but they said remove it. Keeping it removed.) */}
       </div>
     </div>
   );
