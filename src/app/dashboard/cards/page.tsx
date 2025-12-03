@@ -74,19 +74,17 @@ const MOCK_CARDS = [
   },
 ];
 
+import { PageHeader } from "@/components/dashboard/page-header";
+
 export default function CardsPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-            결제수단 관리
-          </h1>
-          <p className="text-sm md:text-base text-zinc-500 dark:text-zinc-400 mt-2">
-            등록된 카드와 계좌를 한눈에 관리하세요.
-          </p>
-        </div>
+        <PageHeader 
+          title="결제수단 관리" 
+          description="등록된 카드와 계좌를 한눈에 관리하세요." 
+        />
         <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20">
           <Plus className="mr-2 h-4 w-4" />
           새 카드 추가

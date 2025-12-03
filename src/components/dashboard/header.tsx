@@ -13,6 +13,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
+import { IconButton } from "@/components/ui/icon-button";
 
 export function DashboardHeader() {
   return (
@@ -21,10 +22,10 @@ export function DashboardHeader() {
       <div className="flex items-center gap-2 md:gap-4">
         <ModeToggle />
         
-        <Button variant="ghost" size="icon" className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50">
+        <IconButton>
           <Bell className="h-5 w-5" />
           <span className="sr-only">알림</span>
-        </Button>
+        </IconButton>
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

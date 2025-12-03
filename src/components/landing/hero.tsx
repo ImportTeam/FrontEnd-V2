@@ -8,7 +8,7 @@ import Image from "next/image";
 
 export function Hero() {
     return (
-        <section className="relative min-h-[90vh] w-full overflow-hidden bg-zinc-50 dark:bg-zinc-950 flex items-center">
+        <section className="relative min-h-[90vh] w-full overflow-hidden bg-background flex items-center">
             {/* Background Gradients */}
             <div className="absolute top-0 right-0 w-[40%] h-full bg-gradient-to-l from-blue-50 to-transparent dark:from-blue-950/20 dark:to-transparent" />
             <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-white to-transparent dark:from-zinc-950 dark:to-transparent" />
@@ -27,11 +27,11 @@ export function Hero() {
                                 <Sparkles className="mr-2 h-3.5 w-3.5" />
                                 AI 기반 스마트 소비 분석
                             </div>
-                            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl 2xl:text-7xl/none bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400 mb-6">
+                            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl 2xl:text-7xl/none bg-clip-text text-transparent bg-gradient-to-r from-foreground to-muted-foreground mb-6">
                                 결제 순간,<br />
                                 가장 유리한 선택
                             </h1>
-                            <p className="max-w-[600px] text-zinc-500 md:text-lg lg:text-xl dark:text-zinc-400 leading-relaxed">
+                            <p className="max-w-[600px] text-muted-foreground md:text-lg lg:text-xl leading-relaxed">
                                 복잡한 카드 혜택, 더 이상 고민하지 마세요.<br />
                                 PicSel이 당신의 소비 패턴을 분석하여<br />
                                 최적의 결제 수단을 실시간으로 추천해드립니다.
@@ -52,10 +52,10 @@ export function Hero() {
                             </Link>
                         </motion.div>
 
-                        <div className="flex items-center gap-4 text-sm text-zinc-500 dark:text-zinc-400">
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
                             <div className="flex -space-x-2">
                                 {[1, 2, 3, 4].map((i) => (
-                                    <div key={i} className="h-8 w-8 rounded-full border-2 border-white dark:border-zinc-950 bg-zinc-200 dark:bg-zinc-800" />
+                                    <div key={i} className="h-8 w-8 rounded-full border-2 border-background bg-muted" />
                                 ))}
                             </div>
                             <p>이미 10,000+ 명이 스마트한 소비를 시작했습니다</p>

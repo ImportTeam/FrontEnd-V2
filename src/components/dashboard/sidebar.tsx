@@ -64,7 +64,7 @@ export function Sidebar() {
             {/* Desktop Sidebar */}
             <aside className="hidden w-64 flex-col bg-white md:flex dark:bg-zinc-900">
             <div className="flex h-16 items-center px-8">
-                <Link href="/" className="flex items-center gap-2 font-bold text-2xl text-zinc-900 dark:text-white">
+                <Link href="/" className="flex items-center gap-2 font-bold text-2xl text-foreground">
                     PicSel
                 </Link>
             </div>
@@ -79,11 +79,11 @@ export function Sidebar() {
                                 className={cn(
                                     "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all",
                                     isActive 
-                                        ? "bg-zinc-900 text-white shadow-md dark:bg-zinc-50 dark:text-zinc-900" 
-                                        : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+                                        ? "bg-primary text-primary-foreground shadow-md" 
+                                        : "text-muted-foreground hover:bg-accent hover:text-foreground"
                                 )}
                             >
-                                <item.icon className={cn("h-5 w-5", isActive ? "text-white dark:text-zinc-900" : "text-zinc-400 group-hover:text-zinc-900")} />
+                                <item.icon className={cn("h-5 w-5", isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground")} />
                                 {item.title}
                             </Link>
                         );
