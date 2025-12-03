@@ -11,7 +11,7 @@ export default function DashboardPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+            <h1 className="text-[clamp(1.875rem,1rem+1.5vw,2.25rem)] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
                 안녕하세요, 김픽셀님!
             </h1>
             <span className="text-2xl">👋</span>

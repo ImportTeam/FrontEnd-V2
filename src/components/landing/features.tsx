@@ -1,33 +1,33 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
+
 
 export function Features() {
     return (
-        <section className="py-24 overflow-hidden">
-            <div className="container mx-auto px-4 md:px-6 space-y-32">
+        <section className="py-32 overflow-hidden">
+            <div className="container mx-auto px-6 md:px-12 max-w-screen-2xl space-y-40">
                 
                 {/* Section 1: Image 0 - Text Left, Image Right */}
-                <div className="grid gap-12 lg:grid-cols-2 items-center">
+                <div className="grid gap-16 lg:grid-cols-2 items-center">
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
-                        className="space-y-6"
+                        className="space-y-8"
                     >
-                        <div className="space-y-2">
-                            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">주요 기능 소개</h2>
-                            <div className="inline-block rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
+                        <div className="space-y-4">
+                            <h2 className="text-[clamp(1.875rem,1rem+1.5vw,2.5rem)] font-bold tracking-tight">주요 기능 소개</h2>
+                            <div className="inline-block rounded-full bg-orange-100 px-4 py-1.5 text-sm font-medium text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 2xl:text-base">
                                 무료 브라우저 확장 프로그램
                             </div>
                         </div>
-                        <h3 className="text-4xl font-bold leading-tight bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-600">
+                        <h3 className="text-[clamp(1.75rem,1rem+1.5vw,2.75rem)] font-bold leading-tight bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-600">
                             온라인 결제 상품 결제 전,<br />
                             PicSel이 더 스마트하게 비교합니다.
                         </h3>
-                        <p className="text-lg text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                        <p className="text-[clamp(1rem,0.875rem+0.5vw,1.125rem)] text-zinc-500 dark:text-zinc-400 leading-relaxed">
                             여러 결제 페이지에서 고민하지 마세요.<br />
                             PicSel이 카드 혜택부터 적립 혜택까지 자동 분석해,<br />
                             한눈에 가장 유리한 결제수단을 추천합니다.<br />
@@ -46,7 +46,7 @@ export function Features() {
                 </div>
 
                 {/* Section 2: Image 3 - Image Left, Text Right */}
-                <div className="grid gap-12 lg:grid-cols-2 items-center">
+                <div className="grid gap-16 lg:grid-cols-2 items-center">
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
@@ -61,17 +61,17 @@ export function Features() {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
-                        className="order-1 lg:order-2 space-y-6"
+                        className="order-1 lg:order-2 space-y-8"
                     >
-                        <div className="inline-block rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                        <div className="inline-block rounded-full bg-blue-100 px-4 py-1.5 text-sm font-medium text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 2xl:text-base">
                             AI 기반 소비 분석 리포트
                         </div>
-                        <h3 className="text-4xl font-bold leading-tight">
+                        <h3 className="text-[clamp(1.75rem,1rem+1.5vw,2.75rem)] font-bold leading-tight">
                             매일 가격 확인도, 계산도 이제 그만.<br />
                             PicSel이 당신의 결제 데이터를<br />
                             자동으로 분석합니다.
                         </h3>
-                        <p className="text-lg text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                        <p className="text-[clamp(1rem,0.875rem+0.5vw,1.125rem)] text-zinc-500 dark:text-zinc-400 leading-relaxed">
                             PicSel은 카드와 간편결제 데이터를 실시간으로 분석해<br />
                             놓친 혜택, 절약 가능한 금액, 내 효율적인 결제 습관을 한눈에 보여드립니다.<br />
                             매주 업데이트되는 AI 리포트로<br />
@@ -81,22 +81,22 @@ export function Features() {
                 </div>
 
                 {/* Section 3: Image 1 - Text Left, Image Right */}
-                <div className="grid gap-12 lg:grid-cols-2 items-center">
+                <div className="grid gap-16 lg:grid-cols-2 items-center">
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
-                        className="space-y-6"
+                        className="space-y-8"
                     >
-                        <div className="inline-block rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
+                        <div className="inline-block rounded-full bg-purple-100 px-4 py-1.5 text-sm font-medium text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 2xl:text-base">
                             전 혜택 자동 추적 및 알림 기능
                         </div>
-                        <h3 className="text-4xl font-bold leading-tight">
+                        <h3 className="text-[clamp(1.75rem,1rem+1.5vw,2.75rem)] font-bold leading-tight">
                             놓치는 혜택 없이,<br />
                             <span className="text-purple-600 dark:text-purple-400">당신의 결제가 더 알뜰해집니다.</span>
                         </h3>
-                        <p className="text-lg text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                        <p className="text-[clamp(1rem,0.875rem+0.5vw,1.125rem)] text-zinc-500 dark:text-zinc-400 leading-relaxed">
                             매월 제공되는 구독 혜택부터 은행 캐시백까지<br />
                             PicSel이 모든 카드·페이 혜택을 자동으로 추적합니다.<br />
                             시작일부터 만료 닿은 혜택을 알림으로 알려주고,<br />

@@ -27,13 +27,13 @@ const steps = [
 
 export function HowToUse() {
     return (
-        <section className="py-24 bg-zinc-50 dark:bg-zinc-900/50">
-            <div className="container mx-auto px-4 md:px-6">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">사용 방법</h2>
+        <section className="py-32 bg-zinc-50 dark:bg-zinc-900/50">
+            <div className="container mx-auto px-6 md:px-12 max-w-screen-2xl">
+                <div className="text-center mb-24">
+                    <h2 className="text-[clamp(1.875rem,1rem+1.5vw,2.5rem)] font-bold tracking-tight mb-6">사용 방법</h2>
                 </div>
 
-                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
                     {steps.map((step, index) => (
                         <motion.div
                             key={step.id}
@@ -44,13 +44,13 @@ export function HowToUse() {
                             className="flex flex-col items-center text-center group"
                         >
                             {/* Image Placeholder - Matching the grey box in reference */}
-                            <div className="w-full aspect-square bg-zinc-200 dark:bg-zinc-800 rounded-2xl mb-6 shadow-sm group-hover:shadow-md transition-all duration-300 overflow-hidden relative">
+                            <div className="w-full aspect-square bg-zinc-200 dark:bg-zinc-800 rounded-2xl mb-8 shadow-sm group-hover:shadow-md transition-all duration-300 overflow-hidden relative">
                                 <div className="absolute inset-0 bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900" />
                                 {/* Optional: Add an icon or illustration here later */}
                             </div>
                             
-                            <h3 className="text-xl font-bold mb-3">{step.title}</h3>
-                            <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed whitespace-pre-line">
+                            <h3 className="text-[clamp(1.125rem,0.875rem+0.5vw,1.375rem)] font-bold mb-4">{step.title}</h3>
+                            <p className="text-[clamp(0.875rem,0.75rem+0.25vw,1rem)] text-zinc-500 dark:text-zinc-400 leading-relaxed whitespace-pre-line">
                                 {step.description}
                             </p>
                         </motion.div>
