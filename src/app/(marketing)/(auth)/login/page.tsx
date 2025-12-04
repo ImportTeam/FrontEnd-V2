@@ -6,14 +6,52 @@ import { Label } from "@/components/ui/label";
 import { GoogleIcon, KakaoIcon, NaverIcon } from "@/components/ui/icons";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
-import { useEffect } from "react";
+// Production Grade Imports
+import { useAuthForm } from "@/hooks/use-auth-form";
+import { loginSchema, LoginSchema } from "@/lib/schemas/auth";
+import { useAuthStore } from "@/store/use-auth-store";
 
 export default function LoginPage() {
+    const router = useRouter();
+    const login = useAuthStore((state) => state.login);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Custom Hook for Form Logic
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isValid },
+    } = useAuthForm<LoginSchema>({
+        schema: loginSchema,
+        defaultValues: {
+            email: "",
+            password: "",
+        },
+    });
+
     useEffect(() => {
         // Force scroll to top instantly to prevent starting at scrolled position
         window.scrollTo({ top: 0, behavior: "instant" });
     }, []);
+
+    const onSubmit = async (data: LoginSchema) => {
+        setIsLoading(true);
+        // Simulate API Call
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        
+        // Mock Login
+        login({
+            id: "1",
+            name: "Test User",
+            email: data.email,
+        });
+        
+        setIsLoading(false);
+        router.push("/dashboard");
+    };
 
     return (
         <motion.div 
@@ -29,7 +67,7 @@ export default function LoginPage() {
                 </p>
             </div>
 
-            <form className="space-y-8">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
                 <div className="space-y-6">
                     <div className="space-y-2">
                         <Label htmlFor="email" className="text-zinc-500">이메일</Label>
@@ -38,7 +76,11 @@ export default function LoginPage() {
                             type="email" 
                             placeholder="name@example.com"
                             className="h-10 rounded-none border-0 border-b border-zinc-200 bg-transparent px-0 shadow-none focus-visible:ring-0 focus-visible:border-blue-600 dark:border-zinc-700 dark:focus-visible:border-blue-400 placeholder:text-zinc-300"
+                            {...register("email")}
                         />
+                        {errors.email && (
+                            <p className="text-xs text-red-500">{errors.email.message}</p>
+                        )}
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="password" className="text-zinc-500">비밀번호</Label>
@@ -47,7 +89,11 @@ export default function LoginPage() {
                             type="password"
                             placeholder="••••••••"
                             className="h-10 rounded-none border-0 border-b border-zinc-200 bg-transparent px-0 shadow-none focus-visible:ring-0 focus-visible:border-blue-600 dark:border-zinc-700 dark:focus-visible:border-blue-400 placeholder:text-zinc-300"
+                            {...register("password")}
                         />
+                        {errors.password && (
+                            <p className="text-xs text-red-500">{errors.password.message}</p>
+                        )}
                     </div>
                 </div>
 
@@ -57,8 +103,12 @@ export default function LoginPage() {
                     </Link>
                 </div>
 
-                <Button className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-base rounded-lg dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200">
-                    로그인
+                <Button 
+                    type="submit" 
+                    disabled={isLoading || !isValid}
+                    className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-base rounded-lg dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    {isLoading ? "로그인 중..." : "로그인"}
                 </Button>
             </form>
 
