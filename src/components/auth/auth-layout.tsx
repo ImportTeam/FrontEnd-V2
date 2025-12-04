@@ -22,7 +22,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             {/* Image Panel - 50% Width */}
             <motion.div
                 layout
-                className={`hidden lg:flex w-1/2 min-h-screen relative bg-zinc-900 items-center justify-center overflow-hidden ${isSignup ? "order-2" : "order-1"}`}
+                className={`hidden lg:flex w-1/2 min-h-screen relative items-center justify-center overflow-hidden ${isSignup ? "order-2" : "order-1"} bg-[#393E44] dark:bg-[#2d3136]`}
                 initial={false}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >

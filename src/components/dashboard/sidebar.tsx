@@ -62,7 +62,7 @@ export function Sidebar() {
             />
             
             {/* Desktop Sidebar */}
-            <aside className="hidden w-64 flex-col bg-white md:flex dark:bg-zinc-900">
+            <aside className="hidden w-64 flex-col bg-white md:flex dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 h-full">
             <div className="flex h-16 items-center px-8">
                 <Link href="/" className="flex items-center gap-2 font-bold text-2xl text-foreground">
                     PicSel

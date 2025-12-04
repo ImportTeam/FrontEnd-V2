@@ -73,7 +73,7 @@ export default function LoginPage() {
                         <KakaoIcon className="w-5 h-5 text-[#3A1D1D]" />
                     </Button>
                     <Button variant="outline" className="w-12 h-12 rounded-full p-0 border-[#03C75A] bg-[#03C75A] shadow-sm hover:bg-[#02b351] dark:border-[#03C75A] transition-transform hover:scale-110">
-                        <NaverIcon className="w-4 h-4 text-white" />
+                        <NaverIcon className="w-5 h-5" style={{ color: "white", fill: "white" }} />
                     </Button>
                 </div>
             </div>

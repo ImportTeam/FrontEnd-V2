@@ -8,7 +8,7 @@ import Image from "next/image";
 
 export function Hero() {
     return (
-        <section className="relative min-h-[90vh] w-full overflow-hidden bg-background flex items-center">
+        <section className="relative min-h-[90vh] w-full overflow-hidden bg-background flex items-start pt-32 md:pt-40">
             {/* Background Gradients */}
             <div className="absolute top-0 right-0 w-[40%] h-full bg-gradient-to-l from-blue-50 to-transparent dark:from-blue-950/20 dark:to-transparent" />
             <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-white to-transparent dark:from-zinc-950 dark:to-transparent" />
@@ -17,7 +17,7 @@ export function Hero() {
                 {/* 7:3 ratio grid */}
                 <div className="grid gap-8 lg:grid-cols-10 lg:gap-12 xl:gap-16 items-center">
                     {/* Left Content - 7 columns with right shift */}
-                    <div className="lg:col-span-7 flex flex-col justify-center space-y-8 lg:pl-12 xl:pl-20">
+                    <div className="lg:col-span-7 flex flex-col justify-center space-y-12 lg:pl-12 xl:pl-20">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
