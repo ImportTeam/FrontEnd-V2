@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const notoSansKr = Noto_Sans_KR({
@@ -29,18 +27,14 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <body className={`${notoSansKr.variable} antialiased font-sans`}>
-        <div className="flex min-h-screen flex-col">
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange={false}
-          >
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </ThemeProvider>
-        </div>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange={false}
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
