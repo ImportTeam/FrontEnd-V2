@@ -1,7 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+    const pathname = usePathname();
+
+    if (pathname?.startsWith("/dashboard")) {
+        return null;
+    }
+
     return (
         <footer className="relative border-t bg-gradient-to-b from-muted/40 to-muted/80 dark:from-zinc-950 dark:to-zinc-900">
             

@@ -8,10 +8,15 @@ import Image from "next/image";
 
 export function Hero() {
     return (
-        <section className="relative min-h-[90vh] w-full overflow-hidden bg-background flex items-start pt-32 md:pt-40">
-            {/* Background Gradients */}
-            <div className="absolute top-0 right-0 w-[40%] h-full bg-gradient-to-l from-blue-50 to-transparent dark:from-blue-950/20 dark:to-transparent" />
-            <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-white to-transparent dark:from-zinc-950 dark:to-transparent" />
+        <section className="relative min-h-[90vh] w-full overflow-hidden bg-background flex items-start pt-8 md:pt-4">
+            {/* Background Gradients - Cross-fade implementation */}
+            <div className="absolute inset-0 w-full h-full pointer-events-none">
+                {/* Dark Mode Gradient (Visible in dark mode) */}
+                <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-background/80 to-background opacity-0 dark:opacity-100 transition-opacity duration-500 ease-in-out" />
+                
+                {/* Light Mode Gradient (Visible in light mode) */}
+                <div className="absolute inset-0 bg-gradient-to-b from-blue-50 via-background/80 to-background dark:opacity-0 transition-opacity duration-500 ease-in-out" />
+            </div>
 
             <div className="container relative z-10 mx-auto px-6 md:px-12 max-w-screen-2xl">
                 {/* 7:3 ratio grid */}

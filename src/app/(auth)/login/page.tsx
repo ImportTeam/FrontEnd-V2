@@ -7,7 +7,14 @@ import { GoogleIcon, KakaoIcon, NaverIcon } from "@/components/ui/icons";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
+import { useEffect } from "react";
+
 export default function LoginPage() {
+    useEffect(() => {
+        // Force scroll to top instantly to prevent starting at scrolled position
+        window.scrollTo({ top: 0, behavior: "instant" });
+    }, []);
+
     return (
         <motion.div 
             initial={{ opacity: 0, x: 20 }}
