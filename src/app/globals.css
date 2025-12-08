@@ -47,12 +47,7 @@
         font-weight: 600;
     }
 
-    /* Apply smooth transitions to all elements for theme changes */
-    body, div, nav, button, input, h1, h2, h3, p, span, section, header, footer, aside, main {
-        transition-property: background-color, border-color, color, fill, stroke;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 300ms;
-    }
+
 }
 
 /* Container System */
