@@ -11,6 +11,7 @@ interface ErrorProps {
   reset: () => void;
 }
 
+// eslint-disable-next-line no-restricted-syntax
 export default function DashboardError({ error, reset }: ErrorProps) {
   useEffect(() => {
     // Log the error to an error reporting service

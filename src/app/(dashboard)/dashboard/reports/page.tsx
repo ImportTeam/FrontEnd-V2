@@ -5,6 +5,7 @@ import { Calendar, Download, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
+// eslint-disable-next-line no-restricted-syntax
 export default function ReportsPage() {
   return (
     <div className="space-y-8">

@@ -6,6 +6,7 @@ import { SummaryCards } from "@/components/dashboard/summary-cards";
 import { Button } from "@/components/ui/button";
 
 
+// eslint-disable-next-line no-restricted-syntax
 export default function DashboardPage() {
   return (
     <div className="space-y-8">
@@ -35,12 +36,15 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      <h2 className="sr-only">요약 카드</h2>
       {/* Row 1: Summary Cards (KPIs) */}
       <SummaryCards />
 
+      <h2 className="sr-only">차트와 추천 리스트</h2>
       {/* Row 2: Charts & Top Recommendations */}
       <DashboardCharts />
 
+      <h2 className="sr-only">최근 결제 내역</h2>
       {/* Row 3: Recent Transactions */}
       <RecentTransactions />
     </div>

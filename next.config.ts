@@ -4,13 +4,14 @@ const nextConfig: NextConfig = {
     reactStrictMode: true,
     poweredByHeader: false,
     compress: true,
+    productionBrowserSourceMaps: true,
     typescript: {
         ignoreBuildErrors: false,
     },
     experimental: {
         optimizePackageImports: [
-            "lucide-react", 
-            "framer-motion", 
+            "lucide-react",
+            "framer-motion",
             "recharts",
             "@radix-ui/react-avatar",
             "@radix-ui/react-dropdown-menu",
@@ -51,7 +52,7 @@ const nextConfig: NextConfig = {
                     },
                     {
                         key: 'Content-Security-Policy',
-                        value: "default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:;"
+                        value: "default-src 'self'; img-src 'self' data: https: blob:; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' https://vitals.vercel-insights.com https://va.vercel-scripts.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self';"
                     }
                 ]
             }
@@ -59,4 +60,5 @@ const nextConfig: NextConfig = {
     },
 };
 
+// eslint-disable-next-line no-restricted-syntax
 export default nextConfig;

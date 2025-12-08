@@ -1,14 +1,17 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { LazyMotion, m } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 
+const loadFeatures = () => import("framer-motion").then((mod) => mod.domAnimation);
+
 export function Hero() {
     return (
+        <LazyMotion features={loadFeatures}>
         <section className="relative min-h-[90vh] w-full overflow-hidden bg-background flex items-start pt-8 md:pt-4">
             {/* Background Gradients - Cross-fade implementation */}
             <div className="absolute inset-0 w-full h-full pointer-events-none">
@@ -24,7 +27,7 @@ export function Hero() {
                 <div className="grid gap-8 lg:grid-cols-10 lg:gap-12 xl:gap-16 items-center">
                     {/* Left Content - 7 columns with right shift */}
                     <div className="lg:col-span-7 flex flex-col justify-center space-y-12 lg:pl-12 xl:pl-20">
-                        <motion.div
+                        <m.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5 }}
@@ -37,14 +40,14 @@ export function Hero() {
                                 결제 순간,<br />
                                 가장 유리한 선택
                             </h1>
-                            <p className="max-w-[600px] text-[clamp(1rem,0.875rem+0.5vw,1.25rem)] text-muted-foreground leading-relaxed">
+                            <p className="max-w-[600px] text-[clamp(1rem,0.875rem+0.5vw,1.25rem)] text-zinc-700 dark:text-zinc-300 leading-relaxed">
                                 복잡한 카드 혜택, 더 이상 고민하지 마세요.<br />
                                 PicSel이 당신의 소비 패턴을 분석하여<br />
                                 최적의 결제 수단을 실시간으로 추천해드립니다.
                             </p>
-                        </motion.div>
+                        </m.div>
 
-                        <motion.div
+                        <m.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.2 }}
@@ -56,9 +59,9 @@ export function Hero() {
                                     <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1 2xl:h-6 2xl:w-6" />
                                 </Button>
                             </Link>
-                        </motion.div>
+                        </m.div>
 
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground 2xl:text-base">
+                        <div className="flex items-center gap-4 text-sm text-zinc-700 dark:text-zinc-300 2xl:text-base">
                             <div className="flex -space-x-2">
                                 {[1, 2, 3, 4].map((i) => (
                                     <div key={i} className="h-8 w-8 rounded-full border-2 border-background bg-muted 2xl:h-10 2xl:w-10" />
@@ -69,7 +72,7 @@ export function Hero() {
                     </div>
 
                     {/* Right Visual - 3 columns - Real Cards */}
-                    <motion.div
+                    <m.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.7 }}
@@ -82,7 +85,7 @@ export function Hero() {
                             {/* Main Visual Container */}
                             <div className="relative w-full h-full perspective-1000">
                                 {/* Real Card 1 - Floating */}
-                                <motion.div 
+                                <m.div 
                                     className="absolute top-[10%] right-[10%] w-[70%] aspect-[1.586] rounded-2xl shadow-2xl overflow-hidden z-20"
                                     animate={{ y: [0, -20, 0], rotateY: [-5, 5, -5] }}
                                     transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
@@ -95,10 +98,10 @@ export function Hero() {
                                         className="object-cover"
                                         priority
                                     />
-                                </motion.div>
+                                </m.div>
 
                                 {/* Real Card 2 - Benefits Display */}
-                                <motion.div 
+                                <m.div 
                                     className="absolute bottom-[20%] left-[5%] w-[60%] aspect-[1.586] rounded-2xl bg-white dark:bg-zinc-100 shadow-xl border border-zinc-200 p-4 sm:p-6 flex flex-col justify-between z-10"
                                     animate={{ y: [0, 20, 0], rotate: [-10, -5, -10] }}
                                     transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
@@ -112,19 +115,20 @@ export function Hero() {
                                         <div className="text-zinc-500 text-[10px] sm:text-xs mb-1">이번 달 혜택</div>
                                         <div className="text-zinc-900 text-lg sm:text-2xl font-bold">₩ 125,000</div>
                                     </div>
-                                </motion.div>
+                                </m.div>
 
                                 {/* Decorative Elements */}
-                                <motion.div 
+                                <m.div 
                                     className="absolute top-[30%] left-[0%] w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-blue-500/10 backdrop-blur-md border border-blue-500/20 z-30"
                                     animate={{ rotate: [0, 90, 0] }}
                                     transition={{ duration: 10, repeat: Infinity }}
                                 />
                             </div>
                         </div>
-                    </motion.div>
+                    </m.div>
                 </div>
             </div>
         </section>
+        </LazyMotion>
     );
 }

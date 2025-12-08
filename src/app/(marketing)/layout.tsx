@@ -1,6 +1,7 @@
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 
+// eslint-disable-next-line no-restricted-syntax
 export default function MarketingLayout({
   children,
 }: {

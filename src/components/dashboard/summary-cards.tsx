@@ -8,7 +8,7 @@ export function SummaryCards() {
       {/* Card 1: Total Savings (Black Theme) */}
       <Card className="bg-zinc-900 text-white border-zinc-800 shadow-lg dark:bg-zinc-950 dark:border-zinc-800">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-zinc-400">
+          <CardTitle className="text-sm font-semibold text-zinc-300">
             이번 달 총 절약 금액
           </CardTitle>
           <div className="h-4 w-4 text-zinc-400 font-serif italic">$</div>
@@ -25,7 +25,7 @@ export function SummaryCards() {
       {/* Card 2: Top Spending Category */}
       <Card className="bg-white border-zinc-200 shadow-sm hover:shadow-md transition-shadow dark:bg-zinc-900 dark:border-zinc-800">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+          <CardTitle className="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
             가장 많이 쓴 쇼핑몰
           </CardTitle>
           <ShoppingBag className="h-4 w-4 text-zinc-400" />
@@ -41,7 +41,7 @@ export function SummaryCards() {
       {/* Card 3: Most Used Card */}
       <Card className="bg-white border-zinc-200 shadow-sm hover:shadow-md transition-shadow dark:bg-zinc-900 dark:border-zinc-800">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+          <CardTitle className="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
             최다 사용 결제수단
           </CardTitle>
           <CreditCard className="h-4 w-4 text-zinc-400" />
@@ -57,7 +57,7 @@ export function SummaryCards() {
       {/* Card 4: AI Recommendation */}
       <Card className="bg-white border-zinc-200 shadow-sm hover:shadow-md transition-shadow dark:bg-zinc-900 dark:border-zinc-800">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+          <CardTitle className="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
             AI 추천 혜택
           </CardTitle>
           <Wallet className="h-4 w-4 text-yellow-500" />

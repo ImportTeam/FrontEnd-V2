@@ -13,6 +13,7 @@ import { useAuthStore } from "@/store/use-auth-store";
 
 import type { SignupSchema } from "@/lib/schemas/auth";
 
+// eslint-disable-next-line no-restricted-syntax
 export default function SignupPage() {
     const router = useRouter();
     const login = useAuthStore((state) => state.login);
@@ -23,7 +24,7 @@ export default function SignupPage() {
         register,
         handleSubmit,
         formState: { errors, isValid },
-    } = useAuthForm<SignupSchema>({
+    } = useAuthForm<typeof signupSchema>({
         schema: signupSchema,
         defaultValues: {
             name: "",

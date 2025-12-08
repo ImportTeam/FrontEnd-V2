@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 
+// eslint-disable-next-line no-restricted-syntax
 export default function NotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background">

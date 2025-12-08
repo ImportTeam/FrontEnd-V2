@@ -1,6 +1,6 @@
 
-import { Noto_Sans_KR } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import { Noto_Sans_KR } from "next/font/google";
 
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -69,6 +69,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
 };
 
+// eslint-disable-next-line no-restricted-syntax
 export default function RootLayout({
   children,
 }: Readonly<{

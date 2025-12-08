@@ -1,6 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { LazyMotion, m } from "framer-motion";
+
+const loadFeatures = () => import("framer-motion").then((mod) => mod.domAnimation);
 
 const steps = [
     {
@@ -27,6 +29,7 @@ const steps = [
 
 export function HowToUse() {
     return (
+        <LazyMotion features={loadFeatures}>
         <section id="usage" className="py-32 bg-zinc-50 dark:bg-zinc-900/50">
             <div className="container mx-auto px-6 md:px-12 max-w-screen-2xl">
                 <div className="text-center mb-24">
@@ -35,7 +38,7 @@ export function HowToUse() {
 
                 <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
                     {steps.map((step, index) => (
-                        <motion.div
+                        <m.div
                             key={step.id}
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -50,13 +53,14 @@ export function HowToUse() {
                             </div>
 
                             <h3 className="text-[clamp(1.125rem,0.875rem+0.5vw,1.375rem)] font-bold mb-4">{step.title}</h3>
-                            <p className="text-[clamp(0.875rem,0.75rem+0.25vw,1rem)] text-zinc-500 dark:text-zinc-400 leading-relaxed whitespace-pre-line">
+                            <p className="text-[clamp(0.875rem,0.75rem+0.25vw,1rem)] text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-line">
                                 {step.description}
                             </p>
-                        </motion.div>
+                        </m.div>
                     ))}
                 </div>
             </div>
         </section>
+        </LazyMotion>
     );
 }

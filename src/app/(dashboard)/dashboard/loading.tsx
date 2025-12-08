@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-restricted-syntax
 export default function DashboardLoading() {
   return (
     <div className="space-y-8 animate-pulse">

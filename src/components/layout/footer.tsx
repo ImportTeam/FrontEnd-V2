@@ -14,7 +14,7 @@ export function Footer() {
                         <h4 className="text-[clamp(1.25rem,0.875rem+0.5vw,1.5rem)] font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
                             PicSel
                         </h4>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                             쇼핑할 때 가장 유리한 결제수단을<br />
                             실시간으로 추천해드립니다.
                         </p>
@@ -29,7 +29,7 @@ export function Footer() {
                     {/* Services Section */}
                     <div>
                         <h4 className="font-semibold mb-4 text-foreground">서비스</h4>
-                        <ul className="space-y-3 text-sm text-muted-foreground">
+                        <ul className="space-y-3 text-sm text-zinc-700 dark:text-zinc-300">
                             <li>
                                 <Link href="#features" className="hover:text-foreground transition-colors hover:translate-x-1 inline-block">
                                     주요 기능
@@ -51,7 +51,7 @@ export function Footer() {
                     {/* Support Section */}
                     <div>
                         <h4 className="font-semibold mb-4 text-foreground">지원</h4>
-                        <ul className="space-y-3 text-sm text-muted-foreground">
+                        <ul className="space-y-3 text-sm text-zinc-700 dark:text-zinc-300">
                             <li>
                                 <Link href="#support" className="hover:text-foreground transition-colors hover:translate-x-1 inline-block">
                                     고객센터
@@ -73,7 +73,7 @@ export function Footer() {
                     {/* Contact Section */}
                     <div>
                         <h4 className="font-semibold mb-4 text-foreground">문의</h4>
-                        <ul className="space-y-3 text-sm text-muted-foreground">
+                        <ul className="space-y-3 text-sm text-zinc-700 dark:text-zinc-300">
                             <li className="flex items-center gap-2">
                                 <Mail className="h-4 w-4 text-blue-500" />
                                 <a href="mailto:contact@picsel.com" className="hover:text-foreground transition-colors">
@@ -85,7 +85,7 @@ export function Footer() {
                                 <span>02-1234-5678</span>
                             </li>
                             <li className="flex items-start gap-2">
-                                <MapPin className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                                <MapPin className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
                                 <span>서울시 강남구 테헤란로</span>
                             </li>
                         </ul>

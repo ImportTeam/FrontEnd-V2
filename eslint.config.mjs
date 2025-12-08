@@ -81,4 +81,5 @@ const eslintConfig = defineConfig([
   },
 ]);
 
+// eslint-disable-next-line no-restricted-syntax
 export default eslintConfig;

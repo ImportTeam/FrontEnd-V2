@@ -14,6 +14,7 @@ import { useAuthStore } from "@/store/use-auth-store";
 
 import type { LoginSchema } from "@/lib/schemas/auth";
 
+// eslint-disable-next-line no-restricted-syntax
 export default function LoginPage() {
     const router = useRouter();
     const login = useAuthStore((state) => state.login);
@@ -24,7 +25,7 @@ export default function LoginPage() {
         register,
         handleSubmit,
         formState: { errors, isValid },
-    } = useAuthForm<LoginSchema>({
+    } = useAuthForm<typeof loginSchema>({
         schema: loginSchema,
         defaultValues: {
             email: "",
@@ -101,7 +102,7 @@ export default function LoginPage() {
                 <div className="flex justify-end">
                     <Link 
                         href="#" 
-                        className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+                        className="text-xs text-zinc-600 hover:text-zinc-800 dark:text-zinc-300 dark:hover:text-zinc-100 transition-colors"
                     >
                         비밀번호 찾기
                     </Link>

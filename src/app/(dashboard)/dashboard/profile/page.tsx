@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 
+// eslint-disable-next-line no-restricted-syntax
 export default function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -19,9 +20,9 @@ export default function ProfilePage() {
         <p className="text-zinc-500 dark:text-zinc-400 mt-1">
           개인정보를 확인하고 수정할 수 있습니다.
         </p>
-      </div>
+    </div>
 
-      <div className="grid gap-8 md:grid-cols-[1fr_2fr]">
+    <div className="grid gap-8 md:grid-cols-[1fr_2fr]">
         {/* Left Column: Avatar & Basic Info */}
         <Card className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm h-fit">
             <CardContent className="pt-6 flex flex-col items-center text-center">

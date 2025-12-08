@@ -20,7 +20,7 @@ export function Navbar() {
                     <Link href="/" className="flex items-center gap-2 font-bold text-xl">
                         <span className="text-[clamp(1.25rem,0.875rem+0.5vw,1.5rem)] font-bold tracking-tight">PicSel</span>
                     </Link>
-                    <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground" aria-label="주요 메뉴">
+                    <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-zinc-700 dark:text-zinc-300" aria-label="주요 메뉴">
                         <Link href="#features" className="hover:text-foreground transition-colors">
                             주요 기능
                         </Link>

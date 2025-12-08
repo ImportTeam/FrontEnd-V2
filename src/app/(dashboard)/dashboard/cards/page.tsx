@@ -75,6 +75,7 @@ const MOCK_CARDS = [
   },
 ];
 
+// eslint-disable-next-line no-restricted-syntax
 export default function CardsPage() {
   return (
     <div className="space-y-8">

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
+// eslint-disable-next-line no-restricted-syntax
 export default function SettingsPage() {
   const { setTheme, theme } = useTheme();
 
