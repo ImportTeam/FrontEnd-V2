@@ -5,7 +5,7 @@ export function proxy(request: NextRequest) {
 
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-inline' https:;
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vitals.vercel-insights.com https://va.vercel-scripts.com https:;
     style-src 'self' 'unsafe-inline';
     img-src 'self' data: https: blob:;
     font-src 'self' data:;
