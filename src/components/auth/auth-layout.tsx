@@ -19,7 +19,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
     };
 
     return (
-        <div className="flex min-h-screen w-full overflow-hidden bg-background">
+        <div className="flex flex-row min-h-screen w-full overflow-hidden bg-background">
             {/* Image Panel - 50% Width */}
             <motion.div
                 layout

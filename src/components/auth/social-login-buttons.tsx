@@ -14,7 +14,7 @@ export function SocialLoginButtons({ mode }: SocialLoginButtonsProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t border-zinc-100 dark:border-zinc-800" />

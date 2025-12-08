@@ -60,7 +60,7 @@ export default function SignupPage() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="w-full space-y-12"
+            className="w-full space-y-6"
         >
             <div className="space-y-2">
                 <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
@@ -75,8 +75,8 @@ export default function SignupPage() {
                     {error}
                 </div> : null}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                <div className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="space-y-4">
                     <AuthFormField
                         id="name"
                         label="이름"
