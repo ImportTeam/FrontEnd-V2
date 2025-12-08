@@ -1,5 +1,6 @@
 
 import { Noto_Sans_KR } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -105,6 +106,7 @@ export default function RootLayout({
         >
           {children}
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

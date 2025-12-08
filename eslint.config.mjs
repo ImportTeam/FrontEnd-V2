@@ -35,7 +35,15 @@ const eslintConfig = defineConfig([
         "warn",
         { validStrategies: ["ternary", "coerce"] },
       ],
-      "react-hooks/exhaustive-deps": "warn",
+      "react-hooks/exhaustive-deps": "error",
+      "react/no-unstable-nested-components": [
+        "warn",
+        { allowAsProps: true },
+      ],
+      "react/jsx-no-useless-fragment": [
+        "warn",
+        { allowExpressions: true },
+      ],
 
       // General code quality
       "no-console": ["warn", { allow: ["warn", "error"] }],
@@ -60,6 +68,15 @@ const eslintConfig = defineConfig([
         },
       ],
       "import/no-duplicates": "error",
+
+      // Prefer named exports for tree-shaking and clarity
+      "no-restricted-syntax": [
+        "warn",
+        {
+          selector: "ExportDefaultDeclaration",
+          message: "Prefer named exports for better tree-shaking and readability.",
+        },
+      ],
     },
   },
 ]);
