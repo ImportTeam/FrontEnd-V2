@@ -8,8 +8,8 @@ const loadFeatures = () => import("framer-motion").then((mod) => mod.domAnimatio
 export function Features() {
     return (
         <LazyMotion features={loadFeatures}>
-        <section className="py-32 overflow-hidden">
-            <div className="container space-y-40">
+        <section className="py-20 overflow-hidden">
+            <div className="container space-y-24">
 
                 {/* Section 1: Image 0 - Text Left, Image Right */}
                 <div className="grid gap-16 lg:grid-cols-2 items-center">

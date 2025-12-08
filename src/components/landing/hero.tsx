@@ -12,7 +12,7 @@ const loadFeatures = () => import("framer-motion").then((mod) => mod.domAnimatio
 export function Hero() {
     return (
         <LazyMotion features={loadFeatures}>
-        <section className="relative min-h-[90vh] w-full overflow-hidden bg-background flex items-start pt-8 md:pt-4">
+        <section className="relative min-h-screen w-full overflow-hidden bg-background flex items-center">
             {/* Background Gradients - Cross-fade implementation */}
             <div className="absolute inset-0 w-full h-full pointer-events-none">
                 {/* Dark Mode Gradient (Visible in dark mode) */}
@@ -23,10 +23,10 @@ export function Hero() {
             </div>
 
             <div className="container relative z-10">
-                {/* 7:3 ratio grid */}
+                {/* 6:4 ratio grid */}
                 <div className="grid gap-8 lg:grid-cols-10 lg:gap-12 xl:gap-16 items-center">
-                    {/* Left Content - 7 columns */}
-                    <div className="lg:col-span-7 flex flex-col justify-center space-y-8">
+                    {/* Left Content - 6 columns */}
+                    <div className="lg:col-span-6 flex flex-col justify-center space-y-8 lg:pl-8 xl:pl-12">
                         <m.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -71,12 +71,12 @@ export function Hero() {
                         </div>
                     </div>
 
-                    {/* Right Visual - 3 columns - Real Cards */}
+                    {/* Right Visual - 4 columns - Real Cards */}
                     <m.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.7 }}
-                        className="lg:col-span-3 relative h-[400px] sm:h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[700px] flex items-center justify-center"
+                        className="lg:col-span-4 relative h-[400px] sm:h-[500px] lg:h-[550px] xl:h-[600px] flex items-center justify-center"
                     >
                         <div className="relative w-full max-w-[350px] sm:max-w-[400px] lg:max-w-[380px] 2xl:max-w-[500px] aspect-square">
                             {/* Abstract Background Blobs */}

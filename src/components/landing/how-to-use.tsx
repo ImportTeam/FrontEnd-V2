@@ -30,9 +30,9 @@ const steps = [
 export function HowToUse() {
     return (
         <LazyMotion features={loadFeatures}>
-        <section id="usage" className="py-32 bg-zinc-50 dark:bg-zinc-900/50">
+        <section id="usage" className="py-20 bg-zinc-50 dark:bg-zinc-900/50">
             <div className="container">
-                <div className="text-center mb-24">
+                <div className="text-center mb-16">
                     <h2 className="text-4xl font-bold tracking-tight mb-6">사용 방법</h2>
                 </div>
 
