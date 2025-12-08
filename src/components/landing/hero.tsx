@@ -13,10 +13,10 @@ export function Hero() {
             {/* Background Gradients - Cross-fade implementation */}
             <div className="absolute inset-0 w-full h-full pointer-events-none">
                 {/* Dark Mode Gradient (Visible in dark mode) */}
-                <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-background/80 to-background opacity-0 dark:opacity-100 transition-opacity duration-500 ease-in-out" />
+                <div className="absolute inset-0 bg-linear-to-b from-blue-950/20 via-background/80 to-background opacity-0 dark:opacity-100 transition-opacity duration-500 ease-in-out" />
                 
                 {/* Light Mode Gradient (Visible in light mode) */}
-                <div className="absolute inset-0 bg-gradient-to-b from-blue-50 via-background/80 to-background dark:opacity-0 transition-opacity duration-500 ease-in-out" />
+                <div className="absolute inset-0 bg-linear-to-b from-blue-50 via-background/80 to-background dark:opacity-0 transition-opacity duration-500 ease-in-out" />
             </div>
 
             <div className="container relative z-10 mx-auto px-6 md:px-12 max-w-screen-2xl">
@@ -33,7 +33,7 @@ export function Hero() {
                                 <Sparkles className="mr-2 h-3.5 w-3.5 2xl:h-4 2xl:w-4" />
                                 AI 기반 스마트 소비 분석
                             </div>
-                            <h1 className="text-[clamp(2.5rem,1.5rem+2vw,4rem)] font-bold tracking-tighter leading-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-muted-foreground mb-6">
+                            <h1 className="text-[clamp(2.5rem,1.5rem+2vw,4rem)] font-bold tracking-tighter leading-tight bg-clip-text text-transparent bg-linear-to-r from-foreground to-muted-foreground mb-6">
                                 결제 순간,<br />
                                 가장 유리한 선택
                             </h1>
@@ -77,7 +77,7 @@ export function Hero() {
                     >
                         <div className="relative w-full max-w-[350px] sm:max-w-[400px] lg:max-w-[380px] 2xl:max-w-[500px] aspect-square">
                             {/* Abstract Background Blobs */}
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-br from-blue-100/50 to-purple-100/50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-full blur-3xl" />
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-linear-to-br from-blue-100/50 to-purple-100/50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-full blur-3xl" />
                             
                             {/* Main Visual Container */}
                             <div className="relative w-full h-full perspective-1000">
@@ -91,6 +91,7 @@ export function Hero() {
                                         src="/assets/card/shinhanCard.svg"
                                         alt="Shinhan Card"
                                         fill
+                                        sizes="(max-width: 640px) 70vw, (max-width: 1024px) 50vw, 350px"
                                         className="object-cover"
                                         priority
                                     />

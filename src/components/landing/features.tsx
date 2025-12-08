@@ -7,7 +7,7 @@ export function Features() {
     return (
         <section className="py-32 overflow-hidden">
             <div className="container mx-auto px-6 md:px-12 max-w-screen-2xl space-y-40">
-                
+
                 {/* Section 1: Image 0 - Text Left, Image Right */}
                 <div className="grid gap-16 lg:grid-cols-2 items-center">
                     <motion.div
@@ -23,7 +23,7 @@ export function Features() {
                                 무료 브라우저 확장 프로그램
                             </div>
                         </div>
-                        <h3 className="text-[clamp(1.75rem,1rem+1.5vw,2.75rem)] font-bold leading-tight bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-600">
+                        <h3 className="text-[clamp(1.75rem,1rem+1.5vw,2.75rem)] font-bold leading-tight bg-clip-text text-transparent bg-linear-to-r from-orange-500 to-red-600">
                             온라인 결제 상품 결제 전,<br />
                             PicSel이 더 스마트하게 비교합니다.
                         </h3>
@@ -39,9 +39,9 @@ export function Features() {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
-                        className="relative aspect-square lg:aspect-[4/3] bg-zinc-200 dark:bg-zinc-800 rounded-3xl overflow-hidden shadow-2xl"
+                        className="relative aspect-square lg:aspect-4/3 bg-zinc-200 dark:bg-zinc-800 rounded-3xl overflow-hidden shadow-2xl"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-br from-zinc-100 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900" />
+                        <div className="absolute inset-0 bg-linear-to-br from-zinc-100 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900" />
                     </motion.div>
                 </div>
 
@@ -52,9 +52,9 @@ export function Features() {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
-                        className="order-2 lg:order-1 relative aspect-square lg:aspect-[4/3] bg-zinc-200 dark:bg-zinc-800 rounded-3xl overflow-hidden shadow-2xl"
+                        className="order-2 lg:order-1 relative aspect-square lg:aspect-4/3 bg-zinc-200 dark:bg-zinc-800 rounded-3xl overflow-hidden shadow-2xl"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-br from-zinc-100 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900" />
+                        <div className="absolute inset-0 bg-linear-to-br from-zinc-100 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900" />
                     </motion.div>
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
@@ -108,9 +108,9 @@ export function Features() {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
-                        className="relative aspect-square lg:aspect-[4/3] bg-zinc-200 dark:bg-zinc-800 rounded-3xl overflow-hidden shadow-2xl"
+                        className="relative aspect-square lg:aspect-4/3 bg-zinc-200 dark:bg-zinc-800 rounded-3xl overflow-hidden shadow-2xl"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-br from-zinc-100 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900" />
+                        <div className="absolute inset-0 bg-linear-to-br from-zinc-100 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900" />
                     </motion.div>
                 </div>
 

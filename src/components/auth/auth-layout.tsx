@@ -28,7 +28,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
                 {/* Background Image / Placeholder */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-900">
+                <div className="absolute inset-0 bg-linear-to-br from-blue-600 to-purple-900">
                      {/* Abstract Pattern */}
                      <div className="absolute inset-0 opacity-20" 
                           style={{ 

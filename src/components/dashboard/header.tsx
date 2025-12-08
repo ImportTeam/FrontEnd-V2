@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, User, Settings, LogOut } from "lucide-react";
+import { Bell, User, Settings, LogOut, Menu } from "lucide-react";
 import Link from "next/link";
 
 import { ModeToggle } from "@/components/mode-toggle";
@@ -15,10 +15,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { IconButton } from "@/components/ui/icon-button";
+import { useUIStore } from "@/store/use-ui-store";
 
 export function DashboardHeader() {
+  const toggleSidebar = useUIStore((state) => state.toggleSidebar);
+
   return (
     <header className="sticky top-0 z-50 flex h-16 items-center gap-4 bg-white px-6 backdrop-blur-xl dark:bg-zinc-950 shadow-sm">
+      {/* Mobile Menu Toggle */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="md:hidden"
+        onClick={toggleSidebar}
+        aria-label="메뉴 열기"
+      >
+        <Menu className="h-5 w-5" />
+      </Button>
+      
       <div className="flex-1" />
       <div className="flex items-center gap-2 md:gap-4">
         <ModeToggle />

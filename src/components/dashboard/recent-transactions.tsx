@@ -33,7 +33,7 @@ export function RecentTransactions() {
             </div>
             
             {/* Divider */}
-            <div className="h-[1px] w-full bg-border" />
+            <div className="h-px w-full bg-border" />
 
              {/* Transaction Item 2 */}
              <div className="flex items-center justify-between group">
@@ -54,7 +54,7 @@ export function RecentTransactions() {
             </div>
 
             {/* Divider */}
-            <div className="h-[1px] w-full bg-border" />
+            <div className="h-px w-full bg-border" />
 
              {/* Transaction Item 3 */}
              <div className="flex items-center justify-between group">

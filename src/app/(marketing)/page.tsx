@@ -7,7 +7,9 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <Hero />
       <HowToUse />
-      <Features />
+      <section id="features">
+        <Features />
+      </section>
     </div>
   );
 }

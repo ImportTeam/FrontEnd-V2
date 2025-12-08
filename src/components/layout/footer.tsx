@@ -5,13 +5,13 @@ import Link from "next/link";
 
 export function Footer() {
     return (
-        <footer className="relative border-t bg-gradient-to-b from-muted/40 to-muted/80 dark:from-zinc-950 dark:to-zinc-900">
+        <footer className="relative border-t bg-linear-to-b from-muted/40 to-muted/80 dark:from-zinc-950 dark:to-zinc-900">
             
             <div className="container mx-auto px-6 md:px-12 py-12 md:py-20 max-w-screen-2xl">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-12">
                     {/* Brand Section */}
                     <div className="space-y-4 md:col-span-1">
-                        <h4 className="text-[clamp(1.25rem,0.875rem+0.5vw,1.5rem)] font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+                        <h4 className="text-[clamp(1.25rem,0.875rem+0.5vw,1.5rem)] font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
                             PicSel
                         </h4>
                         <p className="text-sm text-muted-foreground leading-relaxed">
@@ -94,7 +94,7 @@ export function Footer() {
 
                 {/* Divider with gradient */}
                 <div className="relative mt-12 pt-8">
-                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                    <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-border to-transparent" />
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
                         <p>© {new Date().getFullYear()} PicSel. All rights reserved.</p>
                         <div className="flex gap-6">

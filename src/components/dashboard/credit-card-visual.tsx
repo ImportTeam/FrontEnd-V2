@@ -84,7 +84,7 @@ export function CreditCardVisual({
         {/* Chip & Contactless - Only for gradient cards */}
         {!imageSrc && (
             <div className="flex items-center gap-3">
-            <div className="h-8 w-10 rounded-md bg-gradient-to-br from-yellow-200 to-yellow-500 shadow-sm" />
+            <div className="h-8 w-10 rounded-md bg-linear-to-br from-yellow-200 to-yellow-500 shadow-sm" />
             <Wifi className="h-5 w-5 rotate-90 opacity-60" />
             </div>
         )}

@@ -1,0 +1,9 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow private dashboard routes
+Disallow: /dashboard
+
+# Sitemap location
+Sitemap: https://picsel.vercel.app/sitemap.xml
