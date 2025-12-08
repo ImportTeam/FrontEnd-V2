@@ -1,4 +1,4 @@
-import { ArrowUpRight, CreditCard, ShoppingBag, Wallet } from "lucide-react";
+import { ArrowRight, CreditCard, ShoppingBag, Wallet } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -11,13 +11,13 @@ export function SummaryCards() {
           <CardTitle className="text-sm font-semibold text-zinc-300">
             이번 달 총 절약 금액
           </CardTitle>
-          <div className="h-4 w-4 text-zinc-400 font-serif italic">$</div>
+          <div className="h-4 w-4 text-zinc-600 dark:text-zinc-300 font-serif italic">$</div>
         </CardHeader>
         <CardContent>
           <div className="text-[clamp(1.75rem,1rem+1vw,2.25rem)] font-bold">₩ 45,231</div>
           <p className="text-xs text-emerald-400 flex items-center mt-1">
-            <ArrowUpRight className="h-3 w-3 mr-1" />
-            +12.5% <span className="text-zinc-500 ml-1">지난달 대비</span>
+            <ArrowRight className="h-3 w-3 mr-1" />
+            +12.5% <span className="text-zinc-600 dark:text-zinc-300 ml-1">지난달 대비</span>
           </p>
         </CardContent>
       </Card>
@@ -28,11 +28,11 @@ export function SummaryCards() {
           <CardTitle className="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
             가장 많이 쓴 쇼핑몰
           </CardTitle>
-          <ShoppingBag className="h-4 w-4 text-zinc-400" />
+          <ShoppingBag className="h-4 w-4 text-zinc-600 dark:text-zinc-300" />
         </CardHeader>
         <CardContent>
           <div className="text-[clamp(1.5rem,0.875rem+0.75vw,1.75rem)] font-bold text-zinc-900 dark:text-zinc-100">쿠팡</div>
-          <p className="text-xs text-zinc-500 mt-1 dark:text-zinc-400">
+          <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">
             총 지출의 34% 차지
           </p>
         </CardContent>
@@ -44,11 +44,11 @@ export function SummaryCards() {
           <CardTitle className="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
             최다 사용 결제수단
           </CardTitle>
-          <CreditCard className="h-4 w-4 text-zinc-400" />
+          <CreditCard className="h-4 w-4 text-zinc-600 dark:text-zinc-300" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">신한 Deep</div>
-          <p className="text-xs text-zinc-500 mt-1 dark:text-zinc-400">
+          <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">
             이번 달 24회 사용
           </p>
         </CardContent>
@@ -64,7 +64,7 @@ export function SummaryCards() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">네이버페이</div>
-          <p className="text-xs text-zinc-500 mt-1 dark:text-zinc-400">
+          <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">
             다음 결제 시 2,000P 추가 적립 가능
           </p>
         </CardContent>

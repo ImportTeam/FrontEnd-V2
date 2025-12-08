@@ -12,7 +12,7 @@ export function PageHeader({ title, description, className }: PageHeaderProps) {
       <h1 className="text-[clamp(1.5rem,0.875rem+1vw,1.875rem)] font-bold tracking-tight text-foreground">
         {title}
       </h1>
-      {description ? <p className="text-[clamp(0.875rem,0.75rem+0.25vw,1rem)] text-muted-foreground">
+      {description ? <p className="text-[clamp(0.875rem,0.75rem+0.25vw,1rem)] text-zinc-700 dark:text-zinc-300">
           {description}
         </p> : null}
     </div>

@@ -25,6 +25,13 @@ const nextConfig: NextConfig = {
         // 명시적으로 현재 워크스페이스를 루트로 지정해 Turbopack 루트 추정 경고를 방지
         root: __dirname,
     },
+    images: {
+        formats: ["image/avif", "image/webp"],
+        minimumCacheTTL: 60,
+        dangerouslyAllowSVG: true,
+        contentDispositionType: "attachment",
+        contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    },
     async headers() {
         return [
             {

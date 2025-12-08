@@ -18,12 +18,12 @@ export function DashboardCharts() {
         </CardHeader>
         <CardContent className="pl-2">
           {/* Empty State Placeholder for Chart */}
-          <div className="h-[300px] w-full rounded-xl border-2 border-dashed border-border bg-muted/50 flex flex-col items-center justify-center text-muted-foreground">
+          <div className="h-[300px] w-full rounded-xl border-2 border-dashed border-border bg-muted/50 flex flex-col items-center justify-center text-zinc-700 dark:text-zinc-300">
             <div className="w-16 h-16 mb-4 rounded-full bg-muted flex items-center justify-center">
-                <Sparkles className="w-8 h-8 text-muted-foreground/50" />
+                <Sparkles className="w-8 h-8 text-zinc-600 dark:text-zinc-400" />
             </div>
             <p className="font-medium text-foreground/80">차트 영역 (Recharts 연동 필요)</p>
-            <p className="text-sm mt-2 text-muted-foreground">데이터가 수집되면 이곳에 그래프가 표시됩니다.</p>
+            <p className="text-sm mt-2 text-zinc-700 dark:text-zinc-300">데이터가 수집되면 이곳에 그래프가 표시됩니다.</p>
           </div>
         </CardContent>
       </DashboardCard>
@@ -46,25 +46,25 @@ export function DashboardCharts() {
                 </div>
                 <div className="flex-1 space-y-1">
                     <p className="text-sm font-medium leading-none text-foreground">현대카드 ZERO Edition2</p>
-                    <p className="text-xs text-muted-foreground">모든 가맹점 0.7% 할인</p>
+                    <p className="text-xs text-zinc-700 dark:text-zinc-300">모든 가맹점 0.7% 할인</p>
                 </div>
                 <Badge variant="secondary" className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50">추천</Badge>
             </div>
 
             {/* Item 2 */}
             <div className="flex items-center p-4 rounded-xl bg-background hover:bg-muted/50 transition-colors">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground font-bold text-sm mr-4">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-zinc-700 dark:text-zinc-300 font-bold text-sm mr-4">
                     2
                 </div>
                 <div className="flex-1 space-y-1">
                     <p className="text-sm font-medium leading-none text-foreground">삼성카드 taptap O</p>
-                    <p className="text-xs text-muted-foreground">쇼핑 7% 할인</p>
+                    <p className="text-xs text-zinc-700 dark:text-zinc-300">쇼핑 7% 할인</p>
                 </div>
             </div>
 
             {/* Item 3 */}
             <div className="flex items-center p-4 rounded-xl bg-background hover:bg-muted/50 transition-colors">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground font-bold text-sm mr-4">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-zinc-700 dark:text-zinc-300 font-bold text-sm mr-4">
                     3
                 </div>
                 <div className="flex-1 space-y-1">

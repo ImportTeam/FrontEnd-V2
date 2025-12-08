@@ -55,7 +55,7 @@ export function DashboardHeader() {
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none text-zinc-900 dark:text-zinc-100">김픽셀 님</p>
-                <p className="text-xs leading-none text-zinc-500 dark:text-zinc-400">
+                <p className="text-xs leading-none text-zinc-700 dark:text-zinc-300">
                   picsel_user@example.com
                 </p>
               </div>
