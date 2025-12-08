@@ -1,4 +1,5 @@
 
+import { Analytics } from "@vercel/analytics/next";
 import { Noto_Sans_KR } from "next/font/google";
 
 import { ThemeProvider } from "@/components/theme-provider";
@@ -105,6 +106,7 @@ export default function RootLayout({
         >
           {children}
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
