@@ -1,4 +1,5 @@
 
+import { Analytics } from "@vercel/analytics/next";
 import { Noto_Sans_KR } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 
