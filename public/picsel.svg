@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grad)"/>
+  <text x="600" y="280" font-family="Arial, sans-serif" font-size="120" font-weight="700" fill="white" text-anchor="middle">PicSel</text>
+  <text x="600" y="360" font-family="Arial, sans-serif" font-size="42" fill="white" fill-opacity="0.9" text-anchor="middle">스마트한 결제 가이드</text>
+  <circle cx="200" cy="480" r="30" fill="white" fill-opacity="0.2"/>
+  <circle cx="1000" cy="150" r="50" fill="white" fill-opacity="0.15"/>
+</svg>

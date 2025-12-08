@@ -1,6 +1,7 @@
 
 import { Analytics } from "@vercel/analytics/react";
 import { Noto_Sans_KR } from "next/font/google";
+import { headers } from "next/headers";
 
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
     description: "국내 쇼핑몰 결제 시 최적의 결제수단을 AI가 추천해드립니다.",
     images: [
       {
-        url: "/picsel.png",
+        url: "/picsel.svg",
         width: 1200,
         height: 630,
         alt: "PicSel 로고",
@@ -47,7 +48,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "PicSel - 스마트한 결제 가이드",
     description: "국내 쇼핑몰 결제 시 최적의 결제수단을 추천해드립니다.",
-    images: ["/picsel.png"],
+    images: ["/picsel.svg"],
     creator: "@picsel_app",
   },
   robots: {
@@ -62,19 +63,21 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/picsel.png",
-    shortcut: "/picsel.png",
-    apple: "/picsel.png",
+    icon: "/picsel.svg",
+    shortcut: "/picsel.svg",
+    apple: "/picsel.svg",
   },
   manifest: "/manifest.json",
 };
 
 // eslint-disable-next-line no-restricted-syntax
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+  
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
@@ -95,6 +98,7 @@ export default function RootLayout({
       <head>
         <script
           type="application/ld+json"
+          nonce={nonce}
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
