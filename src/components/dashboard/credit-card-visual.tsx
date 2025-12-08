@@ -1,8 +1,9 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { CreditCard, Wifi } from "lucide-react";
 import Image from "next/image";
+
+import { cn } from "@/lib/utils";
 
 interface CreditCardVisualProps {
   bankName: string;

@@ -1,8 +1,9 @@
 "use client";
 
-import { CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { DashboardCard } from "@/components/dashboard/dashboard-card";
 import { ShoppingBag } from "lucide-react";
+
+import { DashboardCard } from "@/components/dashboard/dashboard-card";
+import { CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export function RecentTransactions() {
   return (

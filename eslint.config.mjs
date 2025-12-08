@@ -13,6 +13,55 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  // Custom strict rules
+  {
+    rules: {
+      // TypeScript strict rules
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+      "@typescript-eslint/consistent-type-imports": [
+        "warn",
+        { prefer: "type-imports" },
+      ],
+
+      // React rules
+      "react/jsx-no-leaked-render": [
+        "warn",
+        { validStrategies: ["ternary", "coerce"] },
+      ],
+      "react-hooks/exhaustive-deps": "warn",
+
+      // General code quality
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "prefer-const": "error",
+      "no-var": "error",
+      eqeqeq: ["error", "always"],
+
+      // Import organization
+      "import/order": [
+        "warn",
+        {
+          groups: [
+            "builtin",
+            "external",
+            "internal",
+            ["parent", "sibling"],
+            "index",
+            "type",
+          ],
+          "newlines-between": "always",
+          alphabetize: { order: "asc", caseInsensitive: true },
+        },
+      ],
+      "import/no-duplicates": "error",
+    },
+  },
 ]);
 
 export default eslintConfig;

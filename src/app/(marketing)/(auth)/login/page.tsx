@@ -1,25 +1,25 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { GoogleIcon, KakaoIcon, NaverIcon } from "@/components/ui/icons";
-import Link from "next/link";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-// Production Grade Imports
+import { AuthFormField } from "@/components/auth/auth-form-field";
+import { SocialLoginButtons } from "@/components/auth/social-login-buttons";
+import { Button } from "@/components/ui/button";
 import { useAuthForm } from "@/hooks/use-auth-form";
-import { loginSchema, LoginSchema } from "@/lib/schemas/auth";
+import { loginSchema } from "@/lib/schemas/auth";
 import { useAuthStore } from "@/store/use-auth-store";
+
+import type { LoginSchema } from "@/lib/schemas/auth";
 
 export default function LoginPage() {
     const router = useRouter();
     const login = useAuthStore((state) => state.login);
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    // Custom Hook for Form Logic
     const {
         register,
         handleSubmit,
@@ -33,24 +33,29 @@ export default function LoginPage() {
     });
 
     useEffect(() => {
-        // Force scroll to top instantly to prevent starting at scrolled position
         window.scrollTo({ top: 0, behavior: "instant" });
     }, []);
 
     const onSubmit = async (data: LoginSchema) => {
-        setIsLoading(true);
-        // Simulate API Call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        
-        // Mock Login
-        login({
-            id: "1",
-            name: "Test User",
-            email: data.email,
-        });
-        
-        setIsLoading(false);
-        router.push("/dashboard");
+        try {
+            setIsLoading(true);
+            setError(null);
+            
+            // TODO: Replace with actual API call
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            
+            login({
+                id: "1",
+                name: "Test User",
+                email: data.email,
+            });
+            
+            router.push("/dashboard");
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "로그인에 실패했습니다. 다시 시도해주세요.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -61,44 +66,43 @@ export default function LoginPage() {
             className="w-full space-y-12"
         >
             <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">로그인</h1>
+                <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+                    로그인
+                </h1>
                 <p className="text-zinc-500 dark:text-zinc-400 text-sm">
                     계정에 로그인하여 서비스를 이용하세요.
                 </p>
             </div>
 
+            {error ? <div className="rounded-lg bg-red-50 dark:bg-red-900/20 p-4 text-sm text-red-600 dark:text-red-400" role="alert">
+                    {error}
+                </div> : null}
+
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
                 <div className="space-y-6">
-                    <div className="space-y-2">
-                        <Label htmlFor="email" className="text-zinc-500">이메일</Label>
-                        <Input 
-                            id="email"
-                            type="email" 
-                            placeholder="name@example.com"
-                            className="h-10 rounded-none border-0 border-b border-zinc-200 bg-transparent px-0 shadow-none focus-visible:ring-0 focus-visible:border-blue-600 dark:border-zinc-700 dark:focus-visible:border-blue-400 placeholder:text-zinc-300"
-                            {...register("email")}
-                        />
-                        {errors.email && (
-                            <p className="text-xs text-red-500">{errors.email.message}</p>
-                        )}
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="password" className="text-zinc-500">비밀번호</Label>
-                        <Input 
-                            id="password"
-                            type="password"
-                            placeholder="••••••••"
-                            className="h-10 rounded-none border-0 border-b border-zinc-200 bg-transparent px-0 shadow-none focus-visible:ring-0 focus-visible:border-blue-600 dark:border-zinc-700 dark:focus-visible:border-blue-400 placeholder:text-zinc-300"
-                            {...register("password")}
-                        />
-                        {errors.password && (
-                            <p className="text-xs text-red-500">{errors.password.message}</p>
-                        )}
-                    </div>
+                    <AuthFormField
+                        id="email"
+                        label="이메일"
+                        type="email"
+                        placeholder="name@example.com"
+                        registration={register("email")}
+                        error={errors.email}
+                    />
+                    <AuthFormField
+                        id="password"
+                        label="비밀번호"
+                        type="password"
+                        placeholder="••••••••"
+                        registration={register("password")}
+                        error={errors.password}
+                    />
                 </div>
 
                 <div className="flex justify-end">
-                    <Link href="#" className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
+                    <Link 
+                        href="#" 
+                        className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+                    >
                         비밀번호 찾기
                     </Link>
                 </div>
@@ -112,28 +116,7 @@ export default function LoginPage() {
                 </Button>
             </form>
 
-            <div className="space-y-6">
-                <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t border-zinc-100 dark:border-zinc-800" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-white dark:bg-zinc-900 px-2 text-zinc-400">또는 소셜 로그인</span>
-                    </div>
-                </div>
-
-                <div className="flex gap-6 justify-center">
-                    <Button variant="outline" className="w-12 h-12 rounded-full p-0 border-zinc-100 bg-white shadow-sm hover:bg-zinc-50 dark:bg-zinc-800 dark:border-zinc-700 dark:hover:bg-zinc-700 transition-transform hover:scale-110">
-                        <GoogleIcon className="w-5 h-5" />
-                    </Button>
-                    <Button variant="outline" className="w-12 h-12 rounded-full p-0 border-[#FEE500] bg-[#FEE500] shadow-sm hover:bg-[#FDD835] dark:border-[#FEE500] transition-transform hover:scale-110">
-                        <KakaoIcon className="w-5 h-5 text-[#3A1D1D]" />
-                    </Button>
-                    <Button variant="outline" className="w-12 h-12 rounded-full p-0 border-[#03C75A] bg-[#03C75A] shadow-sm hover:bg-[#02b351] dark:border-[#03C75A] transition-transform hover:scale-110">
-                        <NaverIcon className="w-5 h-5" style={{ color: "white", fill: "white" }} />
-                    </Button>
-                </div>
-            </div>
+            <SocialLoginButtons mode="login" />
         </motion.div>
     );
 }

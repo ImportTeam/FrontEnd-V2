@@ -1,6 +1,10 @@
-import { Button, ButtonProps } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
+
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+import type { ButtonProps } from "@/components/ui/button";
+
 
 export interface IconButtonProps extends ButtonProps {
   icon?: React.ReactNode;

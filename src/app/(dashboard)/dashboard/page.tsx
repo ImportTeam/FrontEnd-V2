@@ -1,8 +1,10 @@
-import { SummaryCards } from "@/components/dashboard/summary-cards";
+import { Download, Plus, Sparkles } from "lucide-react";
+
 import { DashboardCharts } from "@/components/dashboard/dashboard-charts";
 import { RecentTransactions } from "@/components/dashboard/recent-transactions";
+import { SummaryCards } from "@/components/dashboard/summary-cards";
 import { Button } from "@/components/ui/button";
-import { Download, Plus, Sparkles } from "lucide-react";
+
 
 export default function DashboardPage() {
   return (

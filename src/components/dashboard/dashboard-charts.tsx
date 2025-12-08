@@ -1,9 +1,11 @@
 "use client";
 
-import { CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Sparkles } from "lucide-react";
+
 import { DashboardCard } from "@/components/dashboard/dashboard-card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles } from "lucide-react";
+import { CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+
 
 export function DashboardCharts() {
   return (

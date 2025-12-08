@@ -1,8 +1,10 @@
 "use client";
 
-import { CreditCardVisual } from "@/components/dashboard/credit-card-visual";
-import { Button } from "@/components/ui/button";
 import { Plus, MoreHorizontal } from "lucide-react";
+
+import { CreditCardVisual } from "@/components/dashboard/credit-card-visual";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,14 +21,13 @@ const MOCK_CARDS = [
     imageSrc: "/assets/card/shinhanCard.svg",
     balance: "350,000",
     limit: "500,000",
-    textColor: "text-white", // Assuming dark card
+    textColor: "text-white",
   },
   {
     id: 2,
     bankName: "Naver Financial",
     cardName: "Naver Pay Point",
     cardNumber: "5678",
-    // No image for this one in the list, use gradient
     colorFrom: "#22c55e", 
     colorTo: "#15803d",
     balance: "12,500 P",
@@ -73,8 +74,6 @@ const MOCK_CARDS = [
     textColor: "text-white",
   },
 ];
-
-import { PageHeader } from "@/components/dashboard/page-header";
 
 export default function CardsPage() {
   return (
@@ -142,8 +141,6 @@ export default function CardsPage() {
             </div>
           </div>
         ))}
-        
-        {/* Add New Placeholder (Optional, if user wants it back, but they said remove it. Keeping it removed.) */}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
-import { Hero } from "@/components/landing/hero";
 import { Features } from "@/components/landing/features";
+import { Hero } from "@/components/landing/hero";
 import { HowToUse } from "@/components/landing/how-to-use";
 
 export default function Home() {
