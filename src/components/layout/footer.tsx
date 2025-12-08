@@ -7,11 +7,11 @@ export function Footer() {
     return (
         <footer className="relative border-t bg-linear-to-b from-muted/40 to-muted/80 dark:from-zinc-950 dark:to-zinc-900">
             
-            <div className="container mx-auto px-6 md:px-12 py-12 md:py-20 max-w-screen-2xl">
+            <div className="container py-12 md:py-20">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-12">
                     {/* Brand Section */}
                     <div className="space-y-4 md:col-span-1">
-                        <h4 className="text-[clamp(1.25rem,0.875rem+0.5vw,1.5rem)] font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+                        <h4 className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
                             PicSel
                         </h4>
                         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">

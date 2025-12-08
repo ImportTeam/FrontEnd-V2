@@ -14,7 +14,7 @@ export function SummaryCards() {
           <div className="h-4 w-4 text-zinc-600 dark:text-zinc-300 font-serif italic">$</div>
         </CardHeader>
         <CardContent>
-          <div className="text-[clamp(1.75rem,1rem+1vw,2.25rem)] font-bold">₩ 45,231</div>
+          <div className="text-4xl font-bold">₩ 45,231</div>
           <p className="text-xs text-emerald-400 flex items-center mt-1">
             <ArrowRight className="h-3 w-3 mr-1" />
             +12.5% <span className="text-zinc-600 dark:text-zinc-300 ml-1">지난달 대비</span>
@@ -31,7 +31,7 @@ export function SummaryCards() {
           <ShoppingBag className="h-4 w-4 text-zinc-600 dark:text-zinc-300" />
         </CardHeader>
         <CardContent>
-          <div className="text-[clamp(1.5rem,0.875rem+0.75vw,1.75rem)] font-bold text-zinc-900 dark:text-zinc-100">쿠팡</div>
+          <div className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">쿠팡</div>
           <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">
             총 지출의 34% 차지
           </p>

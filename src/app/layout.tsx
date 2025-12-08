@@ -1,7 +1,7 @@
 
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Noto_Sans_KR } from "next/font/google";
-import { headers } from "next/headers";
 
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -71,13 +71,11 @@ export const metadata: Metadata = {
 };
 
 // eslint-disable-next-line no-restricted-syntax
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const nonce = (await headers()).get("x-nonce") ?? undefined;
-  
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
@@ -98,7 +96,6 @@ export default async function RootLayout({
       <head>
         <script
           type="application/ld+json"
-          nonce={nonce}
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
@@ -112,6 +109,7 @@ export default async function RootLayout({
           {children}
         </ThemeProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

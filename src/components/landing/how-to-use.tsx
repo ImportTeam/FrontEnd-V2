@@ -31,9 +31,9 @@ export function HowToUse() {
     return (
         <LazyMotion features={loadFeatures}>
         <section id="usage" className="py-32 bg-zinc-50 dark:bg-zinc-900/50">
-            <div className="container mx-auto px-6 md:px-12 max-w-screen-2xl">
+            <div className="container">
                 <div className="text-center mb-24">
-                    <h2 className="text-[clamp(1.875rem,1rem+1.5vw,2.5rem)] font-bold tracking-tight mb-6">사용 방법</h2>
+                    <h2 className="text-4xl font-bold tracking-tight mb-6">사용 방법</h2>
                 </div>
 
                 <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
@@ -52,8 +52,8 @@ export function HowToUse() {
                                 {/* Optional: Add an icon or illustration here later */}
                             </div>
 
-                            <h3 className="text-[clamp(1.125rem,0.875rem+0.5vw,1.375rem)] font-bold mb-4">{step.title}</h3>
-                            <p className="text-[clamp(0.875rem,0.75rem+0.25vw,1rem)] text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-line">
+                            <h3 className="text-xl font-bold mb-4">{step.title}</h3>
+                            <p className="text-base text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-line">
                                 {step.description}
                             </p>
                         </m.div>

@@ -14,7 +14,7 @@ export function DashboardCharts() {
       <DashboardCard className="col-span-full lg:col-span-4">
         <CardHeader>
           <CardTitle className="text-lg font-bold">월간 절약 변화 추이</CardTitle>
-          <CardDescription>AI가 분석한 지난 6개월간의 혜택 적용 내역입니다.</CardDescription>
+          <CardDescription className="text-sm">AI가 분석한 지난 6개월간의 혜택 적용 내역입니다.</CardDescription>
         </CardHeader>
         <CardContent className="pl-2">
           {/* Empty State Placeholder for Chart */}
@@ -22,7 +22,7 @@ export function DashboardCharts() {
             <div className="w-16 h-16 mb-4 rounded-full bg-muted flex items-center justify-center">
                 <Sparkles className="w-8 h-8 text-zinc-600 dark:text-zinc-400" />
             </div>
-            <p className="font-medium text-foreground/80">차트 영역 (Recharts 연동 필요)</p>
+            <p className="text-base font-medium text-foreground/80">차트 영역 (Recharts 연동 필요)</p>
             <p className="text-sm mt-2 text-zinc-700 dark:text-zinc-300">데이터가 수집되면 이곳에 그래프가 표시됩니다.</p>
           </div>
         </CardContent>
@@ -35,7 +35,7 @@ export function DashboardCharts() {
             <Sparkles className="w-5 h-5 text-yellow-500 fill-yellow-500 dark:text-yellow-400 dark:fill-yellow-400" />
             <CardTitle className="text-lg font-bold">AI 추천 결제 수단 TOP 3</CardTitle>
           </div>
-          <CardDescription>사용자의 소비 패턴을 분석하여 추천합니다.</CardDescription>
+          <CardDescription className="text-sm">사용자의 소비 패턴을 분석하여 추천합니다.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">

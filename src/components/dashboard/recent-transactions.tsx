@@ -10,7 +10,7 @@ export function RecentTransactions() {
     <DashboardCard>
       <CardHeader>
         <CardTitle className="text-lg font-bold">최근 이용 사이트별 결제수단</CardTitle>
-        <CardDescription>최근 30일간의 결제 내역과 적용된 혜택입니다.</CardDescription>
+        <CardDescription className="text-sm">최근 30일간의 결제 내역과 적용된 혜택입니다.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">

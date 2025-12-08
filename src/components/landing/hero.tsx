@@ -22,25 +22,25 @@ export function Hero() {
                 <div className="absolute inset-0 bg-linear-to-b from-blue-50 via-background/80 to-background dark:opacity-0 transition-opacity duration-500 ease-in-out" />
             </div>
 
-            <div className="container relative z-10 mx-auto px-6 md:px-12 max-w-screen-2xl">
+            <div className="container relative z-10">
                 {/* 7:3 ratio grid */}
                 <div className="grid gap-8 lg:grid-cols-10 lg:gap-12 xl:gap-16 items-center">
-                    {/* Left Content - 7 columns with right shift */}
-                    <div className="lg:col-span-7 flex flex-col justify-center space-y-12 lg:pl-12 xl:pl-20">
+                    {/* Left Content - 7 columns */}
+                    <div className="lg:col-span-7 flex flex-col justify-center space-y-8">
                         <m.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5 }}
                         >
-                            <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800 dark:border-blue-800 dark:bg-blue-950/30 dark:text-blue-300 mb-6 2xl:text-base 2xl:px-4 2xl:py-1.5">
-                                <Sparkles className="mr-2 h-3.5 w-3.5 2xl:h-4 2xl:w-4" />
+                            <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800 dark:border-blue-800 dark:bg-blue-950/30 dark:text-blue-300 mb-6">
+                                <Sparkles className="mr-2 h-4 w-4" />
                                 AI 기반 스마트 소비 분석
                             </div>
-                            <h1 className="text-[clamp(2.5rem,1.5rem+2vw,4rem)] font-bold tracking-tighter leading-tight bg-clip-text text-transparent bg-linear-to-r from-foreground to-muted-foreground mb-6">
+                            <h1 className="text-5xl font-bold tracking-tighter leading-tight bg-clip-text text-transparent bg-linear-to-r from-foreground to-muted-foreground mb-6">
                                 결제 순간,<br />
                                 가장 유리한 선택
                             </h1>
-                            <p className="max-w-[600px] text-[clamp(1rem,0.875rem+0.5vw,1.25rem)] text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                            <p className="max-w-[600px] text-lg text-zinc-700 dark:text-zinc-300 leading-relaxed">
                                 복잡한 카드 혜택, 더 이상 고민하지 마세요.<br />
                                 PicSel이 당신의 소비 패턴을 분석하여<br />
                                 최적의 결제 수단을 실시간으로 추천해드립니다.

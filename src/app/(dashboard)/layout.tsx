@@ -26,7 +26,7 @@ export default function DashboardLayout({
       <Sidebar />
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         <DashboardHeader />
-        <main className="flex-1 overflow-y-auto p-8 lg:p-12 max-w-screen-2xl mx-auto w-full">
+        <main className="flex-1 overflow-y-auto w-full" style={{ padding: 'var(--spacing-lg) var(--spacing-md)' }}>
             {children}
         </main>
       </div>
