@@ -62,13 +62,13 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
 
             {/* Overlay Panel - Always on the right initially, slides left when signup */}
             <div 
-                className={`hidden lg:flex absolute top-0 h-full w-1/2 items-center justify-center overflow-hidden transition-transform duration-500 ease-in-out ${
+                className={`hidden lg:block absolute top-0 h-full w-1/2 overflow-hidden transition-transform duration-500 ease-in-out ${
                     isSignup ? "-translate-x-full" : "translate-x-0"
                 }`}
                 style={{ right: 0 }}
             >
                 {/* Background Gradient */}
-                <div className="absolute inset-0 bg-linear-to-br from-blue-600 to-purple-900">
+                <div className="absolute inset-0 bg-linear-to-br from-blue-600 to-purple-900">  
                     <div 
                         className="absolute inset-0 opacity-20" 
                         style={{ 
@@ -89,20 +89,21 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
                 </div>
                 
                 {/* Overlay Text Content */}
-                <div className="relative z-10 flex w-full max-w-md flex-col justify-center px-8 text-center text-white">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={isSignup ? "signup-cta" : "login-cta"}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.3 }}
-                            className="space-y-6"
-                        >
-                            <h2 className="text-4xl font-bold drop-shadow-md">
-                                {isSignup ? "Welcome Back!" : "Join Our Community"}
-                            </h2>
-                            <p className="text-lg text-white/90 leading-relaxed">
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="relative z-10 w-full max-w-lg min-w-[350px] mx-auto px-6 text-center text-white">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={isSignup ? "signup-cta" : "login-cta"}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.3 }}
+                                className="space-y-4 w-full"
+                            >
+                                <h2 className="text-3xl font-bold drop-shadow-md break-keep">
+                                    {isSignup ? "Welcome Back!" : "Join Our PicSel"}
+                                </h2>
+                                <p className="text-base text-white/90 leading-normal break-keep">
                                 {isSignup 
                                     ? "이미 계정이 있으신가요? 로그인하고 PicSel의 스마트한 소비 분석을 경험하세요." 
                                     : "PicSel과 함께 더 스마트한 소비 생활을 시작하세요. 지금 바로 가입하세요."}
@@ -118,6 +119,7 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
                             </div>
                         </motion.div>
                     </AnimatePresence>
+                    </div>
                 </div>
             </div>
 

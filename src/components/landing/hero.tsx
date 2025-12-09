@@ -12,7 +12,7 @@ const loadFeatures = () => import("framer-motion").then((mod) => mod.domAnimatio
 export function Hero() {
     return (
         <LazyMotion features={loadFeatures}>
-        <section className="relative min-h-[90vh] w-full overflow-hidden bg-background flex items-start pt-4 md:pt-8">
+        <section className="relative min-h-screen w-full overflow-hidden bg-background flex items-center">
             {/* Background Gradients - Cross-fade implementation */}
             <div className="absolute inset-0 w-full h-full pointer-events-none">
                 {/* Dark Mode Gradient (Visible in dark mode) */}
@@ -26,7 +26,7 @@ export function Hero() {
                 {/* 6:4 ratio grid */}
                 <div className="grid gap-8 lg:grid-cols-10 lg:gap-12 xl:gap-16 items-center">
                     {/* Left Content - 6 columns */}
-                    <div className="lg:col-span-6 flex flex-col justify-center space-y-8 lg:pl-8 xl:pl-22">
+                    <div className="lg:col-span-6 flex flex-col justify-center space-y-10 lg:pl-8 xl:pl-22">
                         <m.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}

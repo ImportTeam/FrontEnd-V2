@@ -49,20 +49,20 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 </div>
                 
                 {/* Overlay Content - Fixed width, centered */}
-                <div className="relative z-10 flex w-full max-w-md flex-col justify-center px-8 text-center text-white mb-28">
+                <div className="relative z-10 w-full max-w-lg mx-auto px-6 text-center text-white mb-24">
                     <AnimatePresence mode="wait">
-                         <motion.div
+                        <motion.div
                             key={isSignup ? "signup-text" : "login-text"}
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -20 }}
                             transition={{ duration: 0.3, ease: "easeInOut" }}
-                            className="space-y-6"
-                         >
-                             <h2 className="text-4xl font-bold drop-shadow-md">
+                            className="space-y-4 w-full"
+                        >
+                            <h2 className="text-3xl font-bold drop-shadow-md break-keep">
                                 {isSignup ? "Welcome Back!" : "Join Our Community"}
-                             </h2>
-                             <p className="text-lg text-white/90 leading-relaxed">
+                            </h2>
+                            <p className="text-base text-white/90 leading-normal break-keep">
                                 {isSignup 
                                     ? "이미 계정이 있으신가요? 로그인하고 PicSel의 스마트한 소비 분석을 경험하세요." 
                                     : "PicSel과 함께 더 스마트한 소비 생활을 시작하세요. 지금 바로 가입하세요."}
