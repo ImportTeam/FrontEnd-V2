@@ -68,6 +68,15 @@ export const metadata: Metadata = {
     apple: "/picsel.svg",
   },
   manifest: "/manifest.json",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#2563eb" },
+    { media: "(prefers-color-scheme: dark)", color: "#1e40af" },
+  ],
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "PicSel",
+  },
 };
 
 // eslint-disable-next-line no-restricted-syntax
