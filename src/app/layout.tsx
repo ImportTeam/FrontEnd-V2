@@ -5,7 +5,7 @@ import { Noto_Sans_KR } from "next/font/google";
 
 import { ThemeProvider } from "@/components/theme-provider";
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import "./globals.css";
 
@@ -68,15 +68,18 @@ export const metadata: Metadata = {
     apple: "/picsel.svg",
   },
   manifest: "/manifest.json",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#2563eb" },
-    { media: "(prefers-color-scheme: dark)", color: "#1e40af" },
-  ],
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "PicSel",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#2563eb" },
+    { media: "(prefers-color-scheme: dark)", color: "#1e40af" },
+  ],
 };
 
 // eslint-disable-next-line no-restricted-syntax

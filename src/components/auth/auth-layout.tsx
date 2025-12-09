@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                               backgroundImage: "radial-gradient(rgba(255,255,255,0.2) 1px, transparent 1px)", 
                               backgroundSize: "30px 30px" 
                           }} 
-                     />
+                     /> 
                      
                      {/* Animated Shapes */}
                      <motion.div 
@@ -49,30 +49,35 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 </div>
                 
                 {/* Overlay Content - Fixed width, centered */}
-                <div className="relative z-10 px-8 py-12 text-center text-white w-full mx-auto" style={{ maxWidth: "28rem" }}>
-                     <motion.div
-                        key={isSignup ? "signup-text" : "login-text"}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="space-y-6"
-                     >
-                         <h2 className="text-4xl font-bold drop-shadow-md">
-                            {isSignup ? "Welcome Back!" : "Join Our Community"}
-                         </h2>
-                         <p className="text-lg text-white/90 leading-relaxed">
-                            {isSignup 
-                                ? "이미 계정이 있으신가요? 로그인하고 PicSel의 스마트한 소비 분석을 경험하세요." 
-                                : "PicSel과 함께 더 스마트한 소비 생활을 시작하세요. 지금 바로 가입하세요."}
-                         </p>
-                         <Button 
-                            variant="outline" 
-                            onClick={handleSwitch}
-                            className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-blue-600 rounded-full px-10 py-6 text-lg font-semibold transition-all hover:scale-105"
+                <div className="relative z-10 flex w-full max-w-[28rem] flex-col justify-center px-8 text-center text-white mb-28">
+                    <AnimatePresence mode="wait">
+                         <motion.div
+                            key={isSignup ? "signup-text" : "login-text"}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                            className="space-y-6"
                          >
-                            {isSignup ? "로그인하기" : "회원가입하기"}
-                         </Button>
-                     </motion.div>
+                             <h2 className="text-4xl font-bold drop-shadow-md">
+                                {isSignup ? "Welcome Back!" : "Join Our Community"}
+                             </h2>
+                             <p className="text-lg text-white/90 leading-relaxed">
+                                {isSignup 
+                                    ? "이미 계정이 있으신가요? 로그인하고 PicSel의 스마트한 소비 분석을 경험하세요." 
+                                    : "PicSel과 함께 더 스마트한 소비 생활을 시작하세요. 지금 바로 가입하세요."}
+                             </p>
+                             <div className="pt-4">
+                                <Button 
+                                    variant="outline" 
+                                    onClick={handleSwitch}
+                                    className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-blue-600 rounded-full px-10 py-6 text-lg font-semibold transition-all hover:scale-105"
+                                >
+                                    {isSignup ? "로그인하기" : "회원가입하기"}
+                                </Button>
+                             </div>
+                         </motion.div>
+                    </AnimatePresence>
                 </div>
             </motion.div>
 

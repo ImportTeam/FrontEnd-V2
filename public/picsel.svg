@@ -1,13 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
-  <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  <rect width="1200" height="630" fill="url(#grad)"/>
-  <text x="600" y="280" font-family="Arial, sans-serif" font-size="120" font-weight="700" fill="white" text-anchor="middle">PicSel</text>
-  <text x="600" y="360" font-family="Arial, sans-serif" font-size="42" fill="white" fill-opacity="0.9" text-anchor="middle">스마트한 결제 가이드</text>
-  <circle cx="200" cy="480" r="30" fill="white" fill-opacity="0.2"/>
-  <circle cx="1000" cy="150" r="50" fill="white" fill-opacity="0.15"/>
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="156.000000pt" height="180.000000pt" viewBox="0 0 156.000000 180.000000"
+ preserveAspectRatio="xMidYMid meet">
+
+<g transform="translate(0.000000,180.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M32 898 l3 -863 190 0 190 0 2 689 c2 543 5 691 15 697 7 5 128 7
+268 6 246 -3 256 -4 295 -26 22 -12 55 -37 73 -54 57 -54 66 -81 67 -188 0
+-93 -1 -98 -34 -146 -21 -31 -52 -60 -84 -78 -48 -27 -56 -28 -228 -33 l-179
+-5 0 -168 0 -169 148 0 c215 0 328 21 447 80 152 76 240 181 285 340 7 25 16
+58 21 74 21 67 7 276 -22 328 -5 10 -9 27 -9 38 0 11 -3 20 -8 20 -4 0 -13 14
+-21 32 -18 40 -33 60 -96 123 -54 55 -125 105 -149 105 -8 0 -17 4 -20 9 -6
+10 -27 15 -136 36 -59 11 -177 15 -548 15 l-472 0 2 -862z"/>
+</g>
 </svg>

@@ -1,0 +1,158 @@
+"use client";
+
+import { AnimatePresence, motion } from "framer-motion";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+
+import { LoginForm } from "@/components/auth/login-form";
+import { SignupForm } from "@/components/auth/signup-form";
+import { Button } from "@/components/ui/button";
+
+interface AuthPageClientProps {
+    initialSignup?: boolean;
+}
+
+export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
+    const pathname = usePathname();
+    const [isSignup, setIsSignup] = useState(initialSignup);
+
+    useEffect(() => {
+        setIsSignup(pathname === "/signup");
+    }, [pathname]);
+
+    useEffect(() => {
+        const handlePopState = () => {
+            setIsSignup(window.location.pathname === "/signup");
+        };
+        window.addEventListener("popstate", handlePopState);
+        return () => window.removeEventListener("popstate", handlePopState);
+    }, []);
+
+    const handleSwitch = () => {
+        const newIsSignup = !isSignup;
+        setIsSignup(newIsSignup);
+        window.history.pushState(null, "", newIsSignup ? "/signup" : "/login");
+    };
+
+    return (
+        <div className="relative flex min-h-screen w-full overflow-hidden bg-background">
+            {/* === DESKTOP LAYOUT === */}
+            
+            {/* Form Panel - Always on the left initially, slides right when signup */}
+            <div 
+                className={`hidden lg:flex absolute top-0 h-full w-1/2 items-center justify-center bg-background p-16 transition-transform duration-500 ease-in-out ${
+                    isSignup ? "translate-x-full" : "translate-x-0"
+                }`}
+                style={{ left: 0 }}
+            >
+                <div className="w-full max-w-[400px] mx-auto">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={isSignup ? "signup" : "login"}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            {isSignup ? <SignupForm /> : <LoginForm />}
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
+            </div>
+
+            {/* Overlay Panel - Always on the right initially, slides left when signup */}
+            <div 
+                className={`hidden lg:flex absolute top-0 h-full w-1/2 items-center justify-center overflow-hidden transition-transform duration-500 ease-in-out ${
+                    isSignup ? "-translate-x-full" : "translate-x-0"
+                }`}
+                style={{ right: 0 }}
+            >
+                {/* Background Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-900">
+                    <div 
+                        className="absolute inset-0 opacity-20" 
+                        style={{ 
+                            backgroundImage: "radial-gradient(rgba(255,255,255,0.2) 1px, transparent 1px)", 
+                            backgroundSize: "30px 30px" 
+                        }} 
+                    />
+                    <motion.div 
+                        className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-pink-500 blur-3xl opacity-40"
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 10, repeat: Infinity }}
+                    />
+                    <motion.div 
+                        className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-blue-400 blur-3xl opacity-40"
+                        animate={{ scale: [1.2, 1, 1.2] }}
+                        transition={{ duration: 12, repeat: Infinity }}
+                    />
+                </div>
+                
+                {/* Overlay Text Content */}
+                <div className="relative z-10 flex w-full max-w-[28rem] flex-col justify-center px-8 text-center text-white">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={isSignup ? "signup-cta" : "login-cta"}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.3 }}
+                            className="space-y-6"
+                        >
+                            <h2 className="text-4xl font-bold drop-shadow-md">
+                                {isSignup ? "Welcome Back!" : "Join Our Community"}
+                            </h2>
+                            <p className="text-lg text-white/90 leading-relaxed">
+                                {isSignup 
+                                    ? "이미 계정이 있으신가요? 로그인하고 PicSel의 스마트한 소비 분석을 경험하세요." 
+                                    : "PicSel과 함께 더 스마트한 소비 생활을 시작하세요. 지금 바로 가입하세요."}
+                            </p>
+                            <div className="pt-4">
+                                <Button 
+                                    variant="outline" 
+                                    onClick={handleSwitch}
+                                    className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-blue-600 rounded-full px-10 py-6 text-lg font-semibold transition-all hover:scale-105"
+                                >
+                                    {isSignup ? "로그인하기" : "회원가입하기"}
+                                </Button>
+                            </div>
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
+            </div>
+
+            {/* === MOBILE LAYOUT === */}
+            <div className="flex lg:hidden flex-col min-h-screen w-full">
+                <div className="bg-gradient-to-br from-blue-600 to-purple-900 p-8 text-center text-white">
+                    <h2 className="text-2xl font-bold mb-2">
+                        {isSignup ? "회원가입" : "로그인"}
+                    </h2>
+                    <p className="text-sm text-white/80">
+                        {isSignup ? "새로운 계정을 만들어보세요" : "계정에 로그인하세요"}
+                    </p>
+                </div>
+
+                <div className="flex-1 flex items-center justify-center bg-background p-6">
+                    <div className="w-full max-w-[400px]">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={isSignup ? "m-signup" : "m-login"}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                            >
+                                {isSignup ? <SignupForm /> : <LoginForm />}
+                            </motion.div>
+                        </AnimatePresence>
+                    </div>
+                </div>
+
+                <div className="bg-background p-4 text-center border-t">
+                    <button onClick={handleSwitch} className="text-sm text-zinc-600 dark:text-zinc-400">
+                        {isSignup ? "이미 계정이 있으신가요? 로그인하기" : "계정이 없으신가요? 회원가입하기"}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
