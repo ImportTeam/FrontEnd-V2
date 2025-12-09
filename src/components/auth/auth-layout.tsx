@@ -31,7 +31,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                      <div className="absolute inset-0 opacity-20" 
                           style={{ 
                               backgroundImage: "radial-gradient(rgba(255,255,255,0.2) 1px, transparent 1px)", 
-                              backgroundSize: "30px 30px" 
+                              backgroundSize: "30px 30px"
                           }} 
                      /> 
                      
