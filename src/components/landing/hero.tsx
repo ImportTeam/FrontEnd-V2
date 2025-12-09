@@ -12,7 +12,7 @@ const loadFeatures = () => import("framer-motion").then((mod) => mod.domAnimatio
 export function Hero() {
     return (
         <LazyMotion features={loadFeatures}>
-        <section className="relative min-h-[90vh] w-full overflow-hidden bg-background flex items-start pt-- md:pt-4">
+        <section className="relative min-h-[90vh] w-full overflow-hidden bg-background flex items-start pt-4 md:pt-8">
             {/* Background Gradients - Cross-fade implementation */}
             <div className="absolute inset-0 w-full h-full pointer-events-none">
                 {/* Dark Mode Gradient (Visible in dark mode) */}

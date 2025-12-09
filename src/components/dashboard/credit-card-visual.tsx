@@ -49,10 +49,8 @@ export function CreditCardVisual({
                 alt={cardName} 
                 fill 
                 className="object-cover"
-                priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
-            {/* Overlay for text readability if needed, but usually card images have their own design */}
-            {/* <div className="absolute inset-0 bg-black/10" /> */}
         </div>
       ) : (
         <>

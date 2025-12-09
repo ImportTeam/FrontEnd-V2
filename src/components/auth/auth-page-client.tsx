@@ -68,7 +68,7 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
                 style={{ right: 0 }}
             >
                 {/* Background Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-900">
+                <div className="absolute inset-0 bg-linear-to-br from-blue-600 to-purple-900">
                     <div 
                         className="absolute inset-0 opacity-20" 
                         style={{ 
@@ -89,7 +89,7 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
                 </div>
                 
                 {/* Overlay Text Content */}
-                <div className="relative z-10 flex w-full max-w-[28rem] flex-col justify-center px-8 text-center text-white">
+                <div className="relative z-10 flex w-full max-w-md flex-col justify-center px-8 text-center text-white">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={isSignup ? "signup-cta" : "login-cta"}
@@ -123,7 +123,7 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
 
             {/* === MOBILE LAYOUT === */}
             <div className="flex lg:hidden flex-col min-h-screen w-full">
-                <div className="bg-gradient-to-br from-blue-600 to-purple-900 p-8 text-center text-white">
+                <div className="bg-linear-to-br from-blue-600 to-purple-900 p-8 text-center text-white">
                     <h2 className="text-2xl font-bold mb-2">
                         {isSignup ? "회원가입" : "로그인"}
                     </h2>

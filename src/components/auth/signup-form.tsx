@@ -36,8 +36,8 @@ export function SignupForm() {
             setIsLoading(true);
             setError(null);
             
-            // TODO: Replace with actual API call
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            // Simulate API call
+            await new Promise((resolve) => setTimeout(resolve, 800));
             
             login({
                 id: "2",

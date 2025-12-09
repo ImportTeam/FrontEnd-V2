@@ -26,7 +26,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 initial={false}
             >
                 {/* Background Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-900">
+                <div className="absolute inset-0 bg-linear-to-br from-blue-600 to-purple-900">
                      {/* Abstract Pattern */}
                      <div className="absolute inset-0 opacity-20" 
                           style={{ 
@@ -49,7 +49,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 </div>
                 
                 {/* Overlay Content - Fixed width, centered */}
-                <div className="relative z-10 flex w-full max-w-[28rem] flex-col justify-center px-8 text-center text-white mb-28">
+                <div className="relative z-10 flex w-full max-w-md flex-col justify-center px-8 text-center text-white mb-28">
                     <AnimatePresence mode="wait">
                          <motion.div
                             key={isSignup ? "signup-text" : "login-text"}

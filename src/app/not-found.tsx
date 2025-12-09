@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Navbar } from "@/components/layout/navbar";
+
 import { Footer } from "@/components/layout/footer";
+import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
 
 // eslint-disable-next-line no-restricted-syntax

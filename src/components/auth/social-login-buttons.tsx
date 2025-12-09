@@ -9,8 +9,8 @@ export function SocialLoginButtons({ mode }: SocialLoginButtonsProps) {
   const actionText = mode === "login" ? "로그인" : "가입";
 
   const handleSocialLogin = (provider: "google" | "kakao" | "naver") => {
-    // TODO: Implement actual social login
-    console.warn(`${provider} ${actionText} not implemented yet`);
+    // Social login implementation placeholder
+    alert(`${provider} ${actionText} 기능은 곧 제공될 예정입니다.`);
   };
 
   return (
