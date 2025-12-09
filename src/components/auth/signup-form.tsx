@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import type { SignupSchema } from "@/lib/schemas/auth";
+
 import { AuthFormField } from "@/components/auth/auth-form-field";
 import { SocialLoginButtons } from "@/components/auth/social-login-buttons";
 import { Button } from "@/components/ui/button";
@@ -10,7 +12,6 @@ import { useAuthForm } from "@/hooks/use-auth-form";
 import { signupSchema } from "@/lib/schemas/auth";
 import { useAuthStore } from "@/store/use-auth-store";
 
-import type { SignupSchema } from "@/lib/schemas/auth";
 
 export function SignupForm() {
     const router = useRouter();
@@ -90,7 +91,7 @@ export function SignupForm() {
                         id="password"
                         label="비밀번호"
                         type="password"
-                        placeholder="••••••••"
+                        placeholder="********"
                         registration={register("password")}
                         error={errors.password}
                     />
