@@ -90,7 +90,7 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
                 
                 {/* Overlay Text Content */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="relative z-10 w-full max-w-lg min-w-[350px] mx-auto px-6 text-center text-white">
+                    <div className="relative z-10 w-full max-w-lg min-w-[450px] mx-auto px-6 text-center text-white mb-40">
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={isSignup ? "signup-cta" : "login-cta"}
@@ -100,13 +100,13 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
                                 transition={{ duration: 0.3 }}
                                 className="space-y-4 w-full"
                             >
-                                <h2 className="text-3xl font-bold drop-shadow-md break-keep">
-                                    {isSignup ? "Welcome Back!" : "Join Our PicSel"}
+                                <h2 className="text-5xl font-bold drop-shadow-md break-keep mb-10">
+                                    {isSignup ? "Welcome!" : "Join Our PicSel"}
                                 </h2>
-                                <p className="text-base text-white/90 leading-normal break-keep">
+                                <p className="text-lg text-white/90 leading-normal break-keep">
                                 {isSignup 
-                                    ? "이미 계정이 있으신가요? 로그인하고 PicSel의 스마트한 소비 분석을 경험하세요." 
-                                    : "PicSel과 함께 더 스마트한 소비 생활을 시작하세요. 지금 바로 가입하세요."}
+                                ? "PicSel과 함께 더 스마트한 소비 생활을 시작하세요. 지금 바로 가입하세요."
+                                : "이미 계정이 있으신가요? 로그인하고 PicSel의 스마트한 소비 분석을 경험하세요." }
                             </p>
                             <div className="pt-4">
                                 <Button 
