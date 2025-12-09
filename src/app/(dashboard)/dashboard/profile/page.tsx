@@ -36,7 +36,7 @@ export default function ProfilePage() {
                     </Button>
                 </div>
                 <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">김픽셀</h2>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">picsel_user@example.com</p>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">picsel@user.com</p>
                 <div className="mt-6 w-full space-y-2">
                     <Button variant="outline" className="w-full justify-start">
                         비밀번호 변경
@@ -62,7 +62,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="email">이메일</Label>
-                        <Input id="email" defaultValue="picsel_user@example.com" disabled className="bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500" />
+                        <Input id="email" defaultValue="picsel@user.com" disabled className="bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500" />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="phone">휴대폰 번호</Label>
