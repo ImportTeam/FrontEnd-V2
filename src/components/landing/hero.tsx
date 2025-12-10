@@ -78,51 +78,22 @@ export function Hero() {
                         transition={{ duration: 0.7 }}
                         className="lg:col-span-4 relative h-[400px] sm:h-[500px] lg:h-[550px] xl:h-[600px] flex items-center justify-center"
                     >
-                        <div className="relative w-full max-w-[350px] sm:max-w-[400px] lg:max-w-[380px] 2xl:max-w-[500px] aspect-square">
+                        <div className="relative w-full max-w-[450px] sm:max-w-[500px] lg:max-w-[480px] 2xl:max-w-[600px] aspect-square">
                             {/* Abstract Background Blobs */}
                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-linear-to-br from-blue-100/50 to-purple-100/50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-full blur-3xl" />
                             
-                            {/* Main Visual Container */}
-                            <div className="relative w-full h-full perspective-1000">
-                                {/* Real Card 1 - Floating */}
-                                <m.div 
-                                    className="absolute top-[10%] right-[10%] w-[70%] aspect-[1.586] rounded-2xl shadow-2xl overflow-hidden z-20"
-                                    animate={{ y: [0, -20, 0], rotateY: [-5, 5, -5] }}
-                                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                                >
+                            {/* Main Hero Icon - Static Large Image */}
+                            <div className="relative w-full h-full flex items-center justify-center z-10">
+                                <div className="relative w-[90%] h-[90%] rounded-3xl overflow-hidden shadow-2xl">
                                     <Image
-                                        src="/assets/card/shinhanCard.svg"
-                                        alt="Shinhan Card"
+                                        src="/assets/icon/heroIcon.png"
+                                        alt="PicSel Benefits Display"
                                         fill
-                                        sizes="(max-width: 640px) 70vw, (max-width: 1024px) 50vw, 350px"
+                                        sizes="(max-width: 640px) 80vw, (max-width: 1024px) 50vw, 450px"
                                         className="object-cover"
                                         priority
                                     />
-                                </m.div>
-
-                                {/* Real Card 2 - Benefits Display */}
-                                <m.div 
-                                    className="absolute bottom-[20%] left-[5%] w-[60%] aspect-[1.586] rounded-2xl bg-white dark:bg-zinc-100 shadow-xl border border-zinc-200 p-4 sm:p-6 flex flex-col justify-between z-10"
-                                    animate={{ y: [0, 20, 0], rotate: [-10, -5, -10] }}
-                                    transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                                >
-                                    <div className="flex justify-between items-start">
-                                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
-                                            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className="text-zinc-500 text-[10px] sm:text-xs mb-1">이번 달 혜택</div>
-                                        <div className="text-zinc-900 text-lg sm:text-2xl font-bold">₩ 125,000</div>
-                                    </div>
-                                </m.div>
-
-                                {/* Decorative Elements */}
-                                <m.div 
-                                    className="absolute top-[30%] left-[0%] w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-blue-500/10 backdrop-blur-md border border-blue-500/20 z-30"
-                                    animate={{ rotate: [0, 90, 0] }}
-                                    transition={{ duration: 10, repeat: Infinity }}
-                                />
+                                </div>
                             </div>
                         </div>
                     </m.div>

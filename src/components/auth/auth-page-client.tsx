@@ -28,6 +28,10 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
         return () => window.removeEventListener("popstate", handlePopState);
     }, []);
 
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "instant" });
+    }, []);
+
     const handleSwitch = () => {
         const newIsSignup = !isSignup;
         setIsSignup(newIsSignup);
@@ -67,8 +71,8 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
                 }`}
                 style={{ right: 0 }}
             >
-                {/* Background Gradient */}
-                <div className="absolute inset-0 bg-linear-to-br from-blue-600 to-purple-900">  
+                {/* Background - Solid color based on theme */}
+                <div className="absolute inset-0 bg-[#6366f1] dark:bg-[#2d3136]">  
                     <div 
                         className="absolute inset-0 opacity-20" 
                         style={{ 
@@ -77,12 +81,12 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
                         }} 
                     />
                     <motion.div 
-                        className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-pink-500 blur-3xl opacity-40"
+                        className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-white/20 blur-3xl opacity-40"
                         animate={{ scale: [1, 1.2, 1] }}
                         transition={{ duration: 10, repeat: Infinity }}
                     />
                     <motion.div 
-                        className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-blue-400 blur-3xl opacity-40"
+                        className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-white/10 blur-3xl opacity-40"
                         animate={{ scale: [1.2, 1, 1.2] }}
                         transition={{ duration: 12, repeat: Infinity }}
                     />
@@ -125,7 +129,7 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
 
             {/* === MOBILE LAYOUT === */}
             <div className="flex lg:hidden flex-col min-h-screen w-full">
-                <div className="bg-linear-to-br from-blue-600 to-purple-900 p-8 text-center text-white">
+                <div className="bg-[#6366f1] dark:bg-[#2d3136] p-8 text-center text-white">
                     <h2 className="text-2xl font-bold mb-2">
                         {isSignup ? "회원가입" : "로그인"}
                     </h2>

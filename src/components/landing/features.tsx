@@ -8,7 +8,7 @@ const loadFeatures = () => import("framer-motion").then((mod) => mod.domAnimatio
 export function Features() {
     return (
         <LazyMotion features={loadFeatures}>
-        <section className="py-20 overflow-hidden">
+        <section id="features" className="py-20 overflow-hidden">
             <div className="container space-y-24">
 
                 {/* Section 1: Image 0 - Text Left, Image Right */}
@@ -30,7 +30,7 @@ export function Features() {
                             온라인 결제 상품 결제 전,<br />
                             PicSel이 더 스마트하게 비교합니다.
                         </h3>
-                        <p className="text-lg text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                        <p className="text-lg text-zinc-700 dark:text-zinc-300 leading-relaxed hidden sm:block">
                             여러 결제 페이지에서 고민하지 마세요.<br />
                             PicSel이 카드 혜택부터 적립 혜택까지 자동 분석해,<br />
                             한눈에 가장 유리한 결제수단을 추천합니다.<br />
@@ -74,7 +74,7 @@ export function Features() {
                             PicSel이 당신의 결제 데이터를<br />
                             자동으로 분석합니다.
                         </h3>
-                        <p className="text-lg text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                        <p className="text-lg text-zinc-700 dark:text-zinc-300 leading-relaxed hidden sm:block">
                             PicSel은 카드와 간편결제 데이터를 실시간으로 분석해<br />
                             놓친 혜택, 절약 가능한 금액, 내 효율적인 결제 습관을 한눈에 보여드립니다.<br />
                             매주 업데이트되는 AI 리포트로<br />
@@ -99,7 +99,7 @@ export function Features() {
                             놓치는 혜택 없이,<br />
                             <span className="text-purple-600 dark:text-purple-400">당신의 결제가 더 알뜰해집니다.</span>
                         </h3>
-                        <p className="text-lg text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                        <p className="text-lg text-zinc-700 dark:text-zinc-300 leading-relaxed hidden sm:block">
                             매월 제공되는 구독 혜택부터 은행 캐시백까지<br />
                             PicSel이 모든 카드·페이 혜택을 자동으로 추적합니다.<br />
                             시작일부터 만료 닿은 혜택을 알림으로 알려주고,<br />

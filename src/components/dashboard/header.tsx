@@ -21,7 +21,7 @@ export function DashboardHeader() {
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
 
   return (
-    <header className="sticky top-0 z-50 flex h-16 items-center gap-4 bg-white px-6 backdrop-blur-xl dark:bg-zinc-950 shadow-sm">
+    <header className="sticky top-0 z-50 flex h-16 items-center gap-4 bg-white/80 dark:bg-zinc-950/80 px-6 backdrop-blur-xl shadow-sm border-b border-zinc-100 dark:border-zinc-800">
       {/* Mobile Menu Toggle */}
       <Button
         variant="ghost"

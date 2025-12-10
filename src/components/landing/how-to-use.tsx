@@ -53,7 +53,7 @@ export function HowToUse() {
                             </div>
 
                             <h3 className="text-xl font-bold mb-4">{step.title}</h3>
-                            <p className="text-base text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-line">
+                            <p className="text-base text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-line hidden sm:block">
                                 {step.description}
                             </p>
                         </m.div>
