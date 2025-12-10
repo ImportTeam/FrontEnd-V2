@@ -67,7 +67,7 @@ export function Hero() {
                                     <div key={i} className="h-8 w-8 rounded-full border-2 border-background bg-muted 2xl:h-10 2xl:w-10" />
                                 ))}
                             </div>
-                            <p>이미 6,000+ 명이 스마트한 소비를 시작했습니다</p>
+                            <p>이미 10,000+ 명이 스마트한 소비를 시작했습니다</p>
                         </div>
                     </div>
 
