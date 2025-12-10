@@ -4,15 +4,17 @@ const nextConfig: NextConfig = {
     reactStrictMode: true,
     poweredByHeader: false,
     compress: true,
-    productionBrowserSourceMaps: true,
+    // Disable source maps in production to reduce bundle size
+    productionBrowserSourceMaps: false,
     typescript: {
         ignoreBuildErrors: false,
     },
     experimental: {
+        // CSS optimization for critical CSS extraction
+        optimizeCss: true,
         optimizePackageImports: [
             "lucide-react",
             "framer-motion",
-            "recharts",
             "@radix-ui/react-avatar",
             "@radix-ui/react-dropdown-menu",
             "@radix-ui/react-label",
@@ -27,13 +29,33 @@ const nextConfig: NextConfig = {
     },
     images: {
         formats: ["image/avif", "image/webp"],
-        minimumCacheTTL: 60,
+        // Increase cache TTL to 1 year for better caching
+        minimumCacheTTL: 31536000,
         dangerouslyAllowSVG: true,
         contentDispositionType: "attachment",
         contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     },
     async headers() {
         return [
+            // Cache static assets for 1 year
+            {
+                source: '/assets/:path*',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=31536000, immutable'
+                    }
+                ]
+            },
+            {
+                source: '/_next/static/:path*',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=31536000, immutable'
+                    }
+                ]
+            },
             {
                 source: '/:path*',
                 headers: [

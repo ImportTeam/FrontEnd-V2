@@ -31,9 +31,10 @@ export function Navbar() {
                         <Image 
                             src="/assets/icon/logo.png" 
                             alt="PicSel Logo" 
-                            width={108} 
-                            height={108}
+                            width={100} 
+                            height={100}
                             priority
+                            sizes="40px"
                             className="rounded-sm"
                         />
                     </Link>
