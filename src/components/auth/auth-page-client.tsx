@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -15,6 +14,7 @@ interface AuthPageClientProps {
 export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
     const pathname = usePathname();
     const [isSignup, setIsSignup] = useState(initialSignup);
+    const [isTransitioning, setIsTransitioning] = useState(false);
 
     useEffect(() => {
         setIsSignup(pathname === "/signup");
@@ -33,9 +33,13 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
     }, []);
 
     const handleSwitch = () => {
-        const newIsSignup = !isSignup;
-        setIsSignup(newIsSignup);
-        window.history.pushState(null, "", newIsSignup ? "/signup" : "/login");
+        setIsTransitioning(true);
+        setTimeout(() => {
+            const newIsSignup = !isSignup;
+            setIsSignup(newIsSignup);
+            window.history.pushState(null, "", newIsSignup ? "/signup" : "/login");
+            setTimeout(() => setIsTransitioning(false), 50);
+        }, 150);
     };
 
     return (
@@ -50,17 +54,11 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
                 style={{ left: 0 }}
             >
                 <div className="w-full max-w-[400px] mx-auto">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={isSignup ? "signup" : "login"}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                        >
-                            {isSignup ? <SignupForm /> : <LoginForm />}
-                        </motion.div>
-                    </AnimatePresence>
+                    <div 
+                        className={`transition-opacity duration-200 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
+                    >
+                        {isSignup ? <SignupForm /> : <LoginForm />}
+                    </div>
                 </div>
             </div>
 
@@ -80,49 +78,35 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
                             backgroundSize: "30px 30px" 
                         }} 
                     />
-                    <motion.div 
-                        className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-white/20 blur-3xl opacity-40"
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ duration: 10, repeat: Infinity }}
-                    />
-                    <motion.div 
-                        className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-white/10 blur-3xl opacity-40"
-                        animate={{ scale: [1.2, 1, 1.2] }}
-                        transition={{ duration: 12, repeat: Infinity }}
-                    />
+                    {/* CSS-animated blobs */}
+                    <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-white/20 blur-3xl opacity-40 animate-pulse-slow" />
+                    <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-white/10 blur-3xl opacity-40 animate-pulse-slow-delayed" />
                 </div>
                 
                 {/* Overlay Text Content */}
                 <div className="absolute inset-0 flex items-center justify-center">
                     <div className="relative z-10 w-full max-w-lg min-w-[450px] mx-auto px-6 text-center text-white mb-40">
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={isSignup ? "signup-cta" : "login-cta"}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                transition={{ duration: 0.3 }}
-                                className="space-y-4 w-full"
+                        <div 
+                            className={`space-y-4 w-full transition-all duration-300 ${isTransitioning ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}
+                        >
+                            <h2 className="text-5xl font-bold drop-shadow-md break-keep mb-10">
+                                {isSignup ? "Welcome!" : "Join Our PicSel"}
+                            </h2>
+                            <p className="text-lg text-white/90 leading-normal break-keep">
+                            {isSignup 
+                            ? "PicSel과 함께 더 스마트한 소비 생활을 시작하세요. 지금 바로 가입하세요."
+                            : "이미 계정이 있으신가요? 로그인하고 PicSel의 스마트한 소비 분석을 경험하세요." }
+                        </p>
+                        <div className="pt-4">
+                            <Button 
+                                variant="outline" 
+                                onClick={handleSwitch}
+                                className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-blue-600 rounded-full px-10 py-6 text-lg font-semibold transition-all hover:scale-105"
                             >
-                                <h2 className="text-5xl font-bold drop-shadow-md break-keep mb-10">
-                                    {isSignup ? "Welcome!" : "Join Our PicSel"}
-                                </h2>
-                                <p className="text-lg text-white/90 leading-normal break-keep">
-                                {isSignup 
-                                ? "PicSel과 함께 더 스마트한 소비 생활을 시작하세요. 지금 바로 가입하세요."
-                                : "이미 계정이 있으신가요? 로그인하고 PicSel의 스마트한 소비 분석을 경험하세요." }
-                            </p>
-                            <div className="pt-4">
-                                <Button 
-                                    variant="outline" 
-                                    onClick={handleSwitch}
-                                    className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-blue-600 rounded-full px-10 py-6 text-lg font-semibold transition-all hover:scale-105"
-                                >
-                                    {isSignup ? "로그인하기" : "회원가입하기"}
-                                </Button>
-                            </div>
-                        </motion.div>
-                    </AnimatePresence>
+                                {isSignup ? "로그인하기" : "회원가입하기"}
+                            </Button>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -131,16 +115,11 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
             <div className="flex lg:hidden flex-col min-h-screen w-full">
                 <div className="flex items-start bg-background p-6 pt-20">
                     <div className="w-full max-w-[400px]">
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={isSignup ? "m-signup" : "m-login"}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                            >
-                                {isSignup ? <SignupForm /> : <LoginForm />}
-                            </motion.div>
-                        </AnimatePresence>
+                        <div 
+                            className={`transition-opacity duration-200 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
+                        >
+                            {isSignup ? <SignupForm /> : <LoginForm />}
+                        </div>
                     </div>
                 </div>
 

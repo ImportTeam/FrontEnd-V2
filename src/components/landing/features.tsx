@@ -1,24 +1,12 @@
-"use client";
-
-import { LazyMotion, m } from "framer-motion";
-
-const loadFeatures = () => import("framer-motion").then((mod) => mod.domAnimation);
-
-
 export function Features() {
     return (
-        <LazyMotion features={loadFeatures}>
         <section id="features" className="py-20 overflow-hidden">
             <div className="container space-y-24">
 
                 {/* Section 1: Image 0 - Text Left, Image Right */}
                 <div className="grid gap-8 lg:gap-12 lg:grid-cols-2 items-center">
-                    <m.div
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
-                        className="space-y-4"
+                    <div 
+                        className="space-y-4 animate-fade-in-left"
                     >
                         <div className="space-y-4">
                             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">주요 기능 소개</h2>
@@ -35,35 +23,25 @@ export function Features() {
                             PicSel이 카드 혜택부터 적립 혜택까지 자동 분석해,<br />
                             한눈에 가장 유리한 결제수단을 추천합니다.
                         </p>
-                    </m.div>
-                    <m.div
-                        initial={{ opacity: 0, x: 20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
-                        className="relative aspect-square lg:aspect-4/3 bg-zinc-200 dark:bg-zinc-800 rounded-3xl overflow-hidden shadow-2xl"
+                    </div>
+                    <div
+                        className="relative aspect-square lg:aspect-4/3 bg-zinc-200 dark:bg-zinc-800 rounded-3xl overflow-hidden shadow-2xl animate-fade-in-right"
                     >
                         <div className="absolute inset-0 bg-linear-to-br from-zinc-100 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900" />
-                    </m.div>
+                    </div>
                 </div>
 
                 {/* Section 2: Image 3 - Image Left, Text Right */}
                 <div className="grid gap-8 lg:gap-12 lg:grid-cols-2 items-center">
-                    <m.div
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
-                        className="order-2 lg:order-1 relative aspect-square lg:aspect-4/3 bg-zinc-200 dark:bg-zinc-800 rounded-3xl overflow-hidden shadow-2xl"
+                    <div
+                        className="order-2 lg:order-1 relative aspect-square lg:aspect-4/3 bg-zinc-200 dark:bg-zinc-800 rounded-3xl overflow-hidden shadow-2xl animate-fade-in-left"
+                        style={{ animationDelay: '100ms' }}
                     >
                         <div className="absolute inset-0 bg-linear-to-br from-zinc-100 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900" />
-                    </m.div>
-                    <m.div
-                        initial={{ opacity: 0, x: 20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
-                        className="order-1 lg:order-2 space-y-4"
+                    </div>
+                    <div
+                        className="order-1 lg:order-2 space-y-4 animate-fade-in-right"
+                        style={{ animationDelay: '100ms' }}
                     >
                         <div className="inline-block rounded-full bg-blue-100 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
                             AI 기반 소비 분석 리포트
@@ -76,17 +54,14 @@ export function Features() {
                             PicSel은 카드와 간편결제 데이터를 실시간으로 분석해<br />
                             놓친 혜택, 절약 가능한 금액을 한눈에 보여드립니다.
                         </p>
-                    </m.div>
+                    </div>
                 </div>
 
                 {/* Section 3: Image 1 - Text Left, Image Right */}
                 <div className="grid gap-16 lg:grid-cols-2 items-center">
-                    <m.div
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
-                        className="space-y-4"
+                    <div
+                        className="space-y-4 animate-fade-in-left"
+                        style={{ animationDelay: '200ms' }}
                     >
                         <div className="inline-block rounded-full bg-purple-100 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
                             전 혜택 자동 추적 및 알림 기능
@@ -99,20 +74,16 @@ export function Features() {
                             매월 제공되는 구독 혜택부터 은행 캐시백까지<br />
                             PicSel이 모든 카드·페이 혜택을 자동으로 추적합니다.
                         </p>
-                    </m.div>
-                    <m.div
-                        initial={{ opacity: 0, x: 20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
-                        className="relative aspect-square lg:aspect-4/3 bg-zinc-200 dark:bg-zinc-800 rounded-3xl overflow-hidden shadow-2xl"
+                    </div>
+                    <div
+                        className="relative aspect-square lg:aspect-4/3 bg-zinc-200 dark:bg-zinc-800 rounded-3xl overflow-hidden shadow-2xl animate-fade-in-right"
+                        style={{ animationDelay: '200ms' }}
                     >
                         <div className="absolute inset-0 bg-linear-to-br from-zinc-100 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900" />
-                    </m.div>
+                    </div>
                 </div>
 
             </div>
         </section>
-        </LazyMotion>
     );
 }

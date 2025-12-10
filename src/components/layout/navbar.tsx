@@ -31,10 +31,10 @@ export function Navbar() {
                         <Image 
                             src="/assets/icon/logo.png" 
                             alt="PicSel Logo" 
-                            width={100} 
-                            height={100}
+                            width={99} 
+                            height={99}
                             priority
-                            sizes="40px"
+                            sizes="100px"
                             className="rounded-sm"
                         />
                     </Link>

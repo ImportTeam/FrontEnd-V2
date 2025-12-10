@@ -1,5 +1,3 @@
-"use client";
-
 import { CreditCard, Wifi } from "lucide-react";
 import Image from "next/image";
 

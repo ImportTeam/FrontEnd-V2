@@ -14,7 +14,6 @@ const nextConfig: NextConfig = {
         optimizeCss: true,
         optimizePackageImports: [
             "lucide-react",
-            "framer-motion",
             "@radix-ui/react-avatar",
             "@radix-ui/react-dropdown-menu",
             "@radix-ui/react-label",

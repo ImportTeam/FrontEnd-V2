@@ -1,9 +1,4 @@
-"use client";
-
-import { LazyMotion, m } from "framer-motion";
 import Image from "next/image";
-
-const loadFeatures = () => import("framer-motion").then((mod) => mod.domAnimation);
 
 const steps = [
     {
@@ -31,7 +26,6 @@ const steps = [
 
 export function HowToUse() {
     return (
-        <LazyMotion features={loadFeatures}>
         <section id="usage" className="py-20 bg-zinc-50 dark:bg-zinc-900/50">
             <div className="container">
                 <div className="text-center mb-16">
@@ -40,13 +34,10 @@ export function HowToUse() {
 
                 <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
                     {steps.map((step, index) => (
-                        <m.div
+                        <div
                             key={step.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="flex flex-col items-center text-center group"
+                            className="flex flex-col items-center text-center group animate-fade-in-up"
+                            style={{ animationDelay: `${index * 100}ms` }}
                         >
                             {/* Image Box */}
                             <div className="w-full aspect-square bg-zinc-200 dark:bg-zinc-800 rounded-2xl mb-8 shadow-sm group-hover:shadow-md transition-all duration-300 overflow-hidden relative">
@@ -67,11 +58,10 @@ export function HowToUse() {
                             <p className="text-base text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-line hidden sm:block">
                                 {step.description}
                             </p>
-                        </m.div>
+                        </div>
                     ))}
                 </div>
             </div>
         </section>
-        </LazyMotion>
     );
 }

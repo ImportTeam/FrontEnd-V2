@@ -1,5 +1,3 @@
-"use client";
-
 import { ShoppingBag } from "lucide-react";
 
 import { DashboardCard } from "@/components/dashboard/dashboard-card";

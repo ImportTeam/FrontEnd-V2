@@ -1,6 +1,5 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -21,9 +20,8 @@ export function AuthLayout({ children }: AuthLayoutProps) {
     return (
         <div className="flex min-h-screen w-full bg-background lg:flex-row flex-col">
             {/* Image Panel - Hidden on mobile, 50% on desktop */}
-            <motion.div
+            <div
                 className={`hidden lg:flex lg:w-1/2 min-h-screen relative items-center justify-center overflow-hidden ${isSignup ? "lg:order-2" : "lg:order-1"} bg-zinc-900`}
-                initial={false}
             >
                 {/* Background Gradient */}
                 <div className="absolute inset-0 bg-linear-to-br from-blue-600 to-purple-900">
@@ -35,62 +33,43 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                           }} 
                      /> 
                      
-                     {/* Animated Shapes */}
-                     <motion.div 
-                        className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-pink-500 blur-3xl opacity-40"
-                        animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
-                        transition={{ duration: 10, repeat: Infinity }}
-                     />
-                     <motion.div 
-                        className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-blue-400 blur-3xl opacity-40"
-                        animate={{ scale: [1.2, 1, 1.2], rotate: [0, -90, 0] }}
-                        transition={{ duration: 12, repeat: Infinity }}
-                     />
+                     {/* CSS Animated Shapes */}
+                     <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-pink-500 blur-3xl opacity-40 animate-pulse-slow" />
+                     <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-blue-400 blur-3xl opacity-40 animate-pulse-slow-delayed" />
                 </div>
                 
                 {/* Overlay Content - Fixed width, centered */}
                 <div className="relative z-10 w-full max-w-lg mx-auto px-6 text-center text-white mb-24">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={isSignup ? "signup-text" : "login-text"}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                            className="space-y-4 w-full"
-                        >
-                            <h2 className="text-3xl font-bold drop-shadow-md break-keep">
-                                {isSignup ? "Welcome Back!" : "Join Our Community"}
-                            </h2>
-                            <p className="text-base text-white/90 leading-normal break-keep">
-                                {isSignup 
-                                    ? "이미 계정이 있으신가요? 로그인하고 PicSel의 스마트한 소비 분석을 경험하세요." 
-                                    : "PicSel과 함께 더 스마트한 소비 생활을 시작하세요. 지금 바로 가입하세요."}
-                             </p>
-                             <div className="pt-4">
-                                <Button 
-                                    variant="outline" 
-                                    onClick={handleSwitch}
-                                    className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-blue-600 rounded-full px-10 py-6 text-lg font-semibold transition-all hover:scale-105"
-                                >
-                                    {isSignup ? "로그인하기" : "회원가입하기"}
-                                </Button>
-                             </div>
-                         </motion.div>
-                    </AnimatePresence>
+                    <div className="space-y-4 w-full animate-fade-in-up">
+                        <h2 className="text-3xl font-bold drop-shadow-md break-keep">
+                            {isSignup ? "Welcome Back!" : "Join Our Community"}
+                        </h2>
+                        <p className="text-base text-white/90 leading-normal break-keep">
+                            {isSignup 
+                                ? "이미 계정이 있으신가요? 로그인하고 PicSel의 스마트한 소비 분석을 경험하세요." 
+                                : "PicSel과 함께 더 스마트한 소비 생활을 시작하세요. 지금 바로 가입하세요."}
+                         </p>
+                         <div className="pt-4">
+                            <Button 
+                                variant="outline" 
+                                onClick={handleSwitch}
+                                className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-blue-600 rounded-full px-10 py-6 text-lg font-semibold transition-all hover:scale-105"
+                            >
+                                {isSignup ? "로그인하기" : "회원가입하기"}
+                            </Button>
+                         </div>
+                     </div>
                 </div>
-            </motion.div>
+            </div>
 
             {/* Form Panel - 50% Width */}
-            <motion.div
+            <div
                 className={`w-full lg:w-1/2 flex items-center justify-center bg-background p-8 lg:p-16 ${isSignup ? "lg:order-1" : "lg:order-2"}`}
-                initial={false}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
                 <div className="w-full max-w-[400px] mx-auto space-y-6">
                     {children}
                 </div>
-            </motion.div>
+            </div>
         </div>
     );
 }
