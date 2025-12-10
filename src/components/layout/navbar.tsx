@@ -25,14 +25,14 @@ export function Navbar() {
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md supports-backdrop-filter:bg-background/60">
-            <div className="container flex h-16 items-center justify-between">
+            <div className="container flex h-28 items-center justify-between">
                 <div className="flex items-center gap-8">
                     <Link href="/" className="flex items-center gap-2">
                         <Image 
                             src="/assets/icon/logo.png" 
                             alt="PicSel Logo" 
-                            width={99} 
-                            height={99}
+                            width={100} 
+                            height={100}
                             priority
                             sizes="100px"
                             className="rounded-sm"

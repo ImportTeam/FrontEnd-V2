@@ -10,7 +10,7 @@ export function Features() {
                     >
                         <div className="space-y-4">
                             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">주요 기능 소개</h2>
-                            <div className="inline-block rounded-full bg-orange-100 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
+                            <div className="inline-block rounded-full bg-orange-100 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
                                 무료 브라우저 확장 프로그램
                             </div>
                         </div>
@@ -43,7 +43,7 @@ export function Features() {
                         className="order-1 lg:order-2 space-y-4 animate-fade-in-right"
                         style={{ animationDelay: '100ms' }}
                     >
-                        <div className="inline-block rounded-full bg-blue-100 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                        <div className="inline-block rounded-full bg-blue-100 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
                             AI 기반 소비 분석 리포트
                         </div>
                         <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold leading-tight">
