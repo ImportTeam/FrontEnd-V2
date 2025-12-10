@@ -12,13 +12,13 @@ export function Features() {
             <div className="container space-y-24">
 
                 {/* Section 1: Image 0 - Text Left, Image Right */}
-                <div className="grid gap-16 lg:grid-cols-2 items-center">
+                <div className="grid gap-8 lg:gap-12 lg:grid-cols-2 items-center">
                     <m.div
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
-                        className="space-y-8"
+                        className="space-y-4"
                     >
                         <div className="space-y-4">
                             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">주요 기능 소개</h2>
@@ -48,7 +48,7 @@ export function Features() {
                 </div>
 
                 {/* Section 2: Image 3 - Image Left, Text Right */}
-                <div className="grid gap-16 lg:grid-cols-2 items-center">
+                <div className="grid gap-8 lg:gap-12 lg:grid-cols-2 items-center">
                     <m.div
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
@@ -63,13 +63,13 @@ export function Features() {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
-                        className="order-1 lg:order-2 space-y-8"
+                        className="order-1 lg:order-2 space-y-4"
                     >
                         <div className="inline-block rounded-full bg-blue-100 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
                             AI 기반 소비 분석 리포트
                         </div>
                         <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold leading-tight">
-                            <span className="sm:hidden">PicSel이 결제 데이터를 자동 분석합니다.</span>
+                            <span className="sm:hidden">PicSel이 결제 데이터를 분석합니다.</span>
                             <span className="hidden sm:inline">매일 가격 확인도, 계산도 이제 그만.<br />PicSel이 당신의 결제 데이터를<br />자동으로 분석합니다.</span>
                         </h3>
                         <p className="text-base sm:text-lg text-zinc-700 dark:text-zinc-300 leading-relaxed hidden sm:block">
@@ -86,7 +86,7 @@ export function Features() {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
-                        className="space-y-8"
+                        className="space-y-4"
                     >
                         <div className="inline-block rounded-full bg-purple-100 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
                             전 혜택 자동 추적 및 알림 기능

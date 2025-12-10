@@ -129,16 +129,7 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
 
             {/* === MOBILE LAYOUT === */}
             <div className="flex lg:hidden flex-col min-h-screen w-full">
-                <div className="bg-[#6366f1] dark:bg-[#2d3136] p-8 text-center text-white">
-                    <h2 className="text-2xl font-bold mb-2">
-                        {isSignup ? "회원가입" : "로그인"}
-                    </h2>
-                    <p className="text-sm text-white/80">
-                        {isSignup ? "새로운 계정을 만들어보세요" : "계정에 로그인하세요"}
-                    </p>
-                </div>
-
-                <div className="flex-1 flex items-center justify-center bg-background p-6">
+                <div className="flex items-start bg-background p-6 pt-20">
                     <div className="w-full max-w-[400px]">
                         <AnimatePresence mode="wait">
                             <motion.div

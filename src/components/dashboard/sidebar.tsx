@@ -12,12 +12,13 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import type { LucideIcon } from "lucide-react";
+import type { Route } from "next";
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/store/use-ui-store";
 
-import type { LucideIcon } from "lucide-react";
-import type { Route } from "next";
 
 interface SidebarItem {
     title: string;
@@ -71,12 +72,12 @@ export function Sidebar() {
             
             {/* Sidebar */}
             <aside className={cn(
-                "fixed md:static inset-y-0 left-0 z-50 w-64 flex-col bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 h-full transition-transform duration-300 md:translate-x-0",
+                "fixed md:sticky md:top-0 inset-y-0 left-0 z-50 w-64 flex-col bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 h-screen transition-transform duration-300 md:translate-x-0 shrink-0",
                 isSidebarOpen ? "translate-x-0" : "-translate-x-full",
                 "md:flex"
             )}>
             {/* Mobile Close Button */}
-            <div className="flex h-16 items-center justify-between px-8 md:justify-start">
+            <div className="flex h-16 items-center justify-between px-8 md:justify-start shrink-0">
                 <Link href="/" className="flex items-center gap-2 font-bold text-2xl text-foreground">
                     PicSel
                 </Link>
@@ -90,7 +91,7 @@ export function Sidebar() {
                     <X className="h-5 w-5" />
                 </Button>
             </div>
-            <div className="flex flex-1 flex-col gap-2 p-6">
+            <div className="flex flex-1 flex-col p-6 overflow-y-auto">
                 <nav className="grid gap-2">
                     {sidebarItems.map((item) => {
                         const isActive = pathname === item.href;
@@ -114,7 +115,8 @@ export function Sidebar() {
                     })}
                 </nav>
             </div>
-            <div className="p-6">
+            {/* Logout - pushed to bottom */}
+            <div className="p-6 mt-auto shrink-0 border-t border-zinc-100 dark:border-zinc-800 md:border-t-0">
                 <Link
                     href="/"
                     className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"

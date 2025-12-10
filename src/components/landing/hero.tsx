@@ -12,7 +12,7 @@ const loadFeatures = () => import("framer-motion").then((mod) => mod.domAnimatio
 export function Hero() {
     return (
         <LazyMotion features={loadFeatures}>
-        <section className="relative min-h-screen w-full overflow-hidden bg-background flex items-start pt-24 lg:pt-12">
+        <section className="relative min-h-screen w-full overflow-hidden bg-background flex items-start pt-16 sm:pt-24 lg:pt-12">
             {/* Background Gradients - Cross-fade implementation */}
             <div className="absolute inset-0 w-full h-full pointer-events-none">
                 {/* Dark Mode Gradient (Visible in dark mode) */}
@@ -42,7 +42,7 @@ export function Hero() {
                             </h1>
                             <p className="max-w-[600px] text-base sm:text-lg text-zinc-700 dark:text-zinc-300 leading-relaxed">
                                 <span className="hidden sm:inline">복잡한 카드 혜택, 더 이상 고민하지 마세요.<br /></span>
-                                PicSel이 소비 패턴을 분석하여<br className="hidden sm:inline" />
+                                PicSel이 소비 패턴을 분석하여<br />
                                 최적의 결제 수단을 추천해드립니다.
                             </p>
                         </m.div>
@@ -68,16 +68,19 @@ export function Hero() {
                                     <div key={i} className="h-8 w-8 rounded-full border-2 border-background bg-muted 2xl:h-10 2xl:w-10" />
                                 ))}
                             </div>
-                            <p className="text-xs sm:text-sm">이미 2,000+ 명이 스마트한 소비를 시작했습니다</p>
+                            <p className="text-xs sm:text-sm">
+                                <span className="sm:hidden">2,000+ 명 스마트 소비 시작</span>
+                                <span className="hidden sm:inline">이미 2,000+ 명이 스마트한 소비를 시작했습니다</span>
+                            </p>
                         </div>
                     </div>
 
-                    {/* Right Visual - 4 columns - Real Cards */}
+                    {/* Right Visual - 4 columns - Real Cards - Hidden on mobile */}
                     <m.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.7 }}
-                        className="lg:col-span-4 relative h-[400px] sm:h-[500px] lg:h-[550px] xl:h-[600px] flex items-center justify-center"
+                        className="hidden sm:flex lg:col-span-4 relative h-[400px] sm:h-[500px] lg:h-[550px] xl:h-[600px] items-center justify-center"
                     >
                         <div className="relative w-full max-w-[450px] sm:max-w-[500px] lg:max-w-[480px] 2xl:max-w-[600px] aspect-square">
                             {/* Abstract Background Blobs */}

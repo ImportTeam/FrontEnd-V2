@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import type { LoginSchema } from "@/lib/schemas/auth";
+
 import { AuthFormField } from "@/components/auth/auth-form-field";
 import { SocialLoginButtons } from "@/components/auth/social-login-buttons";
 import { Button } from "@/components/ui/button";
@@ -11,7 +13,6 @@ import { useAuthForm } from "@/hooks/use-auth-form";
 import { loginSchema } from "@/lib/schemas/auth";
 import { useAuthStore } from "@/store/use-auth-store";
 
-import type { LoginSchema } from "@/lib/schemas/auth";
 
 export function LoginForm() {
     const router = useRouter();
