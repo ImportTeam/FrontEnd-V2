@@ -22,11 +22,11 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950">
+    <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950">
       <Sidebar />
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-screen">
         <DashboardHeader />
-        <main className="flex-1 overflow-y-auto w-full" style={{ padding: 'var(--spacing-lg) var(--spacing-md)' }}>
+        <main className="flex-1 w-full p-4 md:p-6 lg:p-8">
             {children}
         </main>
       </div>

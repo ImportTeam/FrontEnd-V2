@@ -1,6 +1,7 @@
 "use client";
 
 import { LazyMotion, m } from "framer-motion";
+import Image from "next/image";
 
 const loadFeatures = () => import("framer-motion").then((mod) => mod.domAnimation);
 
@@ -9,6 +10,7 @@ const steps = [
         id: "01",
         title: "설치하기",
         description: "크롬 익스텐션에서 PicSel을 추가하세요.\n주요 쇼핑몰에서 자동으로 작동합니다.",
+        image: "/assets/how/install.png",
     },
     {
         id: "02",
@@ -46,10 +48,19 @@ export function HowToUse() {
                             transition={{ duration: 0.5, delay: index * 0.1 }}
                             className="flex flex-col items-center text-center group"
                         >
-                            {/* Image Placeholder - Matching the grey box in reference */}
+                            {/* Image Box */}
                             <div className="w-full aspect-square bg-zinc-200 dark:bg-zinc-800 rounded-2xl mb-8 shadow-sm group-hover:shadow-md transition-all duration-300 overflow-hidden relative">
-                                <div className="absolute inset-0 bg-linear-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900" />
-                                {/* Optional: Add an icon or illustration here later */}
+                                {step.image ? (
+                                    <Image
+                                        src={step.image}
+                                        alt={step.title}
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                        className="object-cover"
+                                    />
+                                ) : (
+                                    <div className="absolute inset-0 bg-linear-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900" />
+                                )}
                             </div>
 
                             <h3 className="text-xl font-bold mb-4">{step.title}</h3>

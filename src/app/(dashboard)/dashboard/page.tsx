@@ -11,27 +11,30 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
                 안녕하세요, 김픽셀님!
             </h1>
-            <span className="text-3xl">👋</span>
+            <span className="text-2xl sm:text-3xl">👋</span>
           </div>
-          <p className="text-base text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
+          <p className="text-sm sm:text-base text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-yellow-500" />
-            오늘도 스마트한 소비 생활을 응원합니다.
+            <span className="hidden sm:inline">오늘도 스마트한 소비 생활을 응원합니다.</span>
+            <span className="sm:hidden">스마트한 소비 생활 응원합니다!</span>
           </p>
         </div>
-        <div className="flex gap-3">
-          <Button variant="outline" className="bg-white hover:bg-zinc-50 text-zinc-700 border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800">
-            <Download className="mr-2 h-4 w-4" />
-            리포트 다운로드
+        <div className="flex gap-2 sm:gap-3">
+          <Button variant="outline" size="sm" className="text-xs sm:text-sm bg-white hover:bg-zinc-50 text-zinc-700 border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800">
+            <Download className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">리포트 다운로드</span>
+            <span className="sm:hidden">리포트</span>
           </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20">
-            <Plus className="mr-2 h-4 w-4" />
-            새 결제수단 추가
+          <Button size="sm" className="text-xs sm:text-sm bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20">
+            <Plus className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">새 결제수단 추가</span>
+            <span className="sm:hidden">추가</span>
           </Button>
         </div>
       </div>

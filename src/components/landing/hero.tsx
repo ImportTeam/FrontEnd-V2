@@ -36,14 +36,14 @@ export function Hero() {
                                 <Sparkles className="mr-2 h-4 w-4" />
                                 AI 기반 스마트 소비 분석
                             </div>
-                            <h1 className="text-5xl font-bold tracking-tighter leading-tight bg-clip-text text-transparent bg-linear-to-r from-foreground to-muted-foreground mb-6">
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tighter leading-tight bg-clip-text text-transparent bg-linear-to-r from-foreground to-muted-foreground mb-4 sm:mb-6">
                                 결제 순간,<br />
                                 가장 유리한 선택
                             </h1>
-                            <p className="max-w-[600px] text-lg text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                                복잡한 카드 혜택, 더 이상 고민하지 마세요.<br />
-                                PicSel이 당신의 소비 패턴을 분석하여<br />
-                                최적의 결제 수단을 실시간으로 추천해드립니다.
+                            <p className="max-w-[600px] text-base sm:text-lg text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                                <span className="hidden sm:inline">복잡한 카드 혜택, 더 이상 고민하지 마세요.<br /></span>
+                                PicSel이 소비 패턴을 분석하여<br className="hidden sm:inline" />
+                                최적의 결제 수단을 추천해드립니다.
                             </p>
                         </m.div>
 
@@ -54,8 +54,9 @@ export function Hero() {
                             className="flex flex-col gap-4 sm:flex-row"
                         >
                             <Link href="/login">
-                                <Button size="lg" className="h-12 px-6 lg:h-14 lg:px-8 text-base lg:text-lg rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20 group 2xl:h-16 2xl:px-10 2xl:text-xl">
-                                    내 결제수단에 맞는 혜택 보러가기
+                                <Button size="lg" className="h-11 px-5 sm:h-12 sm:px-6 lg:h-14 lg:px-8 text-sm sm:text-base lg:text-lg rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20 group 2xl:h-16 2xl:px-10 2xl:text-xl">
+                                    <span className="sm:hidden">혜택 보러가기</span>
+                                    <span className="hidden sm:inline">내 결제수단에 맞는 혜택 보러가기</span>
                                     <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1 2xl:h-6 2xl:w-6" />
                                 </Button>
                             </Link>
@@ -67,7 +68,7 @@ export function Hero() {
                                     <div key={i} className="h-8 w-8 rounded-full border-2 border-background bg-muted 2xl:h-10 2xl:w-10" />
                                 ))}
                             </div>
-                            <p>이미 2,000+ 명이 스마트한 소비를 시작했습니다</p>
+                            <p className="text-xs sm:text-sm">이미 2,000+ 명이 스마트한 소비를 시작했습니다</p>
                         </div>
                     </div>
 
