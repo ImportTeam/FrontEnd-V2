@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export function Hero() {
     return (
-        <section className="relative min-h-screen w-full overflow-hidden bg-background flex items-start pt-16 sm:pt-24 lg:pt-12">
+        <section className="relative min-h-screen w-full overflow-hidden bg-background flex items-start pt-32 sm:pt-40 lg:pt-36">
             {/* Background Gradients - Cross-fade implementation */}
             <div className="absolute inset-0 w-full h-full pointer-events-none">
                 {/* Dark Mode Gradient (Visible in dark mode) */}
