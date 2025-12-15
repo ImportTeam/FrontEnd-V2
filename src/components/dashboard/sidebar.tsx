@@ -12,12 +12,13 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import type { LucideIcon } from "lucide-react";
-import type { Route } from "next";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/store/use-ui-store";
+
+import type { LucideIcon } from "lucide-react";
+import type { Route } from "next";
 
 
 interface SidebarItem {

@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus, MoreHorizontal } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 import { CreditCardVisual } from "@/components/dashboard/credit-card-visual";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -11,72 +12,68 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { api } from "@/lib/api/client";
 
-const MOCK_CARDS = [
-  {
-    id: 1,
-    bankName: "Shinhan Card",
-    cardName: "Deep Dream",
-    cardNumber: "1234",
-    imageSrc: "/assets/card/shinhanCard.svg",
-    balance: "350,000",
-    limit: "500,000",
-    textColor: "text-white",
-  },
-  {
-    id: 2,
-    bankName: "Naver Financial",
-    cardName: "Naver Pay Point",
-    cardNumber: "5678",
-    colorFrom: "#22c55e", 
-    colorTo: "#15803d",
-    balance: "12,500 P",
-    limit: "Auto-Charge",
-  },
-  {
-    id: 3,
-    bankName: "Hyundai Card",
-    cardName: "ZERO Edition2",
-    cardNumber: "9012",
-    imageSrc: "/assets/card/hyundaiCard.svg",
-    balance: "890,000",
-    limit: "2,000,000",
-    textColor: "text-white",
-  },
-  {
-    id: 4,
-    bankName: "Samsung Card",
-    cardName: "taptap O",
-    cardNumber: "3456",
-    imageSrc: "/assets/card/samsungCard.svg",
-    balance: "150,000",
-    limit: "1,500,000",
-    textColor: "text-white",
-  },
-  {
-    id: 5,
-    bankName: "KB Kookmin",
-    cardName: "KB Card",
-    cardNumber: "7890",
-    imageSrc: "/assets/card/kbCard.svg",
-    balance: "45,000",
-    limit: "Check Card",
-    textColor: "text-zinc-900",
-  },
-  {
-    id: 6,
-    bankName: "Woori Card",
-    cardName: "Woori Card",
-    cardNumber: "1122",
-    imageSrc: "/assets/card/wooriCard.svg",
-    balance: "210,000",
-    limit: "1,000,000",
-    textColor: "text-white",
-  },
-];
+import type { CardData } from "@/lib/api/types";
+
+function formatPercent(value: number) {
+  const clamped = Math.max(0, Math.min(100, value));
+  return `${clamped.toFixed(0)}%`;
+}
 
 // eslint-disable-next-line no-restricted-syntax
 export default function CardsPage() {
+  const [cards, setCards] = useState<CardData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const sortedCards = useMemo(() => {
+    return [...cards].sort((a, b) => Number(Boolean(b.isPrimary)) - Number(Boolean(a.isPrimary)));
+  }, [cards]);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        setLoading(true);
+        setError(null);
+        const list = await api.paymentMethods.list();
+        setCards(list);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "결제수단을 불러오지 못했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  const handleStartRegistration = async () => {
+    try {
+      const { redirectUrl } = await api.paymentMethods.startCardRegistration();
+      window.location.href = redirectUrl;
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "카드 등록을 시작할 수 없습니다.");
+    }
+  };
+
+  const handleDelete = async (id: CardData["id"]) => {
+    try {
+      await api.paymentMethods.delete(id);
+      setCards((prev) => prev.filter((c) => c.id !== id));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "삭제에 실패했습니다.");
+    }
+  };
+
+  const handleSetPrimary = async (id: CardData["id"]) => {
+    try {
+      await api.paymentMethods.setPrimary(id);
+      setCards((prev) => prev.map((c) => ({ ...c, isPrimary: c.id === id })));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "주 결제수단 설정에 실패했습니다.");
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -85,15 +82,36 @@ export default function CardsPage() {
           title="결제수단 관리" 
           description="등록된 카드와 계좌를 한눈에 관리하세요." 
         />
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20">
+        <Button
+          className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20"
+          onClick={handleStartRegistration}
+        >
           <Plus className="mr-2 h-4 w-4" />
           새 카드 추가
         </Button>
       </div>
 
+      {error ? (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-300" role="alert">
+          {error}
+        </div>
+      ) : null}
+
       {/* Cards Grid */}
       <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-        {MOCK_CARDS.map((card) => (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="rounded-2xl border border-border bg-card p-6 animate-pulse">
+              <div className="aspect-[1.586] w-full rounded-2xl bg-muted" />
+              <div className="mt-6 space-y-3">
+                <div className="h-4 w-32 rounded bg-muted" />
+                <div className="h-3 w-48 rounded bg-muted/70" />
+                <div className="h-2 w-full rounded bg-muted/60" />
+              </div>
+            </div>
+          ))
+        ) : (
+        sortedCards.map((card) => (
           <div key={card.id} className="group relative flex flex-col gap-4">
             {/* Card Visual */}
             <div className="relative">
@@ -101,8 +119,6 @@ export default function CardsPage() {
                     bankName={card.bankName}
                     cardName={card.cardName}
                     cardNumber={card.cardNumber}
-                    colorFrom={card.colorFrom}
-                    colorTo={card.colorTo}
                     imageSrc={card.imageSrc}
                     className={card.textColor}
                 />
@@ -115,9 +131,11 @@ export default function CardsPage() {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem>수정</DropdownMenuItem>
-                            <DropdownMenuItem>삭제</DropdownMenuItem>
-                            <DropdownMenuItem>주카드 설정</DropdownMenuItem>
+                            <DropdownMenuItem disabled>수정</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDelete(card.id)}>삭제</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleSetPrimary(card.id)}>
+                              {card.isPrimary ? "주카드" : "주카드 설정"}
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
@@ -127,21 +145,21 @@ export default function CardsPage() {
             <div className="space-y-3 mt-4">
                 <div className="flex justify-between items-center">
                     <span className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400">이번 달 사용금액</span>
-                    <span className="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100">{card.balance}원</span>
+                <span className="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100">{card.balance || "-"}</span>
                 </div>
                 <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                     <div 
                         className="h-full bg-zinc-900 dark:bg-zinc-100 rounded-full" 
-                        style={{ width: '45%' }}
+                  style={{ width: formatPercent(card.usagePercent ?? 0) }}
                     />
                 </div>
                 <div className="flex justify-between items-center text-xs text-zinc-400 dark:text-zinc-500">
-                    <span>한도 {card.limit}</span>
-                    <span>45% 사용</span>
+                <span>한도 {card.limit || "-"}</span>
+                <span>{formatPercent(card.usagePercent ?? 0)} 사용</span>
                 </div>
             </div>
           </div>
-        ))}
+          )))}
       </div>
     </div>
   );

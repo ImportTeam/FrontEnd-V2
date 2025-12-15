@@ -11,7 +11,7 @@ export function proxy(request: NextRequest) {
     style-src 'self' 'unsafe-inline';
     img-src 'self' data: https: blob:;
     font-src 'self' data:;
-    connect-src 'self' https://vitals.vercel-insights.com https://va.vercel-scripts.com;
+    connect-src 'self' https://api.picsel.kr https://vitals.vercel-insights.com https://va.vercel-scripts.com;
     frame-src 'self';
     frame-ancestors 'self';
     base-uri 'self';

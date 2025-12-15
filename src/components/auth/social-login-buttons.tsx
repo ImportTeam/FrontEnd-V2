@@ -6,11 +6,14 @@ interface SocialLoginButtonsProps {
 }
 
 export function SocialLoginButtons({ mode }: SocialLoginButtonsProps) {
-  const actionText = mode === "login" ? "로그인" : "가입";
+  // const actionText = mode === "login" ? "로그인" : "가입";
+
+  const apiBaseUrl = (process.env.NEXT_PUBLIC_API_URL || "https://api.picsel.kr/api").replace(/\/$/, "");
 
   const handleSocialLogin = (provider: "google" | "kakao" | "naver") => {
-    // Social login implementation placeholder
-    alert(`${provider} ${actionText} 기능은 곧 제공될 예정입니다.`);
+    // Swagger: GET /api/auth/{provider}/login
+    // NOTE: Some backends also expose aliases like /api/auth/google.
+    window.location.href = `${apiBaseUrl}/auth/${provider}/login`;
   };
 
   return (

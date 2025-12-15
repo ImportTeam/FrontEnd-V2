@@ -1,9 +1,34 @@
-import { ShoppingBag } from "lucide-react";
+"use client";
+
+import { ShoppingBag, AlertCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+
 
 import { DashboardCard } from "@/components/dashboard/dashboard-card";
 import { CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { api } from "@/lib/api/client";
+
+import type { TransactionData } from "@/lib/api/types";
 
 export function RecentTransactions() {
+  const [transactions, setTransactions] = useState<TransactionData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const txList = await api.transactions.list();
+        // Take only recent 3 for the dashboard widget
+        setTransactions(txList.slice(0, 3));
+      } catch (error) {
+        console.error("Failed to load transactions:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
   return (
     <DashboardCard>
       <CardHeader>
@@ -12,65 +37,49 @@ export function RecentTransactions() {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-            {/* Transaction Item 1 */}
-            <div className="flex items-center justify-between group">
-                <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center group-hover:bg-muted/80 transition-colors">
-                        <ShoppingBag className="h-5 w-5 text-muted-foreground" />
+            {loading ? (
+                 // Loading Skeletons
+                 [1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center justify-between group">
+                        <div className="flex items-center gap-4 w-full">
+                            <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
+                            <div className="space-y-1 w-full max-w-[150px]">
+                                <div className="h-4 w-3/4 bg-muted animate-pulse rounded" />
+                                <div className="h-3 w-1/2 bg-muted animate-pulse rounded" />
+                            </div>
+                        </div>
                     </div>
-                    <div className="space-y-1">
-                        <p className="text-sm font-medium leading-none text-foreground">쿠팡</p>
-                        <p className="text-xs text-muted-foreground">2025.11.19</p>
+                 ))
+            ) : (
+                transactions.length > 0 ? (
+                    transactions.map((tx, index) => (
+                        <div key={tx.id || index}>
+                            <div className="flex items-center justify-between group">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center group-hover:bg-muted/80 transition-colors">
+                                        <ShoppingBag className="h-5 w-5 text-muted-foreground" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-medium leading-none text-foreground">{tx.merchant}</p>
+                                        <p className="text-xs text-muted-foreground">{tx.date}</p>
+                                    </div>
+                                </div>
+                                <div className="text-right space-y-1">
+                                    <p className="text-sm font-bold text-foreground">{tx.amount}</p>
+                                    <p className="text-xs text-muted-foreground">{tx.cardName}</p>
+                                    <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">{tx.benefit}</p>
+                                </div>
+                            </div>
+                            {index < transactions.length - 1 && <div className="h-px w-full bg-border my-6" />}
+                        </div>
+                    ))
+                ) : (
+                    <div className="flex flex-col items-center justify-center py-6 text-center text-muted-foreground">
+                        <AlertCircle className="h-8 w-8 mb-2 opacity-50" />
+                        <p className="text-sm">최근 결제 내역이 없습니다.</p>
                     </div>
-                </div>
-                <div className="text-right space-y-1">
-                    <p className="text-sm font-bold text-foreground">45,000원</p>
-                    <p className="text-xs text-muted-foreground">신한 Deep Dream</p>
-                    <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">1,500원 적립</p>
-                </div>
-            </div>
-            
-            {/* Divider */}
-            <div className="h-px w-full bg-border" />
-
-             {/* Transaction Item 2 */}
-             <div className="flex items-center justify-between group">
-                <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center group-hover:bg-muted/80 transition-colors">
-                        <ShoppingBag className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <div className="space-y-1">
-                        <p className="text-sm font-medium leading-none text-foreground">배달의민족</p>
-                        <p className="text-xs text-muted-foreground">2025.11.18</p>
-                    </div>
-                </div>
-                <div className="text-right space-y-1">
-                    <p className="text-sm font-bold text-foreground">28,000원</p>
-                    <p className="text-xs text-muted-foreground">현대카드 ZERO</p>
-                    <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">200원 할인</p>
-                </div>
-            </div>
-
-            {/* Divider */}
-            <div className="h-px w-full bg-border" />
-
-             {/* Transaction Item 3 */}
-             <div className="flex items-center justify-between group">
-                <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center group-hover:bg-muted/80 transition-colors">
-                        <ShoppingBag className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <div className="space-y-1">
-                        <p className="text-sm font-medium leading-none text-foreground">스타벅스</p>
-                        <p className="text-xs text-muted-foreground">2025.11.17</p>
-                    </div>
-                </div>
-                <div className="text-right space-y-1">
-                    <p className="text-sm font-bold text-foreground">9,800원</p>
-                    <p className="text-xs text-muted-foreground">삼성카드 taptap O</p>
-                    <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">50% 할인</p>
-                </div>
-            </div>
+                )
+            )}
         </div>
       </CardContent>
     </DashboardCard>

@@ -3,14 +3,16 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import type { SignupSchema } from "@/lib/schemas/auth";
 
 import { AuthFormField } from "@/components/auth/auth-form-field";
 import { SocialLoginButtons } from "@/components/auth/social-login-buttons";
 import { Button } from "@/components/ui/button";
 import { useAuthForm } from "@/hooks/use-auth-form";
+import { api } from "@/lib/api/client";
 import { signupSchema } from "@/lib/schemas/auth";
 import { useAuthStore } from "@/store/use-auth-store";
+
+import type { SignupSchema } from "@/lib/schemas/auth";
 
 
 export function SignupForm() {
@@ -37,13 +39,12 @@ export function SignupForm() {
             setIsLoading(true);
             setError(null);
             
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 800));
+            // Real API call
+            const response = await api.auth.signup(data.name, data.email, data.password);
             
             login({
-                id: "2",
-                name: data.name,
-                email: data.email,
+                ...response.user,
+                id: response.user.uuid
             });
             
             router.push("/dashboard");

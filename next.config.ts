@@ -1,5 +1,15 @@
 import type { NextConfig } from "next";
 
+const apiOrigin = (() => {
+    try {
+        const raw = process.env.NEXT_PUBLIC_API_URL;
+        if (!raw) return "https://api.picsel.kr";
+        return new URL(raw).origin;
+    } catch {
+        return "https://api.picsel.kr";
+    }
+})();
+
 const nextConfig: NextConfig = {
     reactStrictMode: true,
     poweredByHeader: false,
@@ -80,7 +90,7 @@ const nextConfig: NextConfig = {
                     },
                     {
                         key: 'Content-Security-Policy',
-                        value: "default-src 'self'; img-src 'self' data: https: blob:; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' https://vitals.vercel-insights.com https://va.vercel-scripts.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self';"
+                        value: `default-src 'self'; img-src 'self' data: https: blob:; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' ${apiOrigin} https://vitals.vercel-insights.com https://va.vercel-scripts.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self';`
                     }
                 ]
             }

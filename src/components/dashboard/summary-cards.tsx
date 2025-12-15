@@ -1,8 +1,44 @@
+"use client";
+
 import { ArrowRight, CreditCard, ShoppingBag, Wallet } from "lucide-react";
+import { useEffect, useState } from "react";
+
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { api } from "@/lib/api/client";
+
+import type { SummaryData } from "@/lib/api/types";
 
 export function SummaryCards() {
+  const [data, setData] = useState<SummaryData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const summary = await api.dashboard.getSummary();
+        setData(summary);
+      } catch (error) {
+        console.error("Failed to load dashboard summary:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Card key={i} className="h-40 animate-pulse bg-muted/50 border-zinc-200 dark:border-zinc-800" />
+        ))}
+      </div>
+    );
+  }
+
+  if (!data) return null;
+
   return (
     <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
       {/* Card 1: Total Savings (Black Theme) */}
@@ -14,10 +50,10 @@ export function SummaryCards() {
           <div className="h-4 w-4 text-zinc-600 dark:text-zinc-300 font-serif italic">$</div>
         </CardHeader>
         <CardContent>
-          <div className="text-3xl sm:text-4xl font-bold">₩ 45,231</div>
+          <div className="text-3xl sm:text-4xl font-bold">{data.totalSavings}</div>
           <p className="text-xs text-emerald-400 flex items-center mt-1">
             <ArrowRight className="h-3 w-3 mr-1" />
-            +12.5% <span className="text-zinc-600 dark:text-zinc-300 ml-1">지난달 대비</span>
+            {data.totalSavingsChange} <span className="text-zinc-600 dark:text-zinc-300 ml-1">지난달 대비</span>
           </p>
         </CardContent>
       </Card>
@@ -26,14 +62,16 @@ export function SummaryCards() {
       <Card className="bg-white border-zinc-200 shadow-sm hover:shadow-md transition-shadow dark:bg-zinc-900 dark:border-zinc-800">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-200">
-            가장 많이 쓴 쇼핑몰
+            가장 많이 쓴 곳
           </CardTitle>
           <ShoppingBag className="h-4 w-4 text-zinc-600 dark:text-zinc-300" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100">쿠팡</div>
+          <div className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 truncate">
+            {data.topCategory || "분석 중"}
+          </div>
           <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">
-            총 지출의 34% 차지
+             총 지출의 {data.topCategoryPercent || "0%"} 차지
           </p>
         </CardContent>
       </Card>
@@ -47,9 +85,11 @@ export function SummaryCards() {
           <CreditCard className="h-4 w-4 text-zinc-600 dark:text-zinc-300" />
         </CardHeader>
         <CardContent>
-          <div className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100">신한 Deep</div>
+          <div className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 truncate">
+            {data.topPaymentMethod || "없음"}
+          </div>
           <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">
-            이번 달 24회 사용
+            이번 달 {data.topPaymentMethodCount || 0}회 사용
           </p>
         </CardContent>
       </Card>
@@ -63,9 +103,11 @@ export function SummaryCards() {
           <Wallet className="h-4 w-4 text-yellow-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100">네이버페이</div>
+          <div className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 truncate">
+            {data.aiBenefit || "분석 중"}
+          </div>
           <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">
-            <span className="hidden sm:inline">다음 결제 시 </span>2,000P 적립 가능
+            <span className="hidden sm:inline">다음 결제 시 </span>{data.aiBenefitAmount || "0"}원 적립 가능
           </p>
         </CardContent>
       </Card>

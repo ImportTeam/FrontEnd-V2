@@ -1,87 +1,320 @@
-import {
-  MOCK_CARDS,
-  MOCK_RECOMMENDATIONS,
-  MOCK_SUMMARY,
-  MOCK_TRANSACTIONS,
-} from "@/data/mock";
+import axios from "axios";
 
 import type {
   CardData,
   RecommendationData,
   SummaryData,
   TransactionData,
-} from "@/data/mock";
+  AuthResponse,
+  PaymentMethod,
+  ApiResponse,
+  SavingsMetric,
+  RecommendedPaymentMethodChartData,
+  TopMerchantMetric,
+  MonthlySavingsChartData,
+  TopPaymentMethodMetric,
+  AiBenefitSummary,
+  RefreshTokenResponse,
+  MerchantTransactionSummary,
+} from "./types";
 
-/**
- * API abstraction layer
- * Currently uses mock data, can be easily replaced with real API calls
- */
+// Base URL handling
+// NOTE:
+// - Docs use base: https://api.picsel.kr + path: /api/...
+// - This project may set NEXT_PUBLIC_API_URL to either https://api.picsel.kr OR https://api.picsel.kr/api
+// To avoid double "/api", we compute a prefix based on the env value.
+const RAW_API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE_URL = (RAW_API_URL ?? "").replace(/\/$/, "");
+const API_PREFIX = API_BASE_URL.endsWith("/api") ? "" : "/api";
 
-// Simulate network delay
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+function apiPath(pathname: string): string {
+  const normalized = pathname.startsWith("/") ? pathname : `/${pathname}`;
+  return `${API_PREFIX}${normalized}`;
+}
 
-const withErrorHandling = async <T>(fn: () => Promise<T>): Promise<T> => {
+const STORAGE_KEYS = {
+  accessToken: "accessToken",
+  refreshToken: "refreshToken",
+} as const;
+
+function getAccessToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(STORAGE_KEYS.accessToken);
+}
+
+function getRefreshToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(STORAGE_KEYS.refreshToken);
+}
+
+function hasHttpOnlyCookieAuth(): boolean {
+  // When backend uses HttpOnly cookies for refresh, we cannot read it in JS.
+  // We still keep withCredentials=true so the cookie is sent automatically.
+  return typeof window !== "undefined";
+}
+
+function setTokens(tokens: { accessToken: string; refreshToken?: string }) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(STORAGE_KEYS.accessToken, tokens.accessToken);
+  if (tokens.refreshToken) {
+    localStorage.setItem(STORAGE_KEYS.refreshToken, tokens.refreshToken);
+  }
+}
+
+function clearTokens() {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(STORAGE_KEYS.accessToken);
+  localStorage.removeItem(STORAGE_KEYS.refreshToken);
+}
+
+function extractLast4Digits(masked: string | undefined): string | undefined {
+  if (!masked) return undefined;
+  const digits = masked.replace(/\D/g, "");
+  if (digits.length >= 4) return digits.slice(-4);
+  return undefined;
+}
+
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true,
+});
+
+// Request interceptor to add token if exists
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = getAccessToken();
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Response interceptor: try refreshing token once on 401
+let isRefreshing = false;
+let refreshQueue: Array<(token: string | null) => void> = [];
+
+function resolveRefreshQueue(token: string | null) {
+  refreshQueue.forEach((resolve) => resolve(token));
+  refreshQueue = [];
+}
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config as (typeof error.config & { _retry?: boolean }) | undefined;
+    const status: number | undefined = error?.response?.status;
+
+    if (!originalRequest || status !== 401 || originalRequest._retry) {
+      return Promise.reject(error);
+    }
+
+    // Only attempt refresh in the browser.
+    if (typeof window === "undefined") {
+      return Promise.reject(error);
+    }
+
+    const refreshToken = getRefreshToken();
+    // Swagger: refresh may be cookie-based. If we have neither cookie nor stored refresh token, stop.
+    if (!refreshToken && !hasHttpOnlyCookieAuth()) {
+      clearTokens();
+      return Promise.reject(error);
+    }
+
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        refreshQueue.push((token) => {
+          if (!token) {
+            reject(error);
+            return;
+          }
+          originalRequest._retry = true;
+          originalRequest.headers = {
+            ...(originalRequest.headers ?? {}),
+            Authorization: `Bearer ${token}`,
+          };
+          resolve(apiClient(originalRequest));
+        });
+      });
+    }
+
+    isRefreshing = true;
+    originalRequest._retry = true;
+
+    try {
+      const refreshResponse = await apiClient.post<ApiResponse<RefreshTokenResponse>>(
+        apiPath("/auth/refresh"),
+        refreshToken ? { refresh_token: refreshToken } : undefined
+      );
+
+      const newAccessToken = refreshResponse.data.data?.accessToken;
+      if (!newAccessToken) {
+        clearTokens();
+        resolveRefreshQueue(null);
+        return Promise.reject(error);
+      }
+
+      setTokens({ accessToken: newAccessToken });
+      resolveRefreshQueue(newAccessToken);
+
+      originalRequest.headers = {
+        ...(originalRequest.headers ?? {}),
+        Authorization: `Bearer ${newAccessToken}`,
+      };
+
+      return apiClient(originalRequest);
+    } catch (refreshError) {
+      clearTokens();
+      resolveRefreshQueue(null);
+      return Promise.reject(refreshError);
+    } finally {
+      isRefreshing = false;
+    }
+  }
+);
+
+// Helper for error handling
+async function withErrorHandling<T>(fn: () => Promise<T>): Promise<T> {
   try {
     return await fn();
   } catch (error) {
-    // Surface meaningful errors while keeping a friendly fallback
-    console.error("[API] request failed", error);
-    throw error instanceof Error
-      ? error
-      : new Error("요청 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    console.error("API Error:", error);
+    throw error;
   }
-};
+}
 
 export const api = {
-  cards: {
+  paymentMethods: {
     async list(): Promise<CardData[]> {
       return withErrorHandling(async () => {
-        await delay(100);
-        return MOCK_CARDS;
+        const response = await apiClient.get<PaymentMethod[]>(apiPath("/payment-methods"));
+        
+        return response.data.map(pm => ({
+            id: pm.id,
+            bankName: pm.cardCompany || pm.cardName.split(' ')[0] || "Bank", 
+            cardName: pm.cardName,
+            cardNumber: extractLast4Digits(pm.maskedCardNumber) || "****",
+            // Mocking UI fields not present in API yet
+            balance: "0", 
+            limit: "0",
+            imageSrc: `/assets/card/${pm.cardCompany?.toLowerCase() || 'default'}.svg`, // Placeholder logic
+            textColor: "text-zinc-900",
+            usagePercent: 0,
+            isPrimary: pm.isPrimary
+        }));
       });
     },
 
-    async get(id: number): Promise<CardData | undefined> {
+    async startCardRegistration(): Promise<{ redirectUrl: string }> {
       return withErrorHandling(async () => {
-        await delay(50);
-        return MOCK_CARDS.find((card) => card.id === id);
+        const response = await apiClient.post<ApiResponse<{ redirectUrl: string }>>(
+          apiPath("/payment-methods/cards/registration/start")
+        );
+
+        const redirectUrl = response.data.data?.redirectUrl;
+        if (!redirectUrl) {
+          throw new Error(response.data.message || "Card registration start failed");
+        }
+        return { redirectUrl };
       });
     },
 
-    async create(card: Omit<CardData, "id">): Promise<CardData> {
+    async get(id: number | string): Promise<CardData | undefined> {
       return withErrorHandling(async () => {
-        await delay(200);
-        const newCard = { ...card, id: Date.now() };
-        // In real implementation, this would POST to API
-        return newCard;
+        const response = await apiClient.get<PaymentMethod>(apiPath(`/payment-methods/${id}`));
+        const pm = response.data;
+        return {
+            id: pm.id,
+            bankName: pm.cardCompany || "Unknown",
+            cardName: pm.cardName,
+            cardNumber: pm.maskedCardNumber || "****",
+            balance: "N/A",
+            limit: "N/A",
+        };
       });
     },
 
-    async delete(_id: number): Promise<boolean> {
+    async create(card: Record<string, unknown>): Promise<CardData> {
       return withErrorHandling(async () => {
-        await delay(100);
-        // In real implementation, this would DELETE from API
+        // First, start registration flow (as per docs) - strictly this should be a redirect
+        // For now, we'll assume direct registration for simplicity unless full flow is needed
+        const response = await apiClient.post<PaymentMethod>(apiPath("/payment-methods"), card);
+        const pm = response.data;
+        return {
+             id: pm.id,
+            bankName: pm.cardCompany || "",
+            cardName: pm.cardName,
+            cardNumber: "****",
+            balance: "0",
+            limit: "0"
+        };
+      });
+    },
+
+    async delete(id: number | string): Promise<boolean> {
+      return withErrorHandling(async () => {
+        await apiClient.delete(apiPath(`/payment-methods/${id}`));
         return true;
+      });
+    },
+
+    async setPrimary(id: number | string): Promise<void> {
+      return withErrorHandling(async () => {
+        await apiClient.patch(apiPath(`/payment-methods/${id}/primary`));
       });
     },
   },
 
   transactions: {
+    // Docs: GET /api/dashboard/transactions/recentbysite
+    // UI expects a flat list, so we flatten grouped results.
     async list(): Promise<TransactionData[]> {
       return withErrorHandling(async () => {
-        await delay(100);
-        return MOCK_TRANSACTIONS;
+        const response = await apiClient.get<MerchantTransactionSummary[]>(
+          apiPath("/dashboard/transactions/recentbysite")
+        );
+
+        const items = response.data.flatMap((group) =>
+          group.recentTransactions.map((tx) => ({
+            merchant: group.merchant,
+            tx,
+          }))
+        );
+
+        // Keep most recent first using ISO timestamp
+        items.sort((a, b) => (a.tx.paidAt < b.tx.paidAt ? 1 : -1));
+
+        return items.map(({ merchant, tx }) => ({
+          id: `${merchant}-${tx.paidAt}-${tx.amount}`,
+          merchant,
+          category: "UNKNOWN",
+          amount: `${tx.amount.toLocaleString()}원`,
+          date: new Date(tx.paidAt).toLocaleDateString(),
+          paidAt: tx.paidAt,
+          cardName: tx.paymentMethod,
+          benefit: "분석 중",
+        }));
       });
     },
 
     async getByDateRange(
-      _startDate: Date,
-      _endDate: Date
+      startDate: Date,
+      endDate: Date
     ): Promise<TransactionData[]> {
       return withErrorHandling(async () => {
-        await delay(150);
-        // In real implementation, this would filter by date
-        return MOCK_TRANSACTIONS;
+        // Not documented yet. Keeping a safe fallback that reuses list().
+        // If/when the backend supports date filtering, replace with a dedicated endpoint.
+        const all = await api.transactions.list();
+        const start = startDate.getTime();
+        const end = endDate.getTime();
+        return all.filter((tx) => {
+          const t = tx.paidAt ? new Date(tx.paidAt).getTime() : NaN;
+          return Number.isFinite(t) && t >= start && t <= end;
+        });
       });
     },
   },
@@ -89,62 +322,137 @@ export const api = {
   recommendations: {
     async getTop(limit = 3): Promise<RecommendationData[]> {
       return withErrorHandling(async () => {
-        await delay(100);
-        return MOCK_RECOMMENDATIONS.slice(0, limit);
+        const response = await apiClient.get<RecommendedPaymentMethodChartData[]>(
+          apiPath("/dashboard/charts/recommendedpaymentmethods")
+        );
+        
+        return response.data.slice(0, limit).map(rec => ({
+            id: rec.rank,
+            rank: rec.rank,
+            cardName: rec.cardName,
+            benefit: `예상 절약 ${rec.expectedSavings.toLocaleString()}원`,
+            isRecommended: rec.rank === 1,
+            expectedSavings: rec.expectedSavings
+        }));
       });
     },
   },
 
   dashboard: {
+    async getMonthlySavingsChart(): Promise<MonthlySavingsChartData[]> {
+      return withErrorHandling(async () => {
+        const response = await apiClient.get<MonthlySavingsChartData[]>(
+          apiPath("/dashboard/charts/monthlysavings")
+        );
+        return response.data;
+      });
+    },
+
     async getSummary(): Promise<SummaryData> {
       return withErrorHandling(async () => {
-        await delay(100);
-        return MOCK_SUMMARY;
+        // Aggregate multiple API calls
+        const [savingsRes, topMerchantRes, _chartsRes] = await Promise.all([
+             apiClient.get<SavingsMetric>(apiPath("/dashboard/metrics/savings")),
+             apiClient.get<TopMerchantMetric>(apiPath("/dashboard/metrics/topmerchant")), 
+             apiClient.get<MonthlySavingsChartData[]>(apiPath("/dashboard/charts/monthlysavings"))
+        ]);
+
+        // Attempt to fetch other metrics if endpoints exist, otherwise mock/calculate for now
+        // Based on docs, we might have /dashboard/metrics/toppaymentmethod and /dashboard/metrics/aibenefit
+        let topPaymentMethodRes;
+        let aiBenefitRes;
+        
+        try {
+             const [pmRes, aiRes] = await Promise.all([
+             apiClient.get<TopPaymentMethodMetric>(apiPath("/dashboard/metrics/toppaymentmethod")),
+             apiClient.get<AiBenefitSummary>(apiPath("/dashboard/metrics/aibenefitsummary"))
+             ]);
+             topPaymentMethodRes = pmRes;
+             aiBenefitRes = aiRes;
+        } catch (e) {
+            console.warn("Additional metrics endpoints not available, using fallbacks", e);
+        }
+
+        const totalSavings = savingsRes.data.totalSavings;
+        const currentMonthSpending = 1250000; // Mock or calculate if available in other APIs
+        
+        return {
+            totalSavings: `${totalSavings.toLocaleString()}원`,
+            totalSavingsChange: "+12.5%", // Need calculation logic
+            monthlySpending: `${currentMonthSpending.toLocaleString()}원`,
+            monthlySpendingChange: "-5.2%",
+            
+            topCategory: topMerchantRes.data.merchant, // Using merchant as proxy for category per UI
+            topCategoryPercent: "34%", // Mocked for now
+
+            topPaymentMethod: topPaymentMethodRes?.data.cardName || "신한 Deep",
+            topPaymentMethodCount: topPaymentMethodRes?.data.usageCount || 24,
+
+            aiBenefit: aiBenefitRes?.data.recommendedCard || "네이버페이",
+            aiBenefitAmount: aiBenefitRes?.data.expectedMonthlySavings.toLocaleString() || "2,000",
+        };
       });
     },
   },
 
   auth: {
-    async login(email: string, password: string): Promise<{ token: string; user: { id: string; name: string; email: string } }> {
+    async login(email: string, password: string): Promise<{ token: string; user: AuthResponse['user'] }> {
       return withErrorHandling(async () => {
-        await delay(500);
-        // In real implementation, this would POST to /api/auth/login
-        if (password.length < 6) {
-          throw new Error("비밀번호가 올바르지 않습니다.");
+        // Matches POST /api/auth/login response structure
+        const response = await apiClient.post<ApiResponse<AuthResponse>>(apiPath("/auth/login"), { email, password });
+        
+        if (response.data.data) {
+            const { accessToken, user } = response.data.data;
+            const refreshToken = response.data.data.refreshToken;
+            setTokens({ accessToken, refreshToken });
+            return { token: accessToken, user };
         }
-        return {
-          token: "mock-jwt-token",
-          user: {
-            id: "1",
-            name: "Test User",
-            email,
-          },
-        };
+        throw new Error(response.data.message || "Login failed");
       });
     },
 
-    async signup(name: string, email: string, password: string): Promise<{ token: string; user: { id: string; name: string; email: string } }> {
+    async signup(name: string, email: string, password: string): Promise<{ token: string; user: AuthResponse['user'] }> {
       return withErrorHandling(async () => {
-        await delay(500);
-        // In real implementation, this would POST to /api/auth/signup
-        if (password.length < 8) {
-          throw new Error("비밀번호는 8자 이상이어야 합니다.");
+        // Swagger: POST /api/auth/register
+        const response = await apiClient.post<ApiResponse<AuthResponse>>(
+          apiPath("/auth/register"),
+          { name, email, password }
+        );
+
+        if (response.data.data) {
+          const { accessToken, user } = response.data.data;
+          const refreshToken = response.data.data.refreshToken;
+          setTokens({ accessToken, refreshToken });
+          return { token: accessToken, user };
         }
-        return {
-          token: "mock-jwt-token",
-          user: {
-            id: "2",
-            name,
-            email,
-          },
-        };
+
+        throw new Error(response.data.message || "Signup failed");
       });
     },
 
     async logout(): Promise<void> {
       return withErrorHandling(async () => {
-        await delay(100);
-        // In real implementation, this would call logout endpoint
+        // Swagger: logout may be cookie-based (no body). Docs: refresh_token body.
+        // Support both.
+        const refreshToken = getRefreshToken();
+        await apiClient.post(apiPath("/auth/logout"), refreshToken ? { refresh_token: refreshToken } : undefined);
+        clearTokens();
+      });
+    },
+
+    async refresh(): Promise<string> {
+      return withErrorHandling(async () => {
+        const refreshToken = getRefreshToken();
+        const response = await apiClient.post<ApiResponse<RefreshTokenResponse>>(
+          apiPath("/auth/refresh"),
+          refreshToken ? { refresh_token: refreshToken } : undefined
+        );
+        const accessToken = response.data.data?.accessToken;
+        if (!accessToken) {
+          throw new Error(response.data.message || "Refresh failed");
+        }
+        setTokens({ accessToken });
+        return accessToken;
       });
     },
   },
