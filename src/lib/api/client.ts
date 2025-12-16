@@ -501,6 +501,9 @@ export const api = {
         const savingsData = (savingsRes.data.data || savingsRes.data) as Record<string, unknown>;
         const merchantData = (topMerchantRes.data.data || topMerchantRes.data) as Record<string, unknown>;
 
+        console.warn("[DASHBOARD] Savings data:", savingsData);
+        console.warn("[DASHBOARD] Merchant data:", merchantData);
+
         let topPaymentMethodRes;
         let aiBenefitRes;
         
@@ -517,6 +520,9 @@ export const api = {
 
         const pmData = topPaymentMethodRes ? (topPaymentMethodRes.data.data || topPaymentMethodRes.data) as Record<string, unknown> : null;
         const aiData = aiBenefitRes ? (aiBenefitRes.data.data || aiBenefitRes.data) as Record<string, unknown> : null;
+
+        console.warn("[DASHBOARD] Payment method data:", pmData);
+        console.warn("[DASHBOARD] AI benefit data:", aiData);
 
         const savingsAmount = (savingsData.savingsAmount as number) || 0;
         const savingsAmountKrw = (savingsData.savingsAmountKrw as string) || `${savingsAmount.toLocaleString()}원`;

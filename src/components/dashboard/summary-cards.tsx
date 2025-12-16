@@ -71,7 +71,7 @@ export function SummaryCards() {
             {data.topCategory || "분석 중"}
           </div>
           <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">
-             총 지출의 {data.topCategoryPercent || "0%"} 차지
+            {data.monthlySpending}
           </p>
         </CardContent>
       </Card>
@@ -89,7 +89,9 @@ export function SummaryCards() {
             {data.topPaymentMethod || "없음"}
           </div>
           <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">
-            이번 달 {data.topPaymentMethodCount || 0}회 사용
+            {data.topPaymentMethodCount && typeof data.topPaymentMethodCount === 'number' 
+              ? `${data.topPaymentMethodCount.toLocaleString()}원` 
+              : "분석 중"}
           </p>
         </CardContent>
       </Card>
@@ -103,11 +105,11 @@ export function SummaryCards() {
           <Wallet className="h-4 w-4 text-yellow-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 truncate">
+          <div className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100 line-clamp-2">
             {data.aiBenefit || "분석 중"}
           </div>
-          <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">
-            <span className="hidden sm:inline">다음 결제 시 </span>{data.aiBenefitAmount || "0"}원 적립 가능
+          <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1 line-clamp-2">
+            {data.aiBenefitAmount || "분석 중"}
           </p>
         </CardContent>
       </Card>
