@@ -1,16 +1,49 @@
 "use client";
 
-import { Bell, Moon, Shield, Smartphone } from "lucide-react";
 import { useTheme } from "next-themes";
+import { Bell, Moon, Shield, Smartphone, X } from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { api } from "@/lib/api/client";
+
+import type { SessionData } from "@/lib/api/types";
 
 // eslint-disable-next-line no-restricted-syntax
 export default function SettingsPage() {
   const { setTheme, theme } = useTheme();
+  const [showDevices, setShowDevices] = useState(false);
+  const [sessions, setSessions] = useState<SessionData[]>([]);
+  const [isLoadingSessions, setIsLoadingSessions] = useState(false);
+
+  const loadSessions = async () => {
+    setIsLoadingSessions(true);
+    try {
+      const sessionList = await api.users.getSessions() as unknown as SessionData[];
+      setSessions(sessionList);
+      console.warn("[SETTINGS] Sessions loaded:", sessionList);
+    } catch (error) {
+      console.error("Failed to load sessions:", error);
+    } finally {
+      setIsLoadingSessions(false);
+    }
+  };
+
+  const handleLogoutSession = async (seq: string | number) => {
+    if (window.confirm("이 기기에서 로그아웃하시겠습니까?")) {
+      try {
+        await api.users.deleteSession(seq);
+        setSessions(prev => prev.filter(s => s.id !== seq));
+        console.warn("[SETTINGS] Session deleted:", seq);
+      } catch (error) {
+        console.error("Failed to logout session:", error);
+        alert("기기 로그아웃에 실패했습니다.");
+      }
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -103,7 +136,14 @@ export default function SettingsPage() {
                             현재 로그인된 기기 목록을 확인합니다.
                         </p>
                     </div>
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        setShowDevices(true);
+                        void loadSessions();
+                      }}
+                    >
                         <Smartphone className="mr-2 h-4 w-4" />
                         기기 목록 보기
                     </Button>
@@ -111,6 +151,71 @@ export default function SettingsPage() {
             </CardContent>
         </Card>
       </div>
+
+      {/* Device Management Modal */}
+      {showDevices && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-zinc-200 dark:border-zinc-800">
+              <div>
+                <CardTitle>기기 관리</CardTitle>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                  현재 로그인된 기기에서 로그아웃할 수 있습니다.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowDevices(false)}
+                className="rounded-md text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </CardHeader>
+            <CardContent className="overflow-y-auto flex-1 p-6">
+              {isLoadingSessions ? (
+                <div className="flex items-center justify-center py-8">
+                  <p className="text-zinc-500">기기 정보를 불러오는 중...</p>
+                </div>
+              ) : sessions.length === 0 ? (
+                <div className="flex items-center justify-center py-8">
+                  <p className="text-zinc-500">로그인된 기기가 없습니다.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {sessions.map((session) => (
+                    <div
+                      key={session.id}
+                      className="flex items-center justify-between p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
+                    >
+                      <div className="flex items-center gap-4 flex-1">
+                        <Smartphone className="h-6 w-6 text-zinc-400" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-zinc-900 dark:text-zinc-100">
+                            {session.deviceInfo}
+                          </p>
+                          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                            로그인: {new Date(session.createdAt).toLocaleString('ko-KR')}
+                          </p>
+                          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                            만료: {new Date(session.expiresAt).toLocaleString('ko-KR')}
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 ml-2 shrink-0"
+                        onClick={() => void handleLogoutSession(session.id)}
+                      >
+                        로그아웃
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

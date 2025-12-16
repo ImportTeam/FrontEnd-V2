@@ -185,6 +185,15 @@ export interface RecommendationData {
   isRecommended: boolean;
   expectedSavings?: number;
 }
+
+// --- Session Types ---
+export interface SessionData {
+  id: string;
+  deviceInfo: string;
+  createdAt: string;
+  expiresAt: string;
+}
+
 // --- Analytics Types ---
 export interface TopMerchantData {
   range: string;

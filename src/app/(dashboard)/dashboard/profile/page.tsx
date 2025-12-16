@@ -104,12 +104,10 @@ export default function ProfilePage() {
                 </div>
                 <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">{name}</h2>
                 <p className="text-sm text-zinc-500 dark:text-zinc-400">{email}</p>
-                {userProfile && (
-                  <div className="mt-3 space-y-1 w-full text-left text-xs text-zinc-500">
+                {userProfile ? <div className="mt-3 space-y-1 w-full text-left text-xs text-zinc-500">
                     <p>가입일: {new Date(userProfile.createdAt).toLocaleDateString('ko-KR')}</p>
                     <p>인증 상태: {userProfile.isVerified ? '✓ 인증됨' : '미인증'}</p>
-                  </div>
-                )}
+                  </div> : null}
                 <div className="mt-6 w-full space-y-2">
                     <Button 
                       variant="outline" 
@@ -156,8 +154,7 @@ export default function ProfilePage() {
                           className="bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500" 
                         />
                     </div>
-                    {userProfile?.settings && (
-                      <>
+                    {userProfile?.settings ? <>
                         <div className="grid gap-2">
                             <Label htmlFor="currency">통화 선호도</Label>
                             <Input 
@@ -176,8 +173,7 @@ export default function ProfilePage() {
                               className="bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500" 
                             />
                         </div>
-                      </>
-                    )}
+                      </> : null}
                     <div className="flex justify-end pt-4">
                         <Button 
                           type="submit"

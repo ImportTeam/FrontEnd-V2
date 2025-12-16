@@ -1,12 +1,106 @@
 "use client";
 
-import { Calendar, Download, Filter } from "lucide-react";
+import { useEffect, useState } from "react";
+import { FileJson, FileText } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { api } from "@/lib/api/client";
 
 // eslint-disable-next-line no-restricted-syntax
 export default function ReportsPage() {
+  const [selectedMonth, setSelectedMonth] = useState<string>(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  });
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [transactions, setTransactions] = useState<unknown[]>([]);
+
+  useEffect(() => {
+    async function loadTransactions() {
+      try {
+        const [year, month] = selectedMonth.split('-');
+        const from = `${year}-${month}-01T00:00:00.000Z`;
+        const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
+        const to = `${year}-${month}-${lastDay}T23:59:59.999Z`;
+
+        const list = await api.analytics.getTransactionList({ from, to });
+        setTransactions(list);
+        console.warn("[REPORTS] Loaded transactions:", list);
+      } catch (error) {
+        console.error("Failed to load transactions:", error);
+      }
+    }
+    void loadTransactions();
+  }, [selectedMonth]);
+
+  const downloadJSON = () => {
+    setIsDownloading(true);
+    try {
+      const reportData = {
+        month: selectedMonth,
+        generatedAt: new Date().toISOString(),
+        transactions: transactions,
+        summary: {
+          totalCount: transactions.length,
+          totalAmount: (transactions as Record<string, unknown>[]).reduce(
+            (sum, tx) => sum + ((tx.paidAmount as number) || 0),
+            0
+          ),
+        },
+      };
+
+      const dataStr = JSON.stringify(reportData, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `report_${selectedMonth}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      console.warn("[REPORTS] JSON download completed:", selectedMonth);
+    } catch (error) {
+      console.error("Failed to download JSON:", error);
+      alert("JSON 다운로드에 실패했습니다.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const downloadCSV = () => {
+    setIsDownloading(true);
+    try {
+      const headers = ['거래처', '카테고리', '거래일시', '결제금액', '혜택금액', '결제수단'];
+      const rows = (transactions as Record<string, unknown>[]).map(tx => [
+        tx.merchantName || '',
+        tx.category || '',
+        new Date(tx.transactionAt as string).toLocaleString('ko-KR'),
+        ((tx.paidAmount as number) || 0).toLocaleString(),
+        ((tx.discountOrRewardAmount as number) || 0).toLocaleString(),
+        tx.paymentMethodName || '',
+      ]);
+
+      const csv = [
+        headers.join(','),
+        ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
+      ].join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `report_${selectedMonth}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+      console.warn("[REPORTS] CSV download completed:", selectedMonth);
+    } catch (error) {
+      console.error("Failed to download CSV:", error);
+      alert("CSV 다운로드에 실패했습니다.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6 md:space-y-8">
       {/* Header */}
@@ -21,24 +115,38 @@ export default function ReportsPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2 sm:gap-3">
-          <Button variant="outline" size="sm" className="text-xs sm:text-sm bg-white dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300">
-            <Calendar className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">2025년 11월</span>
-            <span className="sm:hidden">11월</span>
+          <input
+            type="month"
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="px-3 py-2 text-xs sm:text-sm rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
+          />
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-xs sm:text-sm bg-white dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300"
+            onClick={downloadJSON}
+            disabled={isDownloading || transactions.length === 0}
+          >
+            <FileJson className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">JSON</span>
+            <span className="sm:hidden">JSON</span>
           </Button>
-          <Button variant="outline" size="sm" className="text-xs sm:text-sm bg-white dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300">
-            <Filter className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-            필터
-          </Button>
-          <Button variant="outline" size="sm" className="text-xs sm:text-sm bg-white dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300">
-            <Download className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">내보내기</span>
-            <span className="sm:hidden">저장</span>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-xs sm:text-sm bg-white dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300"
+            onClick={downloadCSV}
+            disabled={isDownloading || transactions.length === 0}
+          >
+            <FileText className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">CSV</span>
+            <span className="sm:hidden">CSV</span>
           </Button>
         </div>
       </div>
 
-      {/* Main Analysis Section */}
+      {/* Main Analysis Section - Placeholder */}
       <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
         <Card className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm">
             <CardHeader className="p-4 sm:p-6">
@@ -47,7 +155,7 @@ export default function ReportsPage() {
             </CardHeader>
             <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
                 <div className="h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center border-2 border-dashed border-zinc-100 dark:border-zinc-800 rounded-xl bg-zinc-50 dark:bg-zinc-900/50">
-                    <p className="text-zinc-400 text-xs sm:text-sm">Pie Chart Placeholder</p>
+                    <span className="text-zinc-400 text-xs sm:text-sm">Pie Chart Placeholder</span>
                 </div>
             </CardContent>
         </Card>
@@ -59,7 +167,7 @@ export default function ReportsPage() {
             </CardHeader>
             <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
                 <div className="h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center border-2 border-dashed border-zinc-100 dark:border-zinc-800 rounded-xl bg-zinc-50 dark:bg-zinc-900/50">
-                    <p className="text-zinc-400 text-xs sm:text-sm">Bar Chart Placeholder</p>
+                    <span className="text-zinc-400 text-xs sm:text-sm">Bar Chart Placeholder</span>
                 </div>
             </CardContent>
         </Card>
@@ -68,26 +176,39 @@ export default function ReportsPage() {
       {/* Detailed List */}
       <Card className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 shadow-sm">
         <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">상세 지출 내역</CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">상세 지출 내역 ({transactions.length}건)</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">{selectedMonth} 월간 거래 내역</CardDescription>
         </CardHeader>
         <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
-            <div className="space-y-2 sm:space-y-4">
-                {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} className="flex items-center justify-between p-3 sm:p-4 rounded-lg border border-zinc-100 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+            {transactions.length === 0 ? (
+              <div className="flex items-center justify-center py-8">
+                <p className="text-zinc-500">해당 기간에 거래 내역이 없습니다.</p>
+              </div>
+            ) : (
+              <div className="space-y-2 sm:space-y-4">
+                {(transactions as Record<string, unknown>[]).map((tx) => (
+                    <div key={tx.id as string} className="flex items-center justify-between p-3 sm:p-4 rounded-lg border border-zinc-100 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                         <div className="flex items-center gap-2 sm:gap-4">
-                            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-zinc-100 dark:bg-zinc-800 shrink-0" />
+                            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-zinc-100 dark:bg-zinc-800 shrink-0 flex items-center justify-center text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                              {(tx.category as string)?.[0]?.toUpperCase() || '거'}
+                            </div>
                             <div className="min-w-0">
-                                <p className="font-medium text-sm sm:text-base text-zinc-900 dark:text-zinc-100 truncate">거래 내역 {i}</p>
-                                <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400">2025.11.{20-i}</p>
+                                <p className="font-medium text-sm sm:text-base text-zinc-900 dark:text-zinc-100 truncate">{tx.merchantName as string}</p>
+                                <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400">{new Date(tx.transactionAt as string).toLocaleString('ko-KR')}</p>
+                                <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400">{tx.category as string}</p>
                             </div>
                         </div>
                         <div className="text-right shrink-0 ml-2">
-                            <p className="font-bold text-sm sm:text-base text-zinc-900 dark:text-zinc-100">-{(i * 15000).toLocaleString()}원</p>
-                            <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400">신한카드</p>
+                            <p className="font-bold text-sm sm:text-base text-zinc-900 dark:text-zinc-100">-{((tx.paidAmount as number) || 0).toLocaleString()}원</p>
+                            <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400">{tx.paymentMethodName as string}</p>
+                            {((tx.discountOrRewardAmount as number) || 0) > 0 && (
+                              <p className="text-[10px] sm:text-xs text-green-600 dark:text-green-400">+{((tx.discountOrRewardAmount as number) || 0).toLocaleString()}원</p>
+                            )}
                         </div>
                     </div>
                 ))}
-            </div>
+              </div>
+            )}
         </CardContent>
       </Card>
     </div>
