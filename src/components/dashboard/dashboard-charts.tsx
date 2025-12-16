@@ -26,6 +26,8 @@ export function DashboardCharts() {
           api.recommendations.getTop(3),
           api.dashboard.getMonthlySavingsChart(),
         ]);
+        console.warn("[CHARTS] Recommendations:", topRecs);
+        console.warn("[CHARTS] Monthly chart data:", monthlyChart);
         setRecommendations(topRecs);
         setChartData(monthlyChart);
       } catch (error) {

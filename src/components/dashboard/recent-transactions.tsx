@@ -18,8 +18,11 @@ export function RecentTransactions() {
     async function loadData() {
       try {
         const txList = await api.transactions.list();
+        console.warn("[TRANSACTIONS] Full list:", txList);
         // Take only recent 3 for the dashboard widget
-        setTransactions(txList.slice(0, 3));
+        const recentTx = txList.slice(0, 3);
+        console.warn("[TRANSACTIONS] Recent 3:", recentTx);
+        setTransactions(recentTx);
       } catch (error) {
         console.error("Failed to load transactions:", error);
       } finally {
