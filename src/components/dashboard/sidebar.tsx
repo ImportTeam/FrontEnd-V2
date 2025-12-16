@@ -118,13 +118,24 @@ export function Sidebar() {
             </div>
             {/* Logout - pushed to bottom */}
             <div className="p-6 mt-auto shrink-0 border-t border-zinc-100 dark:border-zinc-800 md:border-t-0">
-                <Link
-                    href="/"
-                    className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
+                <button
+                    onClick={async () => {
+                        try {
+                            const { api } = await import("@/lib/api/client");
+                            await api.auth.logout();
+                            window.location.href = "/";
+                        } catch (error) {
+                            console.error("Logout failed:", error);
+                            // Force logout even if API fails
+                            localStorage.clear();
+                            window.location.href = "/";
+                        }
+                    }}
+                    className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
                 >
                     <LogOut className="h-5 w-5" />
                     로그아웃
-                </Link>
+                </button>
             </div>
         </aside>
         </>

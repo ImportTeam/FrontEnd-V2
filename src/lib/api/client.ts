@@ -72,13 +72,6 @@ function clearTokens() {
   useAuthStore.getState().logout();
 }
 
-function extractLast4Digits(masked: string | undefined): string | undefined {
-  if (!masked) return undefined;
-  const digits = masked.replace(/\D/g, "");
-  if (digits.length >= 4) return digits.slice(-4);
-  return undefined;
-}
-
 const apiClient = axios.create({
   baseURL: API_BASE_URL || "https://api.picsel.kr/api",
   headers: {
@@ -262,6 +255,10 @@ async function withErrorHandling<T>(fn: () => Promise<T>): Promise<T> {
 
 export const api = {
   paymentMethods: {
+    /**
+     * Get user's payment methods list
+     * GET /api/payment-methods
+     */
     async list(): Promise<CardData[]> {
       return withErrorHandling(async () => {
         const response = await apiClient.get(apiPath("/payment-methods"));
@@ -271,21 +268,23 @@ export const api = {
         const list = Array.isArray(payload) ? payload : [];
         
         return list.map((pm: Record<string, unknown>) => {
-          const cardCompany = pm.cardCompany as string | undefined;
-          const cardName = pm.cardName as string | undefined;
-          const maskedCardNumber = pm.maskedCardNumber as string | undefined;
+          const seq = pm.seq as number;
+          const last4 = (pm.last4 as string) || "****";
+          const cardType = (pm.cardType as string) || "";
+          const alias = (pm.alias as string) || "카드";
+          const isPrimary = (pm.isPrimary as boolean) || false;
           
           return {
-            id: (pm.id as string | number) || "",
-            bankName: cardCompany || cardName?.split(' ')[0] || "Bank", 
-            cardName: cardName || "Unknown Card",
-            cardNumber: extractLast4Digits(maskedCardNumber) || "****",
+            id: seq || "",
+            bankName: cardType,
+            cardName: alias,
+            cardNumber: last4,
             balance: "0", 
             limit: "0",
-            imageSrc: `/assets/card/${cardCompany?.toLowerCase() || 'default'}.svg`,
+            imageSrc: `/assets/card/${cardType.toLowerCase() || 'default'}.svg`,
             textColor: "text-zinc-900",
             usagePercent: 0,
-            isPrimary: (pm.isPrimary as boolean) || false
+            isPrimary
           };
         });
       });
