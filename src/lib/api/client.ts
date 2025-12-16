@@ -210,11 +210,22 @@ function getApiErrorMessage(error: unknown): string {
   const status = error.response.status;
   const data: unknown = error.response.data;
 
-  // For error responses (4xx, 5xx), extract error message from body
-  // Only use statusCode >= 400 to be safe against backend quirks
+  // Status-code based fallback messages (prioritized for clarity)
+  let statusMessage = "";
+  if (status === 400) statusMessage = "잘못된 요청입니다";
+  else if (status === 401) statusMessage = "로그인이 필요하거나 인증이 만료되었습니다";
+  else if (status === 403) statusMessage = "접근 권한이 없습니다";
+  else if (status === 404) statusMessage = "요청한 리소스를 찾을 수 없습니다";
+  else if (status === 409) statusMessage = "이미 존재하는 데이터이거나 충돌이 발생했습니다";
+  else if (status >= 500) statusMessage = "서버 오류가 발생했습니다";
+  else statusMessage = `요청 실패 (${status})`;
+
+  // For error responses (4xx, 5xx), try reading body but filter nonsense
   if (status >= 400) {
+    let messageFromBody: string | undefined;
+
     if (typeof data === "string" && data) {
-      return data;
+      messageFromBody = data;
     } else if (typeof data === "object" && data !== null) {
       const obj = data as Record<string, unknown>;
       const topMessage = typeof obj.message === "string" ? obj.message : undefined;
@@ -228,20 +239,21 @@ function getApiErrorMessage(error: unknown): string {
         nestedCode = typeof nested.code === "string" ? nested.code : undefined;
       }
 
-      // Prefer nested error message, then top-level message
-      const messageFromBody = nestedMessage || topMessage || nestedCode;
-      if (messageFromBody) return messageFromBody;
+      messageFromBody = nestedMessage || topMessage || nestedCode;
+    }
+
+    // CRITICAL: Filter out backend messages that contain "성공" in error responses (backend bug)
+    if (messageFromBody) {
+      const normalized = messageFromBody.toLowerCase();
+      const isSuspicious = normalized.includes("성공") || normalized.includes("success");
+      if (!isSuspicious) {
+        return messageFromBody;
+      }
     }
   }
 
-  // Fallback to status-code specific messages
-  if (status === 400) return "Bad request";
-  if (status === 401) return "Unauthorized";
-  if (status === 403) return "Forbidden";
-  if (status === 404) return "Not found";
-  if (status === 409) return "Conflict (duplicate or invalid state)";
-  if (status >= 500) return "Server error";
-  return error.message || `Request failed (${status})`;
+  // Return status-based message if body is empty/suspicious
+  return statusMessage || error.message || `Request failed (${status})`;
 }
 
 async function withErrorHandling<T>(fn: () => Promise<T>): Promise<T> {
@@ -468,6 +480,9 @@ export const api = {
         // Matches POST /api/auth/login response structure
         const response = await apiClient.post<ApiResponse<AuthResponse>>(apiPath("/auth/login"), { email, password });
         
+        // Debug: log response structure to understand backend format
+        console.warn("[AUTH] Login response:", JSON.stringify(response.data, null, 2));
+
         if (response.data.data) {
             const payload = response.data.data as unknown as Record<string, unknown>;
             const accessToken = (payload["accessToken"] ?? payload["access_token"] ?? payload["token"]) as string | undefined;
@@ -476,10 +491,19 @@ export const api = {
 
             if (accessToken && user) {
               setTokens({ accessToken, refreshToken });
+              console.warn("[AUTH] Login success, tokens saved");
               return { token: accessToken, user };
             }
+
+            console.error("[AUTH] Login response missing required fields:", { hasAccessToken: !!accessToken, hasUser: !!user });
         }
-        throw new Error(response.data.message || "Login failed");
+
+        // NEVER throw a success message as error
+        const msg = response.data.message || "";
+        if (msg.toLowerCase().includes("성공") || msg.toLowerCase().includes("success")) {
+          throw new Error("로그인 응답 형식이 올바르지 않습니다 (토큰 또는 사용자 정보 누락)");
+        }
+        throw new Error(msg || "로그인에 실패했습니다");
       });
     },
 
@@ -491,6 +515,9 @@ export const api = {
           { name, email, password }
         );
 
+        // Debug: log response structure to understand backend format
+        console.warn("[AUTH] Signup response:", JSON.stringify(response.data, null, 2));
+
         if (response.data.data) {
           const payload = response.data.data as unknown as Record<string, unknown>;
           const accessToken = (payload["accessToken"] ?? payload["access_token"] ?? payload["token"]) as string | undefined;
@@ -499,11 +526,19 @@ export const api = {
 
           if (accessToken && user) {
             setTokens({ accessToken, refreshToken });
+            console.warn("[AUTH] Signup success, tokens saved");
             return { token: accessToken, user };
           }
+
+          console.error("[AUTH] Signup response missing required fields:", { hasAccessToken: !!accessToken, hasUser: !!user });
         }
 
-        throw new Error(response.data.message || "Signup failed");
+        // NEVER throw a success message as error
+        const msg = response.data.message || "";
+        if (msg.toLowerCase().includes("성공") || msg.toLowerCase().includes("success")) {
+          throw new Error("회원가입 응답 형식이 올바르지 않습니다 (토큰 또는 사용자 정보 누락)");
+        }
+        throw new Error(msg || "회원가입에 실패했습니다");
       });
     },
 
