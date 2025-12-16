@@ -8,16 +8,9 @@ import type {
   SummaryData,
   TransactionData,
   AuthResponse,
-  PaymentMethod,
   ApiResponse,
-  SavingsMetric,
-  RecommendedPaymentMethodChartData,
-  TopMerchantMetric,
   MonthlySavingsChartData,
-  TopPaymentMethodMetric,
-  AiBenefitSummary,
   RefreshTokenResponse,
-  MerchantTransactionSummary,
 } from "./types";
 
 // Base URL handling
@@ -270,33 +263,43 @@ export const api = {
   paymentMethods: {
     async list(): Promise<CardData[]> {
       return withErrorHandling(async () => {
-        const response = await apiClient.get<PaymentMethod[]>(apiPath("/payment-methods"));
+        const response = await apiClient.get(apiPath("/payment-methods"));
         
-        return response.data.map(pm => ({
-            id: pm.id,
-            bankName: pm.cardCompany || pm.cardName.split(' ')[0] || "Bank", 
-            cardName: pm.cardName,
-            cardNumber: extractLast4Digits(pm.maskedCardNumber) || "****",
-            // Mocking UI fields not present in API yet
+        // Backend may send array directly or wrapped
+        const payload = (response.data.data || response.data) as unknown;
+        const list = Array.isArray(payload) ? payload : [];
+        
+        return list.map((pm: Record<string, unknown>) => {
+          const cardCompany = pm.cardCompany as string | undefined;
+          const cardName = pm.cardName as string | undefined;
+          const maskedCardNumber = pm.maskedCardNumber as string | undefined;
+          
+          return {
+            id: (pm.id as string | number) || "",
+            bankName: cardCompany || cardName?.split(' ')[0] || "Bank", 
+            cardName: cardName || "Unknown Card",
+            cardNumber: extractLast4Digits(maskedCardNumber) || "****",
             balance: "0", 
             limit: "0",
-            imageSrc: `/assets/card/${pm.cardCompany?.toLowerCase() || 'default'}.svg`, // Placeholder logic
+            imageSrc: `/assets/card/${cardCompany?.toLowerCase() || 'default'}.svg`,
             textColor: "text-zinc-900",
             usagePercent: 0,
-            isPrimary: pm.isPrimary
-        }));
+            isPrimary: (pm.isPrimary as boolean) || false
+          };
+        });
       });
     },
 
     async startCardRegistration(): Promise<{ redirectUrl: string }> {
       return withErrorHandling(async () => {
-        const response = await apiClient.post<ApiResponse<{ redirectUrl: string }>>(
+        const response = await apiClient.post(
           apiPath("/payment-methods/cards/registration/start")
         );
 
-        const redirectUrl = response.data.data?.redirectUrl;
+        const payload = (response.data.data || response.data) as Record<string, unknown>;
+        const redirectUrl = (payload?.redirectUrl || payload?.redirect_url) as string | undefined;
         if (!redirectUrl) {
-          throw new Error(response.data.message || "Card registration start failed");
+          throw new Error(response.data.message || "카드 등록 시작에 실패했습니다");
         }
         return { redirectUrl };
       });
@@ -304,13 +307,13 @@ export const api = {
 
     async get(id: number | string): Promise<CardData | undefined> {
       return withErrorHandling(async () => {
-        const response = await apiClient.get<PaymentMethod>(apiPath(`/payment-methods/${id}`));
-        const pm = response.data;
+        const response = await apiClient.get(apiPath(`/payment-methods/${id}`));
+        const pm = (response.data.data || response.data) as Record<string, unknown>;
         return {
-            id: pm.id,
-            bankName: pm.cardCompany || "Unknown",
-            cardName: pm.cardName,
-            cardNumber: pm.maskedCardNumber || "****",
+            id: (pm.id as string | number) || id,
+            bankName: (pm.cardCompany as string) || "Unknown",
+            cardName: (pm.cardName as string) || "Unknown Card",
+            cardNumber: (pm.maskedCardNumber as string) || "****",
             balance: "N/A",
             limit: "N/A",
         };
@@ -319,14 +322,12 @@ export const api = {
 
     async create(card: Record<string, unknown>): Promise<CardData> {
       return withErrorHandling(async () => {
-        // First, start registration flow (as per docs) - strictly this should be a redirect
-        // For now, we'll assume direct registration for simplicity unless full flow is needed
-        const response = await apiClient.post<PaymentMethod>(apiPath("/payment-methods"), card);
-        const pm = response.data;
+        const response = await apiClient.post(apiPath("/payment-methods"), card);
+        const pm = (response.data.data || response.data) as Record<string, unknown>;
         return {
-             id: pm.id,
-            bankName: pm.cardCompany || "",
-            cardName: pm.cardName,
+             id: (pm.id as string | number) || "",
+            bankName: (pm.cardCompany as string) || "",
+            cardName: (pm.cardName as string) || "",
             cardNumber: "****",
             balance: "0",
             limit: "0"
@@ -349,34 +350,46 @@ export const api = {
   },
 
   transactions: {
-    // Docs: GET /api/dashboard/transactions/recentbysite
-    // UI expects a flat list, so we flatten grouped results.
     async list(): Promise<TransactionData[]> {
       return withErrorHandling(async () => {
-        const response = await apiClient.get<MerchantTransactionSummary[]>(
+        const response = await apiClient.get(
           apiPath("/dashboard/transactions/recentbysite")
         );
 
-        const items = response.data.flatMap((group) =>
-          group.recentTransactions.map((tx) => ({
-            merchant: group.merchant,
+        const payload = (response.data.data || response.data) as unknown;
+        const groups = Array.isArray(payload) ? payload : [];
+
+        const items = groups.flatMap((group: Record<string, unknown>) => {
+          const merchant = (group.merchant as string) || "Unknown";
+          const txs = Array.isArray(group.recentTransactions) ? group.recentTransactions : [];
+          return txs.map((tx: Record<string, unknown>) => ({
+            merchant,
             tx,
-          }))
-        );
+          }));
+        });
 
-        // Keep most recent first using ISO timestamp
-        items.sort((a, b) => (a.tx.paidAt < b.tx.paidAt ? 1 : -1));
+        items.sort((a, b) => {
+          const paidAtA = a.tx.paidAt as string;
+          const paidAtB = b.tx.paidAt as string;
+          return paidAtA < paidAtB ? 1 : -1;
+        });
 
-        return items.map(({ merchant, tx }) => ({
-          id: `${merchant}-${tx.paidAt}-${tx.amount}`,
-          merchant,
-          category: "UNKNOWN",
-          amount: `${tx.amount.toLocaleString()}원`,
-          date: new Date(tx.paidAt).toLocaleDateString(),
-          paidAt: tx.paidAt,
-          cardName: tx.paymentMethod,
-          benefit: "분석 중",
-        }));
+        return items.map(({ merchant, tx }) => {
+          const paidAt = (tx.paidAt as string) || "";
+          const amount = (tx.amount as number) || 0;
+          const paymentMethod = (tx.paymentMethod as string) || "Unknown";
+          
+          return {
+            id: `${merchant}-${paidAt}-${amount}`,
+            merchant,
+            category: "기타",
+            amount: `${amount.toLocaleString()}원`,
+            date: paidAt ? new Date(paidAt).toLocaleDateString() : "-",
+            paidAt,
+            cardName: paymentMethod,
+            benefit: "분석 중",
+          };
+        });
       });
     },
 
@@ -385,8 +398,6 @@ export const api = {
       endDate: Date
     ): Promise<TransactionData[]> {
       return withErrorHandling(async () => {
-        // Not documented yet. Keeping a safe fallback that reuses list().
-        // If/when the backend supports date filtering, replace with a dedicated endpoint.
         const all = await api.transactions.list();
         const start = startDate.getTime();
         const end = endDate.getTime();
@@ -401,18 +412,26 @@ export const api = {
   recommendations: {
     async getTop(limit = 3): Promise<RecommendationData[]> {
       return withErrorHandling(async () => {
-        const response = await apiClient.get<RecommendedPaymentMethodChartData[]>(
+        const response = await apiClient.get(
           apiPath("/dashboard/charts/recommendedpaymentmethods")
         );
         
-        return response.data.slice(0, limit).map(rec => ({
-            id: rec.rank,
-            rank: rec.rank,
-            cardName: rec.cardName,
-            benefit: `예상 절약 ${rec.expectedSavings.toLocaleString()}원`,
-            isRecommended: rec.rank === 1,
-            expectedSavings: rec.expectedSavings
-        }));
+        const payload = (response.data.data || response.data) as unknown;
+        const list = Array.isArray(payload) ? payload : [];
+        
+        return list.slice(0, limit).map((rec: Record<string, unknown>) => {
+          const rank = (rec.rank as number) || 0;
+          const expectedSavings = (rec.expectedSavings as number) || 0;
+          
+          return {
+            id: rank,
+            rank,
+            cardName: (rec.cardName as string) || "Unknown",
+            benefit: `예상 절약 ${expectedSavings.toLocaleString()}원`,
+            isRecommended: rank === 1,
+            expectedSavings
+          };
+        });
       });
     },
   },
@@ -420,31 +439,32 @@ export const api = {
   dashboard: {
     async getMonthlySavingsChart(): Promise<MonthlySavingsChartData[]> {
       return withErrorHandling(async () => {
-        const response = await apiClient.get<MonthlySavingsChartData[]>(
+        const response = await apiClient.get(
           apiPath("/dashboard/charts/monthlysavings")
         );
-        return response.data;
+        const payload = (response.data.data || response.data) as unknown;
+        const list = Array.isArray(payload) ? payload : [];
+        return list;
       });
     },
 
     async getSummary(): Promise<SummaryData> {
       return withErrorHandling(async () => {
-        // Aggregate multiple API calls
-        const [savingsRes, topMerchantRes, _chartsRes] = await Promise.all([
-             apiClient.get<SavingsMetric>(apiPath("/dashboard/metrics/savings")),
-             apiClient.get<TopMerchantMetric>(apiPath("/dashboard/metrics/topmerchant")), 
-             apiClient.get<MonthlySavingsChartData[]>(apiPath("/dashboard/charts/monthlysavings"))
+        const [savingsRes, topMerchantRes] = await Promise.all([
+             apiClient.get(apiPath("/dashboard/metrics/savings")),
+             apiClient.get(apiPath("/dashboard/metrics/topmerchant")), 
         ]);
 
-        // Attempt to fetch other metrics if endpoints exist, otherwise mock/calculate for now
-        // Based on docs, we might have /dashboard/metrics/toppaymentmethod and /dashboard/metrics/aibenefit
+        const savingsData = (savingsRes.data.data || savingsRes.data) as Record<string, unknown>;
+        const merchantData = (topMerchantRes.data.data || topMerchantRes.data) as Record<string, unknown>;
+
         let topPaymentMethodRes;
         let aiBenefitRes;
         
         try {
              const [pmRes, aiRes] = await Promise.all([
-             apiClient.get<TopPaymentMethodMetric>(apiPath("/dashboard/metrics/toppaymentmethod")),
-             apiClient.get<AiBenefitSummary>(apiPath("/dashboard/metrics/aibenefitsummary"))
+             apiClient.get(apiPath("/dashboard/metrics/toppaymentmethod")),
+             apiClient.get(apiPath("/dashboard/metrics/aibenefitsummary"))
              ]);
              topPaymentMethodRes = pmRes;
              aiBenefitRes = aiRes;
@@ -452,23 +472,26 @@ export const api = {
             console.warn("Additional metrics endpoints not available, using fallbacks", e);
         }
 
-        const totalSavings = savingsRes.data.totalSavings;
-        const currentMonthSpending = 1250000; // Mock or calculate if available in other APIs
+        const pmData = topPaymentMethodRes ? (topPaymentMethodRes.data.data || topPaymentMethodRes.data) as Record<string, unknown> : null;
+        const aiData = aiBenefitRes ? (aiBenefitRes.data.data || aiBenefitRes.data) as Record<string, unknown> : null;
+
+        const totalSavings = (savingsData?.totalSavings as number) || 0;
+        const currentMonthSpending = 1250000;
         
         return {
             totalSavings: `${totalSavings.toLocaleString()}원`,
-            totalSavingsChange: "+12.5%", // Need calculation logic
+            totalSavingsChange: "+12.5%",
             monthlySpending: `${currentMonthSpending.toLocaleString()}원`,
             monthlySpendingChange: "-5.2%",
             
-            topCategory: topMerchantRes.data.merchant, // Using merchant as proxy for category per UI
-            topCategoryPercent: "34%", // Mocked for now
+            topCategory: (merchantData?.merchant as string) || "분석 중",
+            topCategoryPercent: "34%",
 
-            topPaymentMethod: topPaymentMethodRes?.data.cardName || "신한 Deep",
-            topPaymentMethodCount: topPaymentMethodRes?.data.usageCount || 24,
+            topPaymentMethod: (pmData?.cardName as string) || "분석 중",
+            topPaymentMethodCount: (pmData?.usageCount as number) || 0,
 
-            aiBenefit: aiBenefitRes?.data.recommendedCard || "네이버페이",
-            aiBenefitAmount: aiBenefitRes?.data.expectedMonthlySavings.toLocaleString() || "2,000",
+            aiBenefit: (aiData?.recommendedCard as string) || "분석 중",
+            aiBenefitAmount: ((aiData?.expectedMonthlySavings as number) || 0).toLocaleString(),
         };
       });
     },
