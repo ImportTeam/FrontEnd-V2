@@ -27,11 +27,17 @@ import type {
 // To avoid double "/api", we compute a prefix based on the env value.
 const RAW_API_URL = process.env.NEXT_PUBLIC_API_URL;
 const API_BASE_URL = (RAW_API_URL ?? "").replace(/\/$/, "");
-const API_PREFIX = API_BASE_URL.endsWith("/api") ? "" : "/api";
+const ENDS_WITH_API = API_BASE_URL.endsWith("/api");
 
 function apiPath(pathname: string): string {
+  // Always ensure pathname starts with /
   const normalized = pathname.startsWith("/") ? pathname : `/${pathname}`;
-  return `${API_PREFIX}${normalized}`;
+  // If baseURL already ends with /api, don't add it again
+  if (ENDS_WITH_API) {
+    return normalized;
+  }
+  // Otherwise prepend /api
+  return `/api${normalized}`;
 }
 
 const STORAGE_KEYS = {
@@ -81,7 +87,7 @@ function extractLast4Digits(masked: string | undefined): string | undefined {
 }
 
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_BASE_URL || "https://api.picsel.kr/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -94,6 +100,10 @@ apiClient.interceptors.request.use(
     const token = getAccessToken();
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    // Ensure Content-Type is always set for POST/PATCH/PUT
+    if (!config.headers["Content-Type"] && (config.method === "post" || config.method === "patch" || config.method === "put")) {
+      config.headers["Content-Type"] = "application/json";
     }
     return config;
   },
