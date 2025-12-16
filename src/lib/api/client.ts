@@ -11,6 +11,9 @@ import type {
   ApiResponse,
   MonthlySavingsChartData,
   RefreshTokenResponse,
+  TopMerchantData,
+  MonthlySavingsData,
+  TransactionListItem,
 } from "./types";
 
 // Base URL handling
@@ -607,6 +610,92 @@ export const api = {
     async deleteSession(seq: number | string): Promise<void> {
       return withErrorHandling(async () => {
         await apiClient.delete(apiPath(`/users/sessions/${seq}`));
+      });
+    },
+  },
+
+  analytics: {
+    /**
+     * Get category-based spending (top merchant)
+     * GET /api/dashboard/metrics/topmerchant
+     */
+    async getTopMerchant(): Promise<TopMerchantData> {
+      return withErrorHandling(async () => {
+        const response = await apiClient.get(apiPath("/dashboard/metrics/topmerchant"));
+        const payload = (response.data.data || response.data) as unknown as Record<string, unknown>;
+        
+        console.warn("[ANALYTICS] Top merchant data:", payload);
+        
+        return {
+          range: (payload.range as string) || "THIS_MONTH",
+          merchantName: (payload.merchantName as string) || "Unknown",
+          totalSpent: (payload.totalSpent as number) || 0,
+          totalSpentKrw: (payload.totalSpentKrw as string) || "0원",
+        };
+      });
+    },
+
+    /**
+     * Get monthly spending trend (last 6 months)
+     * GET /api/analytics/months
+     */
+    async getMonthlySavingsData(): Promise<MonthlySavingsData[]> {
+      return withErrorHandling(async () => {
+        const response = await apiClient.get(apiPath("/analytics/months"));
+        const payload = (response.data.data || response.data) as unknown;
+        const list = Array.isArray(payload) ? payload : [];
+        
+        console.warn("[ANALYTICS] Monthly savings data:", list);
+        
+        return list.map((item: Record<string, unknown>) => ({
+          month: (item.month as string) || "",
+          totalSpent: (item.totalSpent as number) || 0,
+        }));
+      });
+    },
+
+    /**
+     * Get detailed transaction history
+     * GET /api/analytics/transactions
+     */
+    async getTransactionList(params: {
+      from?: string;
+      to?: string;
+      categories?: string[];
+      merchants?: string[];
+      paymentMethodIds?: string[];
+      minAmount?: number;
+      maxAmount?: number;
+      page?: number;
+      size?: number;
+    } = {}): Promise<TransactionListItem[]> {
+      return withErrorHandling(async () => {
+        const response = await apiClient.get(apiPath("/analytics/transactions"), { params });
+        const payload = (response.data.data || response.data) as unknown as Record<string, unknown>;
+        
+        // payload could be array or object with data property
+        const list = Array.isArray(payload) 
+          ? payload 
+          : Array.isArray((payload.data as unknown)) 
+            ? (payload.data as unknown[])
+            : [];
+        
+        console.warn("[ANALYTICS] Transaction list:", list);
+        
+        return list.map((item: unknown) => {
+          const record = item as Record<string, unknown>;
+          return {
+            id: (record.id as string) || "",
+            merchantName: (record.merchantName as string) || "Unknown",
+            category: (record.category as string) || "",
+            transactionAt: (record.transactionAt as string) || "",
+            spendAmount: (record.spendAmount as number) || 0,
+            paidAmount: (record.paidAmount as number) || 0,
+            discountOrRewardAmount: (record.discountOrRewardAmount as number) || 0,
+            paymentMethodId: (record.paymentMethodId as number) || 0,
+            paymentMethodName: (record.paymentMethodName as string) || "",
+          };
+        });
       });
     },
   },

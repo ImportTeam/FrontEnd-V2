@@ -185,3 +185,56 @@ export interface RecommendationData {
   isRecommended: boolean;
   expectedSavings?: number;
 }
+// --- Analytics Types ---
+export interface TopMerchantData {
+  range: string;
+  merchantName: string;
+  totalSpent: number;
+  totalSpentKrw: string;
+}
+
+export interface MonthlySavingsData {
+  month: string;
+  totalSpent: number;
+}
+
+export interface TransactionListItem {
+  id: string;
+  merchantName: string;
+  category: string;
+  transactionAt: string;
+  spendAmount: number;
+  paidAmount: number;
+  discountOrRewardAmount: number;
+  paymentMethodId: number;
+  paymentMethodName: string;
+}
+
+export interface TransactionListResponse {
+  data: TransactionListItem[];
+  pagination: {
+    page: number;
+    size: number;
+    totalCount: number;
+    hasNext: boolean;
+  };
+}
+
+// --- User Types ---
+export interface UserCurrentResponse {
+  id: string;
+  uuid: string;
+  email: string;
+  name: string;
+  socialProvider: string;
+  isVerified: boolean;
+  verifiedAt?: string;
+  createdAt: string;
+  settings: {
+    darkMode: boolean;
+    notificationEnabled: boolean;
+    compareMode: string;
+    currencyPreference: string;
+    updatedAt: string;
+  };
+}
