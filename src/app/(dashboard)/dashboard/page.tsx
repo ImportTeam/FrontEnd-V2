@@ -1,13 +1,19 @@
+"use client";
+
 import { Download, Plus, Sparkles } from "lucide-react";
 
 import { DashboardCharts } from "@/components/dashboard/dashboard-charts";
 import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 import { SummaryCards } from "@/components/dashboard/summary-cards";
 import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/store/use-auth-store";
 
 
 // eslint-disable-next-line no-restricted-syntax
 export default function DashboardPage() {
+  const user = useAuthStore((state) => state.user);
+  const userName = user?.name || "사용자";
+  
   return (
     <div className="space-y-8">
       {/* Header Section */}
@@ -15,7 +21,7 @@ export default function DashboardPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                안녕하세요, 김픽셀님!
+                안녕하세요, {userName}님!
             </h1>
             <span className="text-2xl sm:text-3xl">👋</span>
           </div>

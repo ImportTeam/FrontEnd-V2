@@ -7,18 +7,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuthStore } from "@/store/use-auth-store";
 
 
 // eslint-disable-next-line no-restricted-syntax
 export default function ProfilePage() {
+  const user = useAuthStore((state) => state.user);
+  const userName = user?.name || "\uc0ac\uc6a9\uc790";
+  const userEmail = user?.email || "user@example.com";
+  const userInitial = userName.charAt(0).toUpperCase();
+  
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          내 프로필
+          \ub0b4 \ud504\ub85c\ud544
         </h1>
         <p className="text-zinc-500 dark:text-zinc-400 mt-1">
-          개인정보를 확인하고 수정할 수 있습니다.
+          \uac1c\uc778\uc815\ubcf4\ub97c \ud655\uc778\ud558\uace0 \uc218\uc815\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.
         </p>
     </div>
 
@@ -28,21 +34,21 @@ export default function ProfilePage() {
             <CardContent className="pt-6 flex flex-col items-center text-center">
                 <div className="relative mb-4">
                     <Avatar className="h-32 w-32 border-4 border-white dark:border-zinc-800 shadow-lg">
-                        <AvatarImage src="/placeholder-avatar.jpg" />
-                        <AvatarFallback className="text-4xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400">K</AvatarFallback>
+                        <AvatarImage src="/placeholder-avatar.jpg" alt={userName} />
+                        <AvatarFallback className="text-4xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400">{userInitial}</AvatarFallback>
                     </Avatar>
                     <Button size="icon" variant="secondary" className="absolute bottom-0 right-0 rounded-full shadow-md">
                         <Camera className="h-4 w-4" />
                     </Button>
                 </div>
-                <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">김픽셀</h2>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">picsel@user.com</p>
+                <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">{userName}</h2>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">{userEmail}</p>
                 <div className="mt-6 w-full space-y-2">
                     <Button variant="outline" className="w-full justify-start">
-                        비밀번호 변경
+                        \ube44\ubc00\ubc88\ud638 \ubcc0\uacbd
                     </Button>
                     <Button variant="outline" className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30">
-                        계정 삭제
+                        \uacc4\uc815 \uc0ad\uc81c
                     </Button>
                 </div>
             </CardContent>

@@ -92,8 +92,9 @@ apiClient.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
     if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+      config.headers.Authorization = `Bearer ${token}`;      console.log(`[API] Request to ${config.url} with token: ${token.substring(0, 20)}...`);
+    } else {
+      console.warn(`[API] Request to ${config.url} WITHOUT token`);    }
     // Ensure Content-Type is always set for POST/PATCH/PUT
     if (!config.headers["Content-Type"] && (config.method === "post" || config.method === "patch" || config.method === "put")) {
       config.headers["Content-Type"] = "application/json";
