@@ -348,6 +348,38 @@ export const api = {
         await apiClient.patch(apiPath(`/payment-methods/${id}/primary`));
       });
     },
+
+    /**
+     * Get payment method statistics
+     * GET /api/payment-methods/statistics
+     */
+    async getStatistics(): Promise<Record<string, unknown>> {
+      return withErrorHandling(async () => {
+        const response = await apiClient.get(apiPath("/payment-methods/statistics"));
+        return (response.data.data || response.data) as Record<string, unknown>;
+      });
+    },
+
+    /**
+     * Update payment method
+     * PATCH /api/payment-methods/{id}
+     */
+    async update(id: number | string, data: Record<string, unknown>): Promise<void> {
+      return withErrorHandling(async () => {
+        await apiClient.patch(apiPath(`/payment-methods/${id}`), data);
+      });
+    },
+
+    /**
+     * Get card details
+     * GET /api/payment-methods/{id}/details
+     */
+    async getDetails(id: number | string): Promise<Record<string, unknown>> {
+      return withErrorHandling(async () => {
+        const response = await apiClient.get(apiPath(`/payment-methods/${id}/details`));
+        return (response.data.data || response.data) as Record<string, unknown>;
+      });
+    },
   },
 
   transactions: {
@@ -537,6 +569,39 @@ export const api = {
       return withErrorHandling(async () => {
         const response = await apiClient.get(apiPath("/users/current"));
         return (response.data.data || response.data) as Record<string, unknown>;
+      });
+    },
+
+    /**
+     * Delete current user (withdrawal)
+     * DELETE /api/users/current
+     */
+    async deleteAccount(): Promise<void> {
+      return withErrorHandling(async () => {
+        await apiClient.delete(apiPath("/users/current"));
+        clearTokens();
+      });
+    },
+
+    /**
+     * Get my sessions
+     * GET /api/users/sessions
+     */
+    async getSessions(): Promise<Array<Record<string, unknown>>> {
+      return withErrorHandling(async () => {
+        const response = await apiClient.get(apiPath("/users/sessions"));
+        const payload = (response.data.data || response.data) as unknown;
+        return Array.isArray(payload) ? payload : [];
+      });
+    },
+
+    /**
+     * Force logout a session
+     * DELETE /api/users/sessions/{seq}
+     */
+    async deleteSession(seq: number | string): Promise<void> {
+      return withErrorHandling(async () => {
+        await apiClient.delete(apiPath(`/users/sessions/${seq}`));
       });
     },
   },
