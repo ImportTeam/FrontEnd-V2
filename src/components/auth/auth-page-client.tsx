@@ -1,12 +1,14 @@
 "use client";
 
-import { usePathname , useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { LoginForm } from "@/components/auth/login-form";
 import { SignupForm } from "@/components/auth/signup-form";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/use-auth-store";
+
+import type { Route } from "next";
 
 interface AuthPageClientProps {
     initialSignup?: boolean;
@@ -22,6 +24,15 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
     useEffect(() => {
         if (!hasHydrated) return;
         if (!isAuthenticated) return;
+
+        const params = new URLSearchParams(window.location.search);
+        const next = params.get("next");
+        const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
+
+        if (safeNext) {
+            router.replace(safeNext as unknown as Route);
+            return;
+        }
         router.replace("/dashboard");
     }, [hasHydrated, isAuthenticated, router]);
 

@@ -14,6 +14,7 @@ import { loginSchema } from "@/lib/schemas/auth";
 import { useAuthStore } from "@/store/use-auth-store";
 
 import type { LoginSchema } from "@/lib/schemas/auth";
+import type { Route } from "next";
 
 
 export function LoginForm() {
@@ -52,9 +53,15 @@ export function LoginForm() {
                 ...response.user,
                 id: response.user.uuid
             });
-            
-            // Ensure navigation completes
-            await router.push("/dashboard");
+
+            const params = new URLSearchParams(window.location.search);
+            const next = params.get("next");
+            const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
+            if (safeNext) {
+              router.push(safeNext as unknown as Route);
+              return;
+            }
+            router.push("/dashboard");
         } catch (err) {
             setError(err instanceof Error ? err.message : "로그인에 실패했습니다. 다시 시도해주세요.");
         } finally {

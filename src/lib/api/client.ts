@@ -167,7 +167,10 @@ apiClient.interceptors.response.use(
         refreshToken ? { refresh_token: refreshToken } : undefined
       );
 
-      const newAccessToken = refreshResponse.data.data?.accessToken;
+      const refreshPayload = refreshResponse.data.data as unknown as Record<string, unknown> | undefined;
+      const newAccessToken = (refreshPayload?.["accessToken"] ??
+        refreshPayload?.["access_token"] ??
+        refreshPayload?.["token"]) as string | undefined;
       if (!newAccessToken) {
         clearTokens();
         resolveRefreshQueue(null);

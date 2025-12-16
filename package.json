@@ -16,6 +16,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "type-check": "tsc --noEmit",
     "clear": "clear;clear"
   },
   "dependencies": {
