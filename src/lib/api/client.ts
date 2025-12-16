@@ -351,44 +351,36 @@ export const api = {
   },
 
   transactions: {
+    /**
+     * Get recent transactions by site
+     * GET /api/dashboard/transactions/recentbysite
+     */
     async list(): Promise<TransactionData[]> {
       return withErrorHandling(async () => {
         const response = await apiClient.get(
-          apiPath("/dashboard/transactions/recentbysite")
+          apiPath("/dashboard/transactions/recentbysite"),
+          { params: { page: 1, size: 10 } }
         );
 
         const payload = (response.data.data || response.data) as unknown;
-        const groups = Array.isArray(payload) ? payload : [];
+        const list = Array.isArray(payload) ? payload : [];
 
-        const items = groups.flatMap((group: Record<string, unknown>) => {
-          const merchant = (group.merchant as string) || "Unknown";
-          const txs = Array.isArray(group.recentTransactions) ? group.recentTransactions : [];
-          return txs.map((tx: Record<string, unknown>) => ({
-            merchant,
-            tx,
-          }));
-        });
-
-        items.sort((a, b) => {
-          const paidAtA = a.tx.paidAt as string;
-          const paidAtB = b.tx.paidAt as string;
-          return paidAtA < paidAtB ? 1 : -1;
-        });
-
-        return items.map(({ merchant, tx }) => {
+        return list.map((tx: Record<string, unknown>) => {
+          const merchantName = (tx.merchantName as string) || "Unknown";
           const paidAt = (tx.paidAt as string) || "";
-          const amount = (tx.amount as number) || 0;
-          const paymentMethod = (tx.paymentMethod as string) || "Unknown";
+          const paidAmount = (tx.paidAmount as number) || 0;
+          const paymentMethodName = (tx.paymentMethodName as string) || "Unknown";
+          const discountOrRewardAmount = (tx.discountOrRewardAmount as number) || 0;
           
           return {
-            id: `${merchant}-${paidAt}-${amount}`,
-            merchant,
+            id: `${merchantName}-${paidAt}-${paidAmount}`,
+            merchant: merchantName,
             category: "기타",
-            amount: `${amount.toLocaleString()}원`,
+            amount: `${paidAmount.toLocaleString()}원`,
             date: paidAt ? new Date(paidAt).toLocaleDateString() : "-",
             paidAt,
-            cardName: paymentMethod,
-            benefit: "분석 중",
+            cardName: paymentMethodName,
+            benefit: discountOrRewardAmount > 0 ? `${discountOrRewardAmount.toLocaleString()}원 혜택` : "분석 중",
           };
         });
       });
@@ -411,6 +403,10 @@ export const api = {
   },
 
   recommendations: {
+    /**
+     * Get recommended payment methods (Top3)
+     * GET /api/dashboard/charts/recommendedpaymentmethods
+     */
     async getTop(limit = 3): Promise<RecommendationData[]> {
       return withErrorHandling(async () => {
         const response = await apiClient.get(
@@ -420,17 +416,19 @@ export const api = {
         const payload = (response.data.data || response.data) as unknown;
         const list = Array.isArray(payload) ? payload : [];
         
-        return list.slice(0, limit).map((rec: Record<string, unknown>) => {
-          const rank = (rec.rank as number) || 0;
-          const expectedSavings = (rec.expectedSavings as number) || 0;
+        return list.slice(0, limit).map((rec: Record<string, unknown>, index: number) => {
+          const paymentMethodId = (rec.paymentMethodId as number) || index + 1;
+          const score = (rec.score as number) || 0;
+          const paymentMethodName = (rec.paymentMethodName as string) || "Unknown";
+          const reasonSummary = (rec.reasonSummary as string) || "";
           
           return {
-            id: rank,
-            rank,
-            cardName: (rec.cardName as string) || "Unknown",
-            benefit: `예상 절약 ${expectedSavings.toLocaleString()}원`,
-            isRecommended: rank === 1,
-            expectedSavings
+            id: paymentMethodId,
+            rank: index + 1,
+            cardName: paymentMethodName,
+            benefit: reasonSummary || `추천 점수 ${score}점`,
+            isRecommended: index === 0,
+            expectedSavings: score,
           };
         });
       });
@@ -438,6 +436,10 @@ export const api = {
   },
 
   dashboard: {
+    /**
+     * Get monthly savings chart data (last 6 months)
+     * GET /api/dashboard/charts/monthlysavings
+     */
     async getMonthlySavingsChart(): Promise<MonthlySavingsChartData[]> {
       return withErrorHandling(async () => {
         const response = await apiClient.get(
@@ -445,10 +447,19 @@ export const api = {
         );
         const payload = (response.data.data || response.data) as unknown;
         const list = Array.isArray(payload) ? payload : [];
-        return list;
+        
+        return list.map((item: Record<string, unknown>) => ({
+          month: (item.month as string) || "",
+          savings: (item.savingsAmount as number) || 0,
+          spent: (item.totalSpent as number) || 0,
+        }));
       });
     },
 
+    /**
+     * Get summary metrics for dashboard
+     * Multiple API calls: savings, topmerchant, toppaymentmethod, aibenefitsummary
+     */
     async getSummary(): Promise<SummaryData> {
       return withErrorHandling(async () => {
         const [savingsRes, topMerchantRes] = await Promise.all([
@@ -476,24 +487,56 @@ export const api = {
         const pmData = topPaymentMethodRes ? (topPaymentMethodRes.data.data || topPaymentMethodRes.data) as Record<string, unknown> : null;
         const aiData = aiBenefitRes ? (aiBenefitRes.data.data || aiBenefitRes.data) as Record<string, unknown> : null;
 
-        const totalSavings = (savingsData?.totalSavings as number) || 0;
-        const currentMonthSpending = 1250000;
+        const savingsAmount = (savingsData.savingsAmount as number) || 0;
+        const savingsAmountKrw = (savingsData.savingsAmountKrw as string) || `${savingsAmount.toLocaleString()}원`;
+        const compareMessage = (savingsData.compareMessage as string) || "";
         
         return {
-            totalSavings: `${totalSavings.toLocaleString()}원`,
-            totalSavingsChange: "+12.5%",
-            monthlySpending: `${currentMonthSpending.toLocaleString()}원`,
-            monthlySpendingChange: "-5.2%",
+            totalSavings: savingsAmountKrw,
+            totalSavingsChange: compareMessage,
+            monthlySpending: (merchantData.totalSpentKrw as string) || "0원",
+            monthlySpendingChange: (merchantData.range as string) === "THIS_MONTH" ? "이번 달" : "최근 6개월",
             
-            topCategory: (merchantData?.merchant as string) || "분석 중",
-            topCategoryPercent: "34%",
+            topCategory: (merchantData.merchantName as string) || "분석 중",
+            topCategoryPercent: "",
 
-            topPaymentMethod: (pmData?.cardName as string) || "분석 중",
-            topPaymentMethodCount: (pmData?.usageCount as number) || 0,
+            topPaymentMethod: (pmData?.paymentMethodName as string) || "분석 중",
+            topPaymentMethodCount: (pmData?.thisMonthTotalAmount as number) || 0,
 
-            aiBenefit: (aiData?.recommendedCard as string) || "분석 중",
-            aiBenefitAmount: ((aiData?.expectedMonthlySavings as number) || 0).toLocaleString(),
+            aiBenefit: (aiData?.recommendation as string) || "분석 중",
+            aiBenefitAmount: (aiData?.reasonSummary as string) || "",
         };
+      });
+    },
+  },
+
+  users: {
+    /**
+     * Update current user profile
+     * PATCH /api/users/current
+     */
+    async updateProfile(data: {
+      name?: string;
+      settings?: {
+        notificationEnabled?: boolean;
+        darkMode?: boolean;
+        compareMode?: string;
+        currencyPreference?: string;
+      };
+    }): Promise<void> {
+      return withErrorHandling(async () => {
+        await apiClient.patch(apiPath("/users/current"), data);
+      });
+    },
+
+    /**
+     * Get current user info
+     * GET /api/users/current
+     */
+    async getCurrent(): Promise<Record<string, unknown>> {
+      return withErrorHandling(async () => {
+        const response = await apiClient.get(apiPath("/users/current"));
+        return (response.data.data || response.data) as Record<string, unknown>;
       });
     },
   },

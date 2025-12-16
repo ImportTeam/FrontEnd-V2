@@ -1,30 +1,58 @@
 "use client";
 
 import { Camera } from "lucide-react";
+import { useState } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { api } from "@/lib/api/client";
 import { useAuthStore } from "@/store/use-auth-store";
 
 
 // eslint-disable-next-line no-restricted-syntax
 export default function ProfilePage() {
   const user = useAuthStore((state) => state.user);
-  const userName = user?.name || "\uc0ac\uc6a9\uc790";
+  const userName = user?.name || "사용자";
   const userEmail = user?.email || "user@example.com";
   const userInitial = userName.charAt(0).toUpperCase();
+  
+  const [name, setName] = useState(userName);
+  const [phone, setPhone] = useState("");
+  const [bio, setBio] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await api.users.updateProfile({
+        name,
+        settings: {
+          notificationEnabled: true,
+          darkMode: false,
+          compareMode: "AUTO",
+          currencyPreference: "KRW",
+        }
+      });
+      alert("프로필이 저장되었습니다.");
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      alert("프로필 저장에 실패했습니다.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
   
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          \ub0b4 \ud504\ub85c\ud544
+          내 프로필
         </h1>
         <p className="text-zinc-500 dark:text-zinc-400 mt-1">
-          \uac1c\uc778\uc815\ubcf4\ub97c \ud655\uc778\ud558\uace0 \uc218\uc815\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.
+          개인정보를 확인하고 수정할 수 있습니다.
         </p>
     </div>
 
@@ -45,10 +73,10 @@ export default function ProfilePage() {
                 <p className="text-sm text-zinc-500 dark:text-zinc-400">{userEmail}</p>
                 <div className="mt-6 w-full space-y-2">
                     <Button variant="outline" className="w-full justify-start">
-                        \ube44\ubc00\ubc88\ud638 \ubcc0\uacbd
+                        비밀번호 변경
                     </Button>
                     <Button variant="outline" className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30">
-                        \uacc4\uc815 \uc0ad\uc81c
+                        계정 삭제
                     </Button>
                 </div>
             </CardContent>
@@ -61,26 +89,52 @@ export default function ProfilePage() {
                 <CardDescription>서비스 이용에 필요한 기본 정보를 수정합니다.</CardDescription>
             </CardHeader>
             <CardContent>
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); void handleSave(); }}>
                     <div className="grid gap-2">
                         <Label htmlFor="nickname">닉네임</Label>
-                        <Input id="nickname" defaultValue="김픽셀" className="bg-zinc-50 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700" />
+                        <Input 
+                          id="nickname" 
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="bg-zinc-50 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700" 
+                        />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="email">이메일</Label>
-                        <Input id="email" defaultValue="picsel@user.com" disabled className="bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500" />
+                        <Input 
+                          id="email" 
+                          value={userEmail}
+                          disabled 
+                          className="bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500" 
+                        />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="phone">휴대폰 번호</Label>
-                        <Input id="phone" defaultValue="010-1234-5678" className="bg-zinc-50 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700" />
+                        <Input 
+                          id="phone" 
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          placeholder="010-1234-5678"
+                          className="bg-zinc-50 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700" 
+                        />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="bio">소개</Label>
-                        <Input id="bio" placeholder="나를 소개하는 한 마디" className="bg-zinc-50 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700" />
+                        <Input 
+                          id="bio" 
+                          value={bio}
+                          onChange={(e) => setBio(e.target.value)}
+                          placeholder="나를 소개하는 한 마디" 
+                          className="bg-zinc-50 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700" 
+                        />
                     </div>
                     <div className="flex justify-end pt-4">
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                            변경사항 저장
+                        <Button 
+                          type="submit"
+                          disabled={isSaving}
+                          className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
+                        >
+                          {isSaving ? "저장 중..." : "변경사항 저장"}
                         </Button>
                     </div>
                 </form>
