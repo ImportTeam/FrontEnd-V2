@@ -11,9 +11,9 @@ export function SocialLoginButtons({ mode }: SocialLoginButtonsProps) {
   const apiBaseUrl = (process.env.NEXT_PUBLIC_API_URL || "https://api.picsel.kr/api").replace(/\/$/, "");
 
   const handleSocialLogin = (provider: "google" | "kakao" | "naver") => {
-    // Swagger: GET /api/auth/{provider}/login
-    // NOTE: Some backends also expose aliases like /api/auth/google.
-    window.location.href = `${apiBaseUrl}/auth/${provider}/login`;
+    // Docs: GET /api/auth/{provider}
+    // NOTE: POST /api/auth/{provider}/login exists, but window.location is a GET.
+    window.location.href = `${apiBaseUrl}/auth/${provider}`;
   };
 
   return (

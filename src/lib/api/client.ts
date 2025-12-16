@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import { useAuthStore } from "@/store/use-auth-store";
+
 import type {
   CardData,
   RecommendationData,
@@ -65,6 +67,10 @@ function clearTokens() {
   if (typeof window === "undefined") return;
   localStorage.removeItem(STORAGE_KEYS.accessToken);
   localStorage.removeItem(STORAGE_KEYS.refreshToken);
+
+  // Keep UI auth state consistent with token state.
+  // This prevents a stale 'isAuthenticated=true' while Authorization header is missing.
+  useAuthStore.getState().logout();
 }
 
 function extractLast4Digits(masked: string | undefined): string | undefined {
@@ -178,12 +184,52 @@ apiClient.interceptors.response.use(
 );
 
 // Helper for error handling
+function getApiErrorMessage(error: unknown): string {
+  if (!axios.isAxiosError(error)) {
+    return error instanceof Error ? error.message : "Unknown error";
+  }
+
+  // Network/CSP/CORS errors often surface here.
+  if (!error.response) {
+    return error.message || "Network error";
+  }
+
+  const status = error.response.status;
+  const data: unknown = error.response.data;
+
+  let messageFromBody: string | undefined;
+  if (typeof data === "string") {
+    messageFromBody = data;
+  } else if (typeof data === "object" && data !== null) {
+    const obj = data as Record<string, unknown>;
+    const topMessage = typeof obj.message === "string" ? obj.message : undefined;
+
+    let nestedMessage: string | undefined;
+    let nestedCode: string | undefined;
+    const nestedError = obj.error;
+    if (typeof nestedError === "object" && nestedError !== null) {
+      const nested = nestedError as Record<string, unknown>;
+      nestedMessage = typeof nested.message === "string" ? nested.message : undefined;
+      nestedCode = typeof nested.code === "string" ? nested.code : undefined;
+    }
+
+    messageFromBody = topMessage || nestedMessage || nestedCode;
+  }
+
+  if (messageFromBody) return messageFromBody;
+
+  if (status === 401) return "Unauthorized";
+  if (status === 409) return "Conflict";
+  return error.message || `Request failed (${status})`;
+}
+
 async function withErrorHandling<T>(fn: () => Promise<T>): Promise<T> {
   try {
     return await fn();
   } catch (error) {
+    const message = getApiErrorMessage(error);
     console.error("API Error:", error);
-    throw error;
+    throw new Error(message);
   }
 }
 
@@ -402,10 +448,15 @@ export const api = {
         const response = await apiClient.post<ApiResponse<AuthResponse>>(apiPath("/auth/login"), { email, password });
         
         if (response.data.data) {
-            const { accessToken, user } = response.data.data;
-            const refreshToken = response.data.data.refreshToken;
-            setTokens({ accessToken, refreshToken });
-            return { token: accessToken, user };
+            const payload = response.data.data as unknown as Record<string, unknown>;
+            const accessToken = (payload["accessToken"] ?? payload["access_token"] ?? payload["token"]) as string | undefined;
+            const refreshToken = (payload["refreshToken"] ?? payload["refresh_token"]) as string | undefined;
+            const user = payload["user"] as AuthResponse["user"] | undefined;
+
+            if (accessToken && user) {
+              setTokens({ accessToken, refreshToken });
+              return { token: accessToken, user };
+            }
         }
         throw new Error(response.data.message || "Login failed");
       });
@@ -420,10 +471,15 @@ export const api = {
         );
 
         if (response.data.data) {
-          const { accessToken, user } = response.data.data;
-          const refreshToken = response.data.data.refreshToken;
-          setTokens({ accessToken, refreshToken });
-          return { token: accessToken, user };
+          const payload = response.data.data as unknown as Record<string, unknown>;
+          const accessToken = (payload["accessToken"] ?? payload["access_token"] ?? payload["token"]) as string | undefined;
+          const refreshToken = (payload["refreshToken"] ?? payload["refresh_token"]) as string | undefined;
+          const user = payload["user"] as AuthResponse["user"] | undefined;
+
+          if (accessToken && user) {
+            setTokens({ accessToken, refreshToken });
+            return { token: accessToken, user };
+          }
         }
 
         throw new Error(response.data.message || "Signup failed");
@@ -447,7 +503,8 @@ export const api = {
           apiPath("/auth/refresh"),
           refreshToken ? { refresh_token: refreshToken } : undefined
         );
-        const accessToken = response.data.data?.accessToken;
+        const payload = response.data.data as unknown as Record<string, unknown> | undefined;
+        const accessToken = (payload?.["accessToken"] ?? payload?.["access_token"] ?? payload?.["token"]) as string | undefined;
         if (!accessToken) {
           throw new Error(response.data.message || "Refresh failed");
         }
