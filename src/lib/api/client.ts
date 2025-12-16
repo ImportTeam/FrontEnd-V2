@@ -483,20 +483,19 @@ export const api = {
         // Debug: log response structure to understand backend format
         console.warn("[AUTH] Login response:", JSON.stringify(response.data, null, 2));
 
-        if (response.data.data) {
-            const payload = response.data.data as unknown as Record<string, unknown>;
-            const accessToken = (payload["accessToken"] ?? payload["access_token"] ?? payload["token"]) as string | undefined;
-            const refreshToken = (payload["refreshToken"] ?? payload["refresh_token"]) as string | undefined;
-            const user = payload["user"] as AuthResponse["user"] | undefined;
+        // Backend may send tokens in data.data OR directly in data
+        const payload = (response.data.data || response.data) as unknown as Record<string, unknown>;
+        const accessToken = (payload["accessToken"] ?? payload["access_token"] ?? payload["token"]) as string | undefined;
+        const refreshToken = (payload["refreshToken"] ?? payload["refresh_token"]) as string | undefined;
+        const user = payload["user"] as AuthResponse["user"] | undefined;
 
-            if (accessToken && user) {
-              setTokens({ accessToken, refreshToken });
-              console.warn("[AUTH] Login success, tokens saved");
-              return { token: accessToken, user };
-            }
-
-            console.error("[AUTH] Login response missing required fields:", { hasAccessToken: !!accessToken, hasUser: !!user });
+        if (accessToken && user) {
+          setTokens({ accessToken, refreshToken });
+          console.warn("[AUTH] Login success, tokens saved");
+          return { token: accessToken, user };
         }
+
+        console.error("[AUTH] Login response missing required fields:", { hasAccessToken: !!accessToken, hasUser: !!user });
 
         // NEVER throw a success message as error
         const msg = response.data.message || "";
@@ -518,20 +517,19 @@ export const api = {
         // Debug: log response structure to understand backend format
         console.warn("[AUTH] Signup response:", JSON.stringify(response.data, null, 2));
 
-        if (response.data.data) {
-          const payload = response.data.data as unknown as Record<string, unknown>;
-          const accessToken = (payload["accessToken"] ?? payload["access_token"] ?? payload["token"]) as string | undefined;
-          const refreshToken = (payload["refreshToken"] ?? payload["refresh_token"]) as string | undefined;
-          const user = payload["user"] as AuthResponse["user"] | undefined;
+        // Backend may send tokens in data.data OR directly in data
+        const payload = (response.data.data || response.data) as unknown as Record<string, unknown>;
+        const accessToken = (payload["accessToken"] ?? payload["access_token"] ?? payload["token"]) as string | undefined;
+        const refreshToken = (payload["refreshToken"] ?? payload["refresh_token"]) as string | undefined;
+        const user = payload["user"] as AuthResponse["user"] | undefined;
 
-          if (accessToken && user) {
-            setTokens({ accessToken, refreshToken });
-            console.warn("[AUTH] Signup success, tokens saved");
-            return { token: accessToken, user };
-          }
-
-          console.error("[AUTH] Signup response missing required fields:", { hasAccessToken: !!accessToken, hasUser: !!user });
+        if (accessToken && user) {
+          setTokens({ accessToken, refreshToken });
+          console.warn("[AUTH] Signup success, tokens saved");
+          return { token: accessToken, user };
         }
+
+        console.error("[AUTH] Signup response missing required fields:", { hasAccessToken: !!accessToken, hasUser: !!user });
 
         // NEVER throw a success message as error
         const msg = response.data.message || "";
