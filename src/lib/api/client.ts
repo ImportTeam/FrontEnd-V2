@@ -207,29 +207,37 @@ function getApiErrorMessage(error: unknown): string {
   const status = error.response.status;
   const data: unknown = error.response.data;
 
-  let messageFromBody: string | undefined;
-  if (typeof data === "string") {
-    messageFromBody = data;
-  } else if (typeof data === "object" && data !== null) {
-    const obj = data as Record<string, unknown>;
-    const topMessage = typeof obj.message === "string" ? obj.message : undefined;
+  // For error responses (4xx, 5xx), extract error message from body
+  // Only use statusCode >= 400 to be safe against backend quirks
+  if (status >= 400) {
+    if (typeof data === "string" && data) {
+      return data;
+    } else if (typeof data === "object" && data !== null) {
+      const obj = data as Record<string, unknown>;
+      const topMessage = typeof obj.message === "string" ? obj.message : undefined;
 
-    let nestedMessage: string | undefined;
-    let nestedCode: string | undefined;
-    const nestedError = obj.error;
-    if (typeof nestedError === "object" && nestedError !== null) {
-      const nested = nestedError as Record<string, unknown>;
-      nestedMessage = typeof nested.message === "string" ? nested.message : undefined;
-      nestedCode = typeof nested.code === "string" ? nested.code : undefined;
+      let nestedMessage: string | undefined;
+      let nestedCode: string | undefined;
+      const nestedError = obj.error;
+      if (typeof nestedError === "object" && nestedError !== null) {
+        const nested = nestedError as Record<string, unknown>;
+        nestedMessage = typeof nested.message === "string" ? nested.message : undefined;
+        nestedCode = typeof nested.code === "string" ? nested.code : undefined;
+      }
+
+      // Prefer nested error message, then top-level message
+      const messageFromBody = nestedMessage || topMessage || nestedCode;
+      if (messageFromBody) return messageFromBody;
     }
-
-    messageFromBody = topMessage || nestedMessage || nestedCode;
   }
 
-  if (messageFromBody) return messageFromBody;
-
+  // Fallback to status-code specific messages
+  if (status === 400) return "Bad request";
   if (status === 401) return "Unauthorized";
-  if (status === 409) return "Conflict";
+  if (status === 403) return "Forbidden";
+  if (status === 404) return "Not found";
+  if (status === 409) return "Conflict (duplicate or invalid state)";
+  if (status >= 500) return "Server error";
   return error.message || `Request failed (${status})`;
 }
 

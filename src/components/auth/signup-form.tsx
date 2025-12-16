@@ -42,12 +42,19 @@ export function SignupForm() {
             // Real API call
             const response = await api.auth.signup(data.name, data.email, data.password);
             
+            if (!response || !response.user) {
+              setError("회원가입 응답이 불완전합니다.");
+              setIsLoading(false);
+              return;
+            }
+            
             login({
                 ...response.user,
                 id: response.user.uuid
             });
             
-            router.push("/dashboard");
+            // Ensure navigation completes
+            await router.push("/dashboard");
         } catch (err) {
             setError(err instanceof Error ? err.message : "회원가입에 실패했습니다. 다시 시도해주세요.");
         } finally {
