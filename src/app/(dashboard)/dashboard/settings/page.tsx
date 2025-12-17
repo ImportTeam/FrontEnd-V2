@@ -169,24 +169,24 @@ export default function SettingsPage() {
       {/* Device Management Modal */}
       {showDevices ? (
         <div 
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={() => setShowDevices(false)}
           role="presentation"
         >
           <Card 
-            className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 w-full max-w-2xl max-h-80 overflow-hidden flex flex-col"
+            className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 w-full max-w-3xl max-h-screen-80 overflow-hidden flex flex-col shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-zinc-200 dark:border-zinc-800">
-              <div>
-                <CardTitle>기기 관리</CardTitle>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                  현재 로그인된 기기에서 로그아웃할 수 있습니다.
+            <CardHeader className="flex flex-row items-start justify-between space-y-0 border-b border-zinc-200 dark:border-zinc-800 pb-4">
+              <div className="space-y-1">
+                <CardTitle className="text-xl font-bold">기기 관리</CardTitle>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                  현재 로그인된 기기 목록입니다. 의심스러운 기기가 있다면 즉시 로그아웃하세요.
                 </p>
               </div>
               <button
                 onClick={() => setShowDevices(false)}
-                className="rounded-md text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+                className="rounded-lg p-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
                 type="button"
               >
                 <X className="h-5 w-5" />
@@ -194,38 +194,45 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent className="overflow-y-auto flex-1 p-6">
               {isLoadingSessions ? (
-                <div className="flex items-center justify-center py-8">
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
                   <p className="text-zinc-500">기기 정보를 불러오는 중...</p>
                 </div>
               ) : sessions.length === 0 ? (
-                <div className="flex items-center justify-center py-8">
+                <div className="flex flex-col items-center justify-center py-12">
+                  <Smartphone className="h-12 w-12 text-zinc-300 dark:text-zinc-700 mb-4" />
                   <p className="text-zinc-500">로그인된 기기가 없습니다.</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {sessions.map((session) => (
+                <div className="space-y-3">
+                  {sessions.map((session, index) => (
                     <div
                       key={session.id}
-                      className="flex items-center justify-between p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
+                      className="group flex items-start gap-4 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md transition-all"
                     >
-                      <div className="flex items-center gap-4 flex-1">
-                        <Smartphone className="h-6 w-6 text-zinc-400" />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-zinc-900 dark:text-zinc-100">
+                      <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/30 shrink-0">
+                        <Smartphone className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-semibold text-zinc-900 dark:text-zinc-100">
                             {session.deviceInfo}
                           </p>
-                          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                            로그인: {new Date(session.createdAt).toLocaleString('ko-KR')}
-                          </p>
-                          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                            만료: {new Date(session.expiresAt).toLocaleString('ko-KR')}
-                          </p>
+                          {index === 0 && (
+                            <span className="px-2 py-0.5 text-xs font-medium bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-400 rounded-full">
+                              현재 기기
+                            </span>
+                          )}
+                        </div>
+                        <div className="space-y-0.5 text-sm text-zinc-500 dark:text-zinc-400">
+                          <p>로그인: {new Date(session.createdAt).toLocaleString('ko-KR', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+                          <p>만료: {new Date(session.expiresAt).toLocaleString('ko-KR', { dateStyle: 'medium', timeStyle: 'short' })}</p>
                         </div>
                       </div>
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 ml-2 shrink-0"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30 border-red-200 dark:border-red-900/50 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={() => void handleLogoutSession(session.id)}
                       >
                         로그아웃
