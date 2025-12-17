@@ -46,7 +46,7 @@ export function RecentTransactions() {
                     <div key={i} className="flex items-center justify-between group">
                         <div className="flex items-center gap-4 w-full">
                             <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
-                            <div className="space-y-1 w-full max-w-[150px]">
+                            <div className="space-y-1 w-full max-w-37.5">
                                 <div className="h-4 w-3/4 bg-muted animate-pulse rounded" />
                                 <div className="h-3 w-1/2 bg-muted animate-pulse rounded" />
                             </div>

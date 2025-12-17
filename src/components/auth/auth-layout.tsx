@@ -66,7 +66,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             <div
                 className={`w-full lg:w-1/2 flex items-center justify-center bg-background p-8 lg:p-16 ${isSignup ? "lg:order-1" : "lg:order-2"}`}
             >
-                <div className="w-full max-w-[400px] mx-auto space-y-6">
+                <div className="w-full max-w-100 mx-auto space-y-6">
                     {children}
                 </div>
             </div>

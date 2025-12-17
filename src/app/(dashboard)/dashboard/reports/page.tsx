@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { FileJson, FileText } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -154,7 +154,7 @@ export default function ReportsPage() {
                 <CardDescription className="text-xs sm:text-sm">어디에 가장 많이 썼을까요?</CardDescription>
             </CardHeader>
             <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
-                <div className="h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center border-2 border-dashed border-zinc-100 dark:border-zinc-800 rounded-xl bg-zinc-50 dark:bg-zinc-900/50">
+                <div className="h-50 sm:h-62.5 md:h-75 flex items-center justify-center border-2 border-dashed border-zinc-100 dark:border-zinc-800 rounded-xl bg-zinc-50 dark:bg-zinc-900/50">
                     <span className="text-zinc-400 text-xs sm:text-sm">Pie Chart Placeholder</span>
                 </div>
             </CardContent>
@@ -166,7 +166,7 @@ export default function ReportsPage() {
                 <CardDescription className="text-xs sm:text-sm">지난 6개월간의 변화입니다.</CardDescription>
             </CardHeader>
             <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
-                <div className="h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center border-2 border-dashed border-zinc-100 dark:border-zinc-800 rounded-xl bg-zinc-50 dark:bg-zinc-900/50">
+                <div className="h-50 sm:h-62.5 md:h-75 flex items-center justify-center border-2 border-dashed border-zinc-100 dark:border-zinc-800 rounded-xl bg-zinc-50 dark:bg-zinc-900/50">
                     <span className="text-zinc-400 text-xs sm:text-sm">Bar Chart Placeholder</span>
                 </div>
             </CardContent>

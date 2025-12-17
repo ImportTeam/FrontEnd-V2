@@ -167,14 +167,14 @@ export default function SettingsPage() {
       </div>
 
       {/* Device Management Modal */}
-      {showDevices && (
+      {showDevices ? (
         <div 
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
           onClick={() => setShowDevices(false)}
           role="presentation"
         >
           <Card 
-            className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col"
+            className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 w-full max-w-2xl max-h-80 overflow-hidden flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-zinc-200 dark:border-zinc-800">
@@ -237,7 +237,7 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

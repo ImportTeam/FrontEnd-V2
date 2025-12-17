@@ -48,7 +48,7 @@ export function DashboardCharts() {
           <CardDescription className="text-sm">AI가 분석한 지난 6개월간의 혜택 적용 내역입니다.</CardDescription>
         </CardHeader>
         <CardContent className="pl-2">
-          <div className="h-[300px] w-full min-h-[300px]">
+          <div className="h-75 w-full min-h-75">
             {loading ? (
               <div className="h-full w-full bg-muted/50 animate-pulse rounded-xl" />
             ) : chartData.length === 0 ? (

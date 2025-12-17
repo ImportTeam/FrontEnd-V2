@@ -73,7 +73,7 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
                 }`}
                 style={{ left: 0 }}
             >
-                <div className="w-full max-w-[400px] mx-auto">
+                <div className="w-full max-w-100 mx-auto">
                     <div 
                         className={`transition-opacity duration-200 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
                     >
@@ -105,7 +105,7 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
                 
                 {/* Overlay Text Content */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="relative z-10 w-full max-w-lg min-w-[450px] mx-auto px-6 text-center text-white mb-40">
+                    <div className="relative z-10 w-full max-w-lg min-w-112.5 mx-auto px-6 text-center text-white mb-40">
                         <div 
                             className={`space-y-4 w-full transition-all duration-300 ${isTransitioning ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}
                         >
@@ -134,7 +134,7 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
             {/* === MOBILE LAYOUT === */}
             <div className="flex lg:hidden flex-col min-h-screen w-full">
                 <div className="flex items-start bg-background p-6 pt-20">
-                    <div className="w-full max-w-[400px]">
+                    <div className="w-full max-w-100">
                         <div 
                             className={`transition-opacity duration-200 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
                         >

@@ -38,7 +38,7 @@ export default function DashboardLoading() {
             <div className="h-6 w-40 bg-zinc-200 dark:bg-zinc-800 rounded" />
             <div className="h-4 w-64 bg-zinc-100 dark:bg-zinc-900 rounded" />
           </div>
-          <div className="h-[300px] bg-zinc-100 dark:bg-zinc-900 rounded-xl" />
+          <div className="h-75 bg-zinc-100 dark:bg-zinc-900 rounded-xl" />
         </div>
         <div className="col-span-full lg:col-span-3 rounded-2xl border border-border bg-card p-6">
           <div className="space-y-2 mb-6">
