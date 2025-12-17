@@ -1,8 +1,8 @@
 "use client";
 
-import { useTheme } from "next-themes";
 import { Bell, Moon, Shield, Smartphone, X } from "lucide-react";
-import { useState } from "react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +18,20 @@ export default function SettingsPage() {
   const [showDevices, setShowDevices] = useState(false);
   const [sessions, setSessions] = useState<SessionData[]>([]);
   const [isLoadingSessions, setIsLoadingSessions] = useState(false);
+
+  // Handle ESC key to close modal
+  useEffect(() => {
+    if (!showDevices) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowDevices(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [showDevices]);
 
   const loadSessions = async () => {
     setIsLoadingSessions(true);
@@ -154,8 +168,15 @@ export default function SettingsPage() {
 
       {/* Device Management Modal */}
       {showDevices && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <Card className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowDevices(false)}
+          role="presentation"
+        >
+          <Card 
+            className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-zinc-200 dark:border-zinc-800">
               <div>
                 <CardTitle>기기 관리</CardTitle>
@@ -165,7 +186,8 @@ export default function SettingsPage() {
               </div>
               <button
                 onClick={() => setShowDevices(false)}
-                className="rounded-md text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+                className="rounded-md text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+                type="button"
               >
                 <X className="h-5 w-5" />
               </button>
