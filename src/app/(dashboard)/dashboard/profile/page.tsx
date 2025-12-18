@@ -19,6 +19,9 @@ export default function ProfilePage() {
   const userName = user?.name || "사용자";
   const userEmail = user?.email || "user@example.com";
   const userInitial = userName.charAt(0).toUpperCase();
+
+  const headerGradientClass = "bg-linear-to-r from-blue-500 to-indigo-600";
+  const avatarGradientClass = "bg-linear-to-br from-blue-500 to-indigo-600";
   
   const [userProfile, setUserProfile] = useState<UserCurrentResponse | null>(null);
   const [name, setName] = useState(userName);
@@ -92,14 +95,14 @@ export default function ProfilePage() {
 
       {/* Profile Overview Card */}
       <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
-        <div className="h-24 bg-gradient-to-r from-blue-500 to-indigo-600" />
+        <div className={`h-24 ${headerGradientClass}`} />
         <CardContent className="relative pt-0 pb-6">
           <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-12">
             {/* Avatar */}
             <div className="relative group">
               <Avatar className="h-28 w-28 border-4 border-white dark:border-zinc-900 shadow-xl">
                 <AvatarImage src="/placeholder-avatar.jpg" alt={name} />
-                <AvatarFallback className="text-4xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold">
+                <AvatarFallback className={`text-4xl ${avatarGradientClass} text-white font-bold`}>
                   {userInitial}
                 </AvatarFallback>
               </Avatar>

@@ -48,19 +48,19 @@ export function Footer() {
                         <h4 className="font-semibold mb-4 text-foreground">지원</h4>
                         <ul className="space-y-3 text-sm text-zinc-700 dark:text-zinc-300">
                             <li>
-                                <Link href="#support" className="hover:text-foreground transition-colors">
+                                <Link href="mailto:contact@picsel.com" className="hover:text-foreground transition-colors">
                                     고객센터
                                 </Link>
                             </li>
                             <li>
-                                <Link href="#terms" className="hover:text-foreground transition-colors">
+                                <a href="/terms" className="hover:text-foreground transition-colors">
                                     이용약관
-                                </Link>
+                                </a>
                             </li>
                             <li>
-                                <Link href="#privacy" className="hover:text-foreground transition-colors">
+                                <a href="/privacy" className="hover:text-foreground transition-colors">
                                     개인정보처리방침
-                                </Link>
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -72,12 +72,12 @@ export function Footer() {
                             <li className="flex items-center gap-2">
                                 <Mail className="h-4 w-4 text-blue-500" />
                                 <a href="mailto:contact@picsel.com" className="hover:text-foreground transition-colors">
-                                    contact@picsel.com
+                                    sakills914@gmail.com
                                 </a>
                             </li>
                             <li className="flex items-center gap-2">
                                 <Phone className="h-4 w-4 text-blue-500" />
-                                <span>02-1234-5678</span>
+                                <span>010-3145-9507</span>
                             </li>
                         </ul>
                     </div>
