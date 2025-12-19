@@ -20,6 +20,7 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         font-size: var(--font-size-base);
+        transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     /* Typography (rem 기반) */

@@ -3,12 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+import type { Route } from "next";
+
 import { Features } from "@/components/landing/features";
 import { Hero } from "@/components/landing/hero";
 import { HowToUse } from "@/components/landing/how-to-use";
 import { useAuthStore } from "@/store/use-auth-store";
-
-import type { Route } from "next";
 
 // eslint-disable-next-line no-restricted-syntax
 export default function Home() {
@@ -18,7 +18,7 @@ export default function Home() {
   useEffect(() => {
     // Auto-redirect to dashboard if already logged in
     if (isAuthenticated) {
-      router.push("/dashboard" as Route);
+      router.push("/login" as Route);
     }
   }, [isAuthenticated, router]);
   

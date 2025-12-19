@@ -24,7 +24,7 @@ export function Navbar() {
     };
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md supports-backdrop-filter:bg-background/60">
+        <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-neutral-50/80 dark:bg-neutral-950/80 backdrop-blur-md supports-backdrop-filter:bg-background/60">
             <div className="container flex h-28 items-center justify-between">
                 <div className="flex items-center gap-8">
                     <Link href="/" className="flex items-center gap-2">
@@ -35,7 +35,7 @@ export function Navbar() {
                             height={100}
                             priority
                             sizes="100px"
-                            className="rounded-sm"
+                            className="rounded-sm dark:invert"
                         />
                     </Link>
                     {!isAuthPage && (
