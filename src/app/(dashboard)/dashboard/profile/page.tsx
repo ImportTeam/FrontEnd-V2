@@ -128,7 +128,7 @@ export default function ProfilePage() {
                     </span>
                   </div>
                 </div>
-              ) : null : null}
+              ) : null}
             </div>
           </div>
         </CardContent>
@@ -172,8 +172,7 @@ export default function ProfilePage() {
                 <p className="text-xs text-zinc-500">이메일은 변경할 수 없습니다.</p>
               </div>
 
-              {userProfile?.settings && (
-                <div className="grid gap-5 sm:grid-cols-2">
+              {userProfile?.settings ? <div className="grid gap-5 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="currency" className="text-sm font-medium">통화</Label>
                     <Input 
@@ -192,8 +191,7 @@ export default function ProfilePage() {
                       className="h-11 bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500" 
                     />
                   </div>
-                </div>
-              )}
+                </div> : null}
 
               <div className="flex justify-end pt-4 border-t border-zinc-200 dark:border-zinc-800">
                 <Button 
