@@ -25,7 +25,8 @@ export function SignupForm() {
     const {
         register,
         handleSubmit,
-        formState: { errors, isValid },
+        formState: { errors },
+        watch,
     } = useAuthForm<typeof signupSchema>({
         schema: signupSchema,
         defaultValues: {
@@ -34,6 +35,12 @@ export function SignupForm() {
             password: "",
         },
     });
+
+    // Watch form values to enable button when fields have content
+    const name = watch("name");
+    const email = watch("email");
+    const password = watch("password");
+    const isFormFilled = name && email && password;
 
     const onSubmit = async (data: SignupSchema) => {
         try {
@@ -114,8 +121,8 @@ export function SignupForm() {
 
                 <Button 
                     type="submit" 
-                    disabled={isLoading || !isValid}
-                    className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-base rounded-lg dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isLoading || !isFormFilled}
+                    className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-base rounded-lg dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                     {isLoading ? "가입 중..." : "회원가입"}
                 </Button>

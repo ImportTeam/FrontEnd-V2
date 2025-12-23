@@ -89,8 +89,12 @@ const nextConfig: NextConfig = {
                         value: 'origin-when-cross-origin'
                     },
                     {
+                        key: 'Cross-Origin-Resource-Policy',
+                        value: 'cross-origin'
+                    },
+                    {
                         key: 'Content-Security-Policy',
-                        value: `default-src 'self'; img-src 'self' data: https: blob:; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' ${apiOrigin} https://vitals.vercel-insights.com https://va.vercel-scripts.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self';`
+                        value: `default-src 'self'; img-src 'self' data: https: blob:; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://va.vercel-scripts.com https://vercel.live; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' ${apiOrigin} https://vitals.vercel-insights.com https://va.vercel-scripts.com https://vercel.live; frame-ancestors 'self'; base-uri 'self'; form-action 'self';`
                     }
                 ]
             }

@@ -64,23 +64,26 @@ export function DashboardCharts() {
                       <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb dark:e5e7eb" />
                   <XAxis 
                     dataKey="month" 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fontSize: 12, fill: "#71717a" }}
+                    tick={{ fontSize: 12, fill: "#71717a", fontWeight: 500 }}
                     dy={10}
+                    className="dark:[&_text]:fill-zinc-200"
                   />
                   <YAxis 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fontSize: 12, fill: "#71717a" }}
+                    tick={{ fontSize: 12, fill: "#71717a", fontWeight: 500 }}
                     tickFormatter={(value) => `${(value / 10000).toLocaleString()}만`}
+                    className="dark:[&_text]:fill-zinc-200"
                   />
                   <Tooltip 
-                    contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
+                    contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)", backgroundColor: "#fff", color: "#000" }}
                     formatter={(value?: number) => [value ? `${value.toLocaleString()}원` : "0원", "절약 금액"]}
+                    labelStyle={{ color: "#000" }}
                   />
                   <Area 
                     type="monotone" 

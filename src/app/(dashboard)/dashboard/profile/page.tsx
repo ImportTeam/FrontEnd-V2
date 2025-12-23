@@ -115,7 +115,7 @@ export default function ProfilePage() {
             <div className="flex-1 text-center sm:text-left space-y-1 sm:mb-2">
               <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">{name}</h2>
               <p className="text-sm text-zinc-500 dark:text-zinc-400">{email}</p>
-              {userProfile && (
+              {userProfile ? (
                 <div className="flex items-center justify-center sm:justify-start gap-4 pt-2 text-xs text-zinc-500 dark:text-zinc-400">
                   <div className="flex items-center gap-1.5">
                     <Calendar className="h-3.5 w-3.5" />
@@ -128,7 +128,7 @@ export default function ProfilePage() {
                     </span>
                   </div>
                 </div>
-              )}
+              ) : null : null}
             </div>
           </div>
         </CardContent>

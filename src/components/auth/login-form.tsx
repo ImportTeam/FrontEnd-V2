@@ -26,7 +26,8 @@ export function LoginForm() {
     const {
         register,
         handleSubmit,
-        formState: { errors, isValid },
+        formState: { errors },
+        watch,
     } = useAuthForm<typeof loginSchema>({
         schema: loginSchema,
         defaultValues: {
@@ -34,6 +35,11 @@ export function LoginForm() {
             password: "",
         },
     });
+
+    // Watch form values to enable button when fields have content
+    const email = watch("email");
+    const password = watch("password");
+    const isFormFilled = email && password;
 
     const onSubmit = async (data: LoginSchema) => {
         try {
@@ -115,8 +121,8 @@ export function LoginForm() {
 
                 <Button 
                     type="submit" 
-                    disabled={isLoading || !isValid}
-                    className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-base rounded-lg dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isLoading || !isFormFilled}
+                    className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-base rounded-lg dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                     {isLoading ? "로그인 중..." : "로그인"}
                 </Button>
