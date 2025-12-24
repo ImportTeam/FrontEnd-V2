@@ -12,10 +12,15 @@ export function SocialLoginButtons({ mode }: SocialLoginButtonsProps) {
   const callbackUrl = typeof window !== "undefined" ? `${window.location.origin}/oauth-callback` : "";
 
   const handleSocialLogin = (provider: "google" | "kakao" | "naver") => {
-    // Docs: GET /api/auth/{provider}
-    // Pass redirect_uri to handle OAuth callback
+    // Log for debugging
+    console.warn(`[SOCIAL_LOGIN] Starting ${provider} login`);
+    console.warn(`[SOCIAL_LOGIN] Callback URL: ${callbackUrl}`);
+    
+    // GET /api/auth/{provider}?redirect_uri={callback_url}
     const authUrl = new URL(`${apiBaseUrl}/auth/${provider}`);
     authUrl.searchParams.append("redirect_uri", callbackUrl);
+    
+    console.warn(`[SOCIAL_LOGIN] Auth URL: ${authUrl.toString()}`);
     window.location.href = authUrl.toString();
   };
 

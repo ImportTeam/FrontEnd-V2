@@ -14,17 +14,35 @@ export function OAuthHandler() {
   const router = useRouter();
   const { login } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<string>("");
 
   useEffect(() => {
     async function handleCallback() {
       try {
-        // Get tokens from URL params
+        // 1. Try to get tokens from URL params (direct redirect from backend)
         const accessToken = searchParams.get("access_token") || searchParams.get("token");
         const refreshToken = searchParams.get("refresh_token");
 
-        if (!accessToken) {
-          throw new Error("No access token provided");
+        // Log all URL params for debugging
+        const allParams = Array.from(searchParams.entries());
+        console.warn("[OAUTH] All URL params:", allParams);
+        setDebugInfo(`Params: ${JSON.stringify(Object.fromEntries(allParams))}`);
+
+        // 2. If no tokens, check for OAuth code (Google/Kakao/Naver callback)
+        const code = searchParams.get("code");
+
+        if (code) {
+          console.warn("[OAUTH] Authorization code detected:", code);
+          // Note: Backend should handle /api/auth/{provider}/callback
+          // For now, we'll wait for the backend to redirect with tokens
+          throw new Error("Backend is processing OAuth. Waiting for redirect with access_token...");
         }
+
+        if (!accessToken) {
+          throw new Error("No access token in URL params. Backend redirect required.");
+        }
+
+        console.warn("[OAUTH] Access token found, processing...");
 
         // Store tokens in localStorage
         if (typeof window !== "undefined") {
@@ -72,9 +90,16 @@ export function OAuthHandler() {
   if (error) {
     return (
       <div className="text-center space-y-4">
-        <h1 className="text-2xl font-bold text-red-600">로그인 오류</h1>
-        <p className="text-zinc-600 dark:text-zinc-400">{error}</p>
-        <a href="/login" className="text-blue-600 hover:underline">
+        <h1 className="text-2xl font-bold text-red-600">로그인 처리 중</h1>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">{error}</p>
+        {debugInfo ? <div className="text-xs bg-zinc-900 text-zinc-100 p-3 rounded font-mono max-w-md mx-auto overflow-auto">
+            {debugInfo}
+          </div> : null}
+        <div className="text-xs text-zinc-500">
+          <p>잠시만 기다려주세요...</p>
+          <p>토큰이 URL에 없으면 백엔드에서 리다이렉트 설정 필요</p>
+        </div>
+        <a href="/login" className="text-blue-600 hover:underline text-sm">
           로그인 페이지로 돌아가기
         </a>
       </div>
@@ -84,7 +109,8 @@ export function OAuthHandler() {
   return (
     <div className="text-center space-y-4">
       <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto" />
-      <p className="text-zinc-600 dark:text-zinc-400">로그인 중입니다...</p>
+      <p className="text-zinc-600 dark:text-zinc-400">로그인 처리 중입니다...</p>
+      <p className="text-xs text-zinc-500">토큰 확인 및 인증 상태 업데이트 중</p>
     </div>
   );
 }

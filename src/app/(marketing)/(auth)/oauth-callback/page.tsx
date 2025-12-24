@@ -25,4 +25,4 @@ export function OAuthCallbackPage() {
   );
 }
 
-export default OAuthCallbackPage;
+export { OAuthCallbackPage as default };
