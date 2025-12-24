@@ -9,11 +9,14 @@ export function SocialLoginButtons({ mode }: SocialLoginButtonsProps) {
   // const actionText = mode === "login" ? "로그인" : "가입";
 
   const apiBaseUrl = (process.env.NEXT_PUBLIC_API_URL || "https://api.picsel.kr/api").replace(/\/$/, "");
+  const callbackUrl = typeof window !== "undefined" ? `${window.location.origin}/oauth-callback` : "";
 
   const handleSocialLogin = (provider: "google" | "kakao" | "naver") => {
     // Docs: GET /api/auth/{provider}
-    // NOTE: POST /api/auth/{provider}/login exists, but window.location is a GET.
-    window.location.href = `${apiBaseUrl}/auth/${provider}`;
+    // Pass redirect_uri to handle OAuth callback
+    const authUrl = new URL(`${apiBaseUrl}/auth/${provider}`);
+    authUrl.searchParams.append("redirect_uri", callbackUrl);
+    window.location.href = authUrl.toString();
   };
 
   return (

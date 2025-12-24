@@ -512,20 +512,14 @@ export const api = {
 
     /**
      * Get summary metrics for dashboard
-     * Multiple API calls: savings, topmerchant, toppaymentmethod, aibenefitsummary
+     * Multiple API calls: savings, toppaymentmethod, aibenefitsummary
      */
     async getSummary(): Promise<SummaryData> {
       return withErrorHandling(async () => {
-        const [savingsRes, topMerchantRes] = await Promise.all([
-             apiClient.get(apiPath("/dashboard/metrics/savings")),
-             apiClient.get(apiPath("/dashboard/metrics/topmerchant")), 
-        ]);
-
+        const savingsRes = await apiClient.get(apiPath("/dashboard/metrics/savings"));
         const savingsData = (savingsRes.data.data || savingsRes.data) as Record<string, unknown>;
-        const merchantData = (topMerchantRes.data.data || topMerchantRes.data) as Record<string, unknown>;
 
         console.warn("[DASHBOARD] Savings data:", savingsData);
-        console.warn("[DASHBOARD] Merchant data:", merchantData);
 
         let topPaymentMethodRes;
         let aiBenefitRes;
@@ -554,10 +548,10 @@ export const api = {
         return {
             totalSavings: savingsAmountKrw,
             totalSavingsChange: compareMessage,
-            monthlySpending: (merchantData.totalSpentKrw as string) || "0원",
-            monthlySpendingChange: (merchantData.range as string) === "THIS_MONTH" ? "이번 달" : "최근 6개월",
+            monthlySpending: "0원",
+            monthlySpendingChange: "최근 6개월",
             
-            topCategory: (merchantData.merchantName as string) || "분석 중",
+            topCategory: "분석 중",
             topCategoryPercent: "",
 
             topPaymentMethod: (pmData?.paymentMethodName as string) || "분석 중",

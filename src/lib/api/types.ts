@@ -18,6 +18,21 @@ export interface AuthResponse {
   user: UserProfile;
 }
 
+// OAuth Social Login Response (different structure from regular auth)
+export interface OAuthResponse {
+  message?: string;
+  access_token: string;
+  refresh_token: string;
+  issued_at: string;
+  user: {
+    id: string;
+    uuid: string;
+    email: string;
+    name: string;
+    provider?: string;
+  };
+}
+
 export interface ApiError {
   message: string;
   code?: string;
