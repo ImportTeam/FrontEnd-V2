@@ -10,7 +10,7 @@ export function ErrorBoundary({ children, fallback }: ErrorBoundaryProps) {
     <Suspense
       fallback={
         fallback || (
-          <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex items-center justify-center min-h-100">
             <div className="animate-pulse text-zinc-600 dark:text-zinc-400">
               로딩 중...
             </div>

@@ -11,12 +11,11 @@ import { Badge } from "@/components/ui/badge";
 import { CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { api } from "@/lib/api/client";
 
-import type { RecommendationData, MonthlySavingsChartData } from "@/lib/api/types";
-
+import type { RecommendationData , MonthlySavingsChartItem } from "@/lib/api/types";
 
 export function DashboardCharts() {
   const [recommendations, setRecommendations] = useState<RecommendationData[]>([]);
-  const [chartData, setChartData] = useState<MonthlySavingsChartData[]>([]);
+  const [chartData, setChartData] = useState<MonthlySavingsChartItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,7 +28,7 @@ export function DashboardCharts() {
         console.warn("[CHARTS] Recommendations:", topRecs);
         console.warn("[CHARTS] Monthly chart data:", monthlyChart);
         setRecommendations(topRecs);
-        setChartData(monthlyChart);
+        setChartData(monthlyChart.data);
       } catch (error) {
         console.error("Failed to load recommendations:", error);
       } finally {

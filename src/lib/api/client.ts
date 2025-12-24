@@ -9,11 +9,16 @@ import type {
   TransactionData,
   AuthResponse,
   ApiResponse,
-  MonthlySavingsChartData,
   RefreshTokenResponse,
   TopMerchantData,
   MonthlySavingsData,
   TransactionListItem,
+  MonthlySavingsChartResponse,
+  AIMetricsResponse,
+  AIMetricItem,
+  RecentTransactionsResponse,
+  RecentTransactionItem,
+  CategorySpendingResponse,
 } from "./types";
 
 // Base URL handling
@@ -388,31 +393,30 @@ export const api = {
   transactions: {
     /**
      * Get recent transactions by site
-     * GET /api/dashboard/transactions/recentbysite
+     * GET /api/dashboard/transactions/recent-site
      */
     async list(): Promise<TransactionData[]> {
       return withErrorHandling(async () => {
-        const response = await apiClient.get(
-          apiPath("/dashboard/transactions/recentbysite"),
-          { params: { page: 1, size: 10 } }
+        const response = await apiClient.get<ApiResponse<RecentTransactionsResponse>>(
+          apiPath("/dashboard/transactions/recent-site")
         );
 
-        const payload = (response.data.data || response.data) as unknown;
-        const list = Array.isArray(payload) ? payload : [];
+        const payload = (response.data.data || response.data) as RecentTransactionsResponse;
+        const list = payload.data || [];
 
-        return list.map((tx: Record<string, unknown>) => {
-          const merchantName = (tx.merchantName as string) || "Unknown";
-          const paidAt = (tx.paidAt as string) || "";
-          const paidAmount = (tx.paidAmount as number) || 0;
-          const paymentMethodName = (tx.paymentMethodName as string) || "Unknown";
-          const discountOrRewardAmount = (tx.discountOrRewardAmount as number) || 0;
+        return list.map((tx: RecentTransactionItem) => {
+          const merchantName = tx.merchantName || "Unknown";
+          const paidAt = tx.paidAt || "";
+          const paidAmount = tx.paidAmount || 0;
+          const paymentMethodName = tx.paymentMethodName || "Unknown";
+          const discountOrRewardAmount = tx.discountOrRewardAmount || 0;
           
           return {
             id: `${merchantName}-${paidAt}-${paidAmount}`,
             merchant: merchantName,
             category: "기타",
             amount: `${paidAmount.toLocaleString()}원`,
-            date: paidAt ? new Date(paidAt).toLocaleDateString() : "-",
+            date: paidAt ? new Date(paidAt).toLocaleDateString('ko-KR') : "-",
             paidAt,
             cardName: paymentMethodName,
             benefit: discountOrRewardAmount > 0 ? `${discountOrRewardAmount.toLocaleString()}원 혜택` : "분석 중",
@@ -440,32 +444,21 @@ export const api = {
   recommendations: {
     /**
      * Get recommended payment methods (Top3)
-     * GET /api/dashboard/charts/recommendedpaymentmethods
+     * Note: This is now handled by dashboard.getAIRecommendedMethods()
+     * Kept for backwards compatibility
      */
     async getTop(limit = 3): Promise<RecommendationData[]> {
       return withErrorHandling(async () => {
-        const response = await apiClient.get(
-          apiPath("/dashboard/charts/recommendedpaymentmethods")
-        );
+        const items = await api.dashboard.getAIRecommendedMethods();
         
-        const payload = (response.data.data || response.data) as unknown;
-        const list = Array.isArray(payload) ? payload : [];
-        
-        return list.slice(0, limit).map((rec: Record<string, unknown>, index: number) => {
-          const paymentMethodId = (rec.paymentMethodId as number) || index + 1;
-          const score = (rec.score as number) || 0;
-          const paymentMethodName = (rec.paymentMethodName as string) || "Unknown";
-          const reasonSummary = (rec.reasonSummary as string) || "";
-          
-          return {
-            id: paymentMethodId,
-            rank: index + 1,
-            cardName: paymentMethodName,
-            benefit: reasonSummary || `추천 점수 ${score}점`,
-            isRecommended: index === 0,
-            expectedSavings: score,
-          };
-        });
+        return items.slice(0, limit).map((item: AIMetricItem, index: number) => ({
+          id: item.paymentMethodId,
+          rank: index + 1,
+          cardName: item.paymentMethodName,
+          benefit: item.reasonSummary || `추천 점수 ${item.score}점`,
+          isRecommended: index === 0,
+          expectedSavings: item.score,
+        }));
       });
     },
   },
@@ -473,21 +466,43 @@ export const api = {
   dashboard: {
     /**
      * Get monthly savings chart data (last 6 months)
-     * GET /api/dashboard/charts/monthlysavings
+     * GET /api/dashboard/charts/monthly-savings
      */
-    async getMonthlySavingsChart(): Promise<MonthlySavingsChartData[]> {
+    async getMonthlySavingsChart(): Promise<MonthlySavingsChartResponse> {
       return withErrorHandling(async () => {
-        const response = await apiClient.get(
-          apiPath("/dashboard/charts/monthlysavings")
+        const response = await apiClient.get<ApiResponse<MonthlySavingsChartResponse>>(
+          apiPath("/dashboard/charts/monthly-savings")
         );
-        const payload = (response.data.data || response.data) as unknown;
-        const list = Array.isArray(payload) ? payload : [];
-        
-        return list.map((item: Record<string, unknown>) => ({
-          month: (item.month as string) || "",
-          savings: (item.savingsAmount as number) || 0,
-          spent: (item.totalSpent as number) || 0,
-        }));
+        const payload = (response.data.data || response.data) as MonthlySavingsChartResponse;
+        return payload;
+      });
+    },
+
+    /**
+     * Get AI recommended payment methods (Top 3)
+     * GET /api/dashboard/metrics/ai-top3
+     */
+    async getAIRecommendedMethods(): Promise<AIMetricItem[]> {
+      return withErrorHandling(async () => {
+        const response = await apiClient.get<ApiResponse<AIMetricsResponse>>(
+          apiPath("/dashboard/metrics/ai-top3")
+        );
+        const payload = (response.data.data || response.data) as AIMetricsResponse;
+        return payload.data || [];
+      });
+    },
+
+    /**
+     * Get recent transactions by site
+     * GET /api/dashboard/transactions/recent-site
+     */
+    async getRecentTransactions(): Promise<RecentTransactionsResponse> {
+      return withErrorHandling(async () => {
+        const response = await apiClient.get<ApiResponse<RecentTransactionsResponse>>(
+          apiPath("/dashboard/transactions/recent-site")
+        );
+        const payload = (response.data.data || response.data) as RecentTransactionsResponse;
+        return payload;
       });
     },
 
@@ -652,6 +667,23 @@ export const api = {
           month: (item.month as string) || "",
           totalSpent: (item.totalSpent as number) || 0,
         }));
+      });
+    },
+
+    /**
+     * Get category-based spending breakdown
+     * GET /api/analytics/charts/category
+     */
+    async getCategorySpending(): Promise<CategorySpendingResponse> {
+      return withErrorHandling(async () => {
+        const response = await apiClient.get<ApiResponse<CategorySpendingResponse>>(
+          apiPath("/analytics/charts/category")
+        );
+        const payload = (response.data.data || response.data) as CategorySpendingResponse;
+        
+        console.warn("[ANALYTICS] Category spending data:", payload);
+        
+        return payload;
       });
     },
 

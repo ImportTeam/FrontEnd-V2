@@ -247,3 +247,74 @@ export interface UserCurrentResponse {
     updatedAt: string;
   };
 }
+
+// --- New API Response Types (Updated BE Integration) ---
+
+// 1. Monthly Savings Chart Response
+export interface MonthlySavingsChartItem {
+  month: string;
+  name: string;
+  totalSpent: number;
+  spent: number;
+  totalBenefit: number;
+  benefit: number;
+  savingsAmount: number;
+  saved: number;
+  value: number;
+}
+
+export interface MonthlySavingsChartResponse {
+  data: MonthlySavingsChartItem[];
+  ai: {
+    summary: string;
+    highlights: string[];
+  };
+}
+
+// 2. AI Top 3 Metrics Response
+export interface AIMetricItem {
+  paymentMethodId: number;
+  paymentMethodName: string;
+  name: string;
+  score: number;
+  value: number;
+  reasonSummary: string;
+}
+
+export interface AIMetricsResponse {
+  data: AIMetricItem[];
+}
+
+// 3. Recent Transactions Response
+export interface RecentTransactionItem {
+  merchantName: string;
+  paidAt: string; // ISO 8601 format
+  paymentMethodName: string;
+  paidAmount: number;
+  discountOrRewardAmount: number;
+}
+
+export interface PaginationMeta {
+  page: number;
+  size: number;
+  totalCount: number;
+  hasNext: boolean;
+}
+
+export interface RecentTransactionsResponse {
+  data: RecentTransactionItem[];
+  pagination: PaginationMeta;
+}
+
+// 4. Category Spending Response
+export interface CategorySpendingItem {
+  label: string;
+  value: number;
+  ratioPercent: number;
+}
+
+export interface CategorySpendingResponse {
+  rangeLabel: string;
+  totalValue: number;
+  data: CategorySpendingItem[];
+}
