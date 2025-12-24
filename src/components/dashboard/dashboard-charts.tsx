@@ -21,12 +21,15 @@ export function DashboardCharts() {
   useEffect(() => {
     async function loadData() {
       try {
+        console.warn("[CHARTS] Starting data load...");
         const [topRecs, monthlyChart] = await Promise.all([
           api.recommendations.getTop(3),
           api.dashboard.getMonthlySavingsChart(),
         ]);
         console.warn("[CHARTS] Recommendations:", topRecs);
-        console.warn("[CHARTS] Monthly chart data:", monthlyChart);
+        console.warn("[CHARTS] Monthly chart response:", monthlyChart);
+        console.warn("[CHARTS] Monthly chart data array:", monthlyChart.data);
+        console.warn("[CHARTS] Data length:", monthlyChart.data?.length);
         setRecommendations(topRecs);
         setChartData(monthlyChart.data);
       } catch (error) {

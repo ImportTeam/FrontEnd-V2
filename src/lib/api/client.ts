@@ -470,10 +470,14 @@ export const api = {
      */
     async getMonthlySavingsChart(): Promise<MonthlySavingsChartResponse> {
       return withErrorHandling(async () => {
-        const response = await apiClient.get<ApiResponse<MonthlySavingsChartResponse>>(
-          apiPath("/dashboard/charts/monthly-savings")
-        );
+        const url = apiPath("/dashboard/charts/monthly-savings");
+        console.warn(`[API] GET ${url}`);
+        const response = await apiClient.get<ApiResponse<MonthlySavingsChartResponse>>(url);
+        console.warn("[API] Response status:", response.status);
+        console.warn("[API] Response data:", response.data);
         const payload = (response.data.data || response.data) as MonthlySavingsChartResponse;
+        console.warn("[API] Payload:", payload);
+        console.warn("[API] Payload.data length:", payload?.data?.length);
         return payload;
       });
     },
