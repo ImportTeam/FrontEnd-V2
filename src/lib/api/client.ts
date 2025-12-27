@@ -521,22 +521,30 @@ export const api = {
 
         console.warn("[DASHBOARD] Savings data:", savingsData);
 
-        let topPaymentMethodRes;
-        let aiBenefitRes;
-        
+        let pmData: Record<string, unknown> | null = null;
+        let aiData: Record<string, unknown> | null = null;
+        let aiUnavailable = false;
+
+        // Backend routes:
+        // - GET /api/dashboard/metrics/top-paymethod
+        // - GET /api/dashboard/metrics/ai-benefits
         try {
-             const [pmRes, aiRes] = await Promise.all([
-             apiClient.get(apiPath("/dashboard/metrics/toppaymentmethod")),
-             apiClient.get(apiPath("/dashboard/metrics/aibenefitsummary"))
-             ]);
-             topPaymentMethodRes = pmRes;
-             aiBenefitRes = aiRes;
+          const pmRes = await apiClient.get(apiPath("/dashboard/metrics/top-paymethod"));
+          pmData = (pmRes.data.data || pmRes.data) as Record<string, unknown>;
         } catch (e) {
-            console.warn("Additional metrics endpoints not available, using fallbacks", e);
+          console.warn("Top payment method endpoint not available, using fallback", e);
         }
 
-        const pmData = topPaymentMethodRes ? (topPaymentMethodRes.data.data || topPaymentMethodRes.data) as Record<string, unknown> : null;
-        const aiData = aiBenefitRes ? (aiBenefitRes.data.data || aiBenefitRes.data) as Record<string, unknown> : null;
+        try {
+          const aiRes = await apiClient.get(apiPath("/dashboard/metrics/ai-benefits"));
+          aiData = (aiRes.data.data || aiRes.data) as Record<string, unknown>;
+        } catch (e: any) {
+          const status = e?.response?.status;
+          if (status === 503) {
+            aiUnavailable = true;
+          }
+          console.warn("AI benefit endpoint not available, using fallback", e);
+        }
 
         console.warn("[DASHBOARD] Payment method data:", pmData);
         console.warn("[DASHBOARD] AI benefit data:", aiData);
@@ -544,6 +552,13 @@ export const api = {
         const savingsAmount = (savingsData.savingsAmount as number) || 0;
         const savingsAmountKrw = (savingsData.savingsAmountKrw as string) || `${savingsAmount.toLocaleString()}원`;
         const compareMessage = (savingsData.compareMessage as string) || "";
+
+        const aiRecommendationRaw = (aiData?.recommendation as string) || "";
+        const aiReasonRaw = (aiData?.reasonSummary as string) || "";
+        const aiRecommendation = aiUnavailable
+          ? "AI 추천 서비스 점검 중"
+          : aiRecommendationRaw.trim() || "분석 중";
+        const aiReason = aiUnavailable ? "" : aiReasonRaw;
         
         return {
             totalSavings: savingsAmountKrw,
@@ -557,8 +572,8 @@ export const api = {
             topPaymentMethod: (pmData?.paymentMethodName as string) || "분석 중",
             topPaymentMethodCount: (pmData?.thisMonthTotalAmount as number) || 0,
 
-            aiBenefit: (aiData?.recommendation as string) || "분석 중",
-            aiBenefitAmount: (aiData?.reasonSummary as string) || "",
+            aiBenefit: aiRecommendation,
+            aiBenefitAmount: aiReason,
         };
       });
     },

@@ -12,14 +12,17 @@ import type { SummaryData } from "@/lib/api/types";
 export function SummaryCards() {
   const [data, setData] = useState<SummaryData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
 
   useEffect(() => {
     async function loadData() {
       try {
         const summary = await api.dashboard.getSummary();
         setData(summary);
+        setLoadFailed(false);
       } catch (error) {
         console.error("Failed to load dashboard summary:", error);
+        setLoadFailed(true);
       } finally {
         setLoading(false);
       }
@@ -37,7 +40,24 @@ export function SummaryCards() {
     );
   }
 
-  if (!data) return null;
+  if (!data) {
+    return (
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="h-40 bg-white border-zinc-200 shadow-sm dark:bg-zinc-900 dark:border-zinc-800">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-200">
+              대시보드 요약
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-sm text-zinc-700 dark:text-zinc-300">
+              {loadFailed ? "데이터를 불러올 수 없습니다." : "표시할 데이터가 없습니다."}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">

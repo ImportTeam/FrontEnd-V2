@@ -31,7 +31,9 @@ export function proxy(request: NextRequest) {
 
   response.headers.set("Content-Security-Policy", cspHeader);
   response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
-  response.headers.set("Cross-Origin-Embedder-Policy", "require-corp");
+  // COEP=require-corp causes browsers to block cross-origin scripts that don't send CORP/CORS headers.
+  // Relax it to prevent Vercel/live-feedback/insights scripts from being blocked in production.
+  response.headers.set("Cross-Origin-Embedder-Policy", "unsafe-none");
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("X-Frame-Options", "SAMEORIGIN");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");

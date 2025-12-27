@@ -17,21 +17,39 @@ export function DashboardCharts() {
   const [recommendations, setRecommendations] = useState<RecommendationData[]>([]);
   const [chartData, setChartData] = useState<MonthlySavingsChartItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [aiUnavailable, setAiUnavailable] = useState(false);
 
   useEffect(() => {
     async function loadData() {
       try {
         console.warn("[CHARTS] Starting data load...");
-        const [topRecs, monthlyChart] = await Promise.all([
-          api.recommendations.getTop(3),
-          api.dashboard.getMonthlySavingsChart(),
-        ]);
-        console.warn("[CHARTS] Recommendations:", topRecs);
-        console.warn("[CHARTS] Monthly chart response:", monthlyChart);
-        console.warn("[CHARTS] Monthly chart data array:", monthlyChart.data);
-        console.warn("[CHARTS] Data length:", monthlyChart.data?.length);
-        setRecommendations(topRecs);
-        setChartData(monthlyChart.data);
+        setAiUnavailable(false);
+
+        // 1) Chart should render even if AI is down
+        try {
+          const monthlyChart = await api.dashboard.getMonthlySavingsChart();
+          console.warn("[CHARTS] Monthly chart response:", monthlyChart);
+          console.warn("[CHARTS] Monthly chart data array:", monthlyChart.data);
+          console.warn("[CHARTS] Data length:", monthlyChart.data?.length);
+          setChartData(monthlyChart.data);
+        } catch (e) {
+          console.error("Failed to load monthly savings chart:", e);
+          setChartData([]);
+        }
+
+        // 2) AI recommendations: handle 503 gracefully
+        try {
+          const topRecs = await api.recommendations.getTop(3);
+          console.warn("[CHARTS] Recommendations:", topRecs);
+          setRecommendations(topRecs);
+        } catch (e: any) {
+          const status = e?.response?.status;
+          if (status === 503) {
+            setAiUnavailable(true);
+          }
+          console.error("Failed to load AI recommendations:", e);
+          setRecommendations([]);
+        }
       } catch (error) {
         console.error("Failed to load recommendations:", error);
       } finally {
@@ -118,6 +136,10 @@ export function DashboardCharts() {
                [1, 2, 3].map((i) => (
                 <div key={i} className="h-16 rounded-xl bg-muted/50 animate-pulse" />
                ))
+            ) : aiUnavailable ? (
+              <div className="text-center py-8 text-muted-foreground text-sm">
+                AI 추천 서비스 점검 중
+              </div>
             ) : (
                 recommendations.map((item, index) => (
                     <div 
@@ -144,7 +166,7 @@ export function DashboardCharts() {
                 ))
             )}
             
-            {!loading && recommendations.length === 0 && (
+            {!loading && !aiUnavailable && recommendations.length === 0 && (
                  <div className="text-center py-8 text-muted-foreground text-sm">
                     추천 데이터가 없습니다.
                  </div>
