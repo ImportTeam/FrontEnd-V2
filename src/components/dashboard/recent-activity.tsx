@@ -110,21 +110,35 @@ export function RecentActivity() {
       try {
         setLoading(true);
         setError(null);
-        console.warn("[RECENT_ACTIVITY] Fetching payment methods...");
+        console.log("[RECENT_ACTIVITY] Fetching payment methods...");
         
         const response = await api.paymentMethods.list();
-        console.warn("[RECENT_ACTIVITY] Payment methods:", response);
+        console.log("[RECENT_ACTIVITY] Payment methods response:", response);
         
-        if (response && Array.isArray(response)) {
-          setPaymentCards(response as PaymentCard[]);
-        } else {
-          console.error("[RECENT_ACTIVITY] Invalid response structure:", response);
-          setError("결제 수단 조회에 실패했습니다.");
+        // Validate response is an array
+        if (!Array.isArray(response)) {
+          throw new Error("Invalid response format: expected array of payment cards");
         }
+        
+        // Validate each card has required fields
+        const validCards = response.filter((card): card is PaymentCard => {
+          if (!card || typeof card !== "object") {
+            console.warn("[RECENT_ACTIVITY] Skipping invalid card:", card);
+            return false;
+          }
+          return true;
+        });
+        
+        if (validCards.length === 0 && response.length > 0) {
+          console.warn("[RECENT_ACTIVITY] No valid cards found in response");
+        }
+        
+        setPaymentCards(validCards);
       } catch (err) {
         console.error("[RECENT_ACTIVITY] Error fetching payment methods:", err);
         const errorMsg = err instanceof Error ? err.message : "결제 수단 조회 중 오류가 발생했습니다.";
         setError(errorMsg);
+        setPaymentCards([]); // Reset to empty on error
       } finally {
         setLoading(false);
       }

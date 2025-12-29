@@ -14,11 +14,30 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { api } from "@/lib/api/client";
 
-import type { CardData } from "@/lib/api/types";
+import type { CardData, PaymentCard } from "@/lib/api/types";
 
 function formatPercent(value: number) {
   const clamped = Math.max(0, Math.min(100, value));
   return `${clamped.toFixed(0)}%`;
+}
+
+/**
+ * Convert PaymentCard from backend API to CardData for UI rendering
+ * Maps backend payment card data to the expected CardData structure
+ */
+function paymentCardToCardData(payment: PaymentCard): CardData {
+  return {
+    id: payment.uuid || payment.seq?.toString() || "unknown",
+    bankName: payment.cardType?.split(" ")[0] || "Unknown",
+    cardName: payment.alias || `${payment.cardType} ${payment.last4}`,
+    cardNumber: `•••• ${payment.last4}`, // Masked card number
+    imageSrc: undefined, // Payment API doesn't provide image
+    balance: undefined, // Payment API doesn't provide balance
+    limit: undefined, // Payment API doesn't provide limit
+    textColor: undefined, // Will use default
+    usagePercent: undefined, // Payment API doesn't provide usage
+    isPrimary: payment.isPrimary ?? false,
+  };
 }
 
 // eslint-disable-next-line no-restricted-syntax
@@ -36,10 +55,36 @@ export default function CardsPage() {
       try {
         setLoading(true);
         setError(null);
-        const list = await api.paymentMethods.list();
-        setCards(list);
+        const paymentList = await api.paymentMethods.list();
+        
+        // Validate API response
+        if (!Array.isArray(paymentList)) {
+          throw new Error("Invalid response format from payment methods API");
+        }
+        
+        // Convert PaymentCard[] to CardData[]
+        const cardDataList = paymentList.map((payment) => {
+          try {
+            return paymentCardToCardData(payment);
+          } catch (e) {
+            console.error("[CARDS_PAGE] Error converting payment card:", payment, e);
+            // Return minimal CardData on conversion error
+            return {
+              id: payment.uuid || "unknown",
+              bankName: "Unknown",
+              cardName: "카드 정보 오류",
+              cardNumber: "•••• ••••",
+              isPrimary: false,
+            } as CardData;
+          }
+        });
+        
+        setCards(cardDataList);
       } catch (e) {
-        setError(e instanceof Error ? e.message : "결제수단을 불러오지 못했습니다.");
+        const errorMsg = e instanceof Error ? e.message : "결제수단을 불러오지 못했습니다.";
+        console.error("[CARDS_PAGE] Error loading payment methods:", errorMsg, e);
+        setError(errorMsg);
+        setCards([]); // Reset to empty on error
       } finally {
         setLoading(false);
       }
@@ -49,28 +94,45 @@ export default function CardsPage() {
 
   const handleStartRegistration = async () => {
     try {
-      const { redirectUrl } = await api.paymentMethods.startCardRegistration();
-      window.location.href = redirectUrl;
+      const response = await api.paymentMethods.startCardRegistration();
+      if (!response?.redirectUrl) {
+        throw new Error("카드 등록 URL을 받지 못했습니다.");
+      }
+      window.location.href = response.redirectUrl;
     } catch (e) {
-      setError(e instanceof Error ? e.message : "카드 등록을 시작할 수 없습니다.");
+      const errorMsg = e instanceof Error ? e.message : "카드 등록을 시작할 수 없습니다.";
+      console.error("[CARDS_PAGE] Error starting card registration:", errorMsg, e);
+      setError(errorMsg);
     }
   };
 
   const handleDelete = async (id: CardData["id"]) => {
     try {
+      if (!id) {
+        throw new Error("유효하지 않은 카드 ID입니다.");
+      }
       await api.paymentMethods.delete(id);
       setCards((prev) => prev.filter((c) => c.id !== id));
+      setError(null); // Clear any previous errors
     } catch (e) {
-      setError(e instanceof Error ? e.message : "삭제에 실패했습니다.");
+      const errorMsg = e instanceof Error ? e.message : "삭제에 실패했습니다.";
+      console.error("[CARDS_PAGE] Error deleting card:", id, errorMsg, e);
+      setError(errorMsg);
     }
   };
 
   const handleSetPrimary = async (id: CardData["id"]) => {
     try {
+      if (!id) {
+        throw new Error("유효하지 않은 카드 ID입니다.");
+      }
       await api.paymentMethods.setPrimary(id);
       setCards((prev) => prev.map((c) => ({ ...c, isPrimary: c.id === id })));
+      setError(null); // Clear any previous errors
     } catch (e) {
-      setError(e instanceof Error ? e.message : "주 결제수단 설정에 실패했습니다.");
+      const errorMsg = e instanceof Error ? e.message : "주 결제수단 설정에 실패했습니다.";
+      console.error("[CARDS_PAGE] Error setting primary card:", id, errorMsg, e);
+      setError(errorMsg);
     }
   };
 
