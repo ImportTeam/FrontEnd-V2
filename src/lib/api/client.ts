@@ -120,6 +120,14 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config as (typeof error.config & { _retry?: boolean }) | undefined;
     const status: number | undefined = error?.response?.status;
+    const responseData = error?.response?.data as unknown;
+
+    console.warn(`[API] Error ${status}:`, {
+      url: originalRequest?.url,
+      method: originalRequest?.method,
+      retry: originalRequest?._retry,
+      responseData,
+    });
 
     if (!originalRequest || status !== 401 || originalRequest._retry) {
       return Promise.reject(error);
@@ -167,13 +175,19 @@ apiClient.interceptors.response.use(
       const newAccessToken = (refreshPayload?.["accessToken"] ??
         refreshPayload?.["access_token"] ??
         refreshPayload?.["token"]) as string | undefined;
+      const newRefreshToken = (refreshPayload?.["refreshToken"] ??
+        refreshPayload?.["refresh_token"]) as string | undefined;
       if (!newAccessToken) {
         clearTokens();
         resolveRefreshQueue(null);
         return Promise.reject(error);
       }
 
-      setTokens({ accessToken: newAccessToken });
+      const tokensToSet: { accessToken: string; refreshToken?: string } = { accessToken: newAccessToken };
+      if (newRefreshToken) {
+        tokensToSet.refreshToken = newRefreshToken;
+      }
+      setTokens(tokensToSet);
       resolveRefreshQueue(newAccessToken);
 
       originalRequest.headers = {
@@ -816,10 +830,15 @@ export const api = {
         );
         const payload = response.data.data as unknown as Record<string, unknown> | undefined;
         const accessToken = (payload?.["accessToken"] ?? payload?.["access_token"] ?? payload?.["token"]) as string | undefined;
+        const newRefreshToken = (payload?.["refreshToken"] ?? payload?.["refresh_token"]) as string | undefined;
         if (!accessToken) {
           throw new Error(response.data.message || "Refresh failed");
         }
-        setTokens({ accessToken });
+        const tokensToSet: { accessToken: string; refreshToken?: string } = { accessToken };
+        if (newRefreshToken) {
+          tokensToSet.refreshToken = newRefreshToken;
+        }
+        setTokens(tokensToSet);
         return accessToken;
       });
     },

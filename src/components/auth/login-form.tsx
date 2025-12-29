@@ -46,10 +46,15 @@ export function LoginForm() {
             setIsLoading(true);
             setError(null);
             
+            console.warn("[LoginForm] Submitting credentials:", { email: data.email, password: "***" });
+            
             // Real API call
             const response = await api.auth.login(data.email, data.password);
             
+            console.warn("[LoginForm] Login response:", response);
+            
             if (!response || !response.user) {
+              console.error("[LoginForm] Invalid response structure:", response);
               setError("로그인 응답이 불완전합니다.");
               setIsLoading(false);
               return;
@@ -69,7 +74,9 @@ export function LoginForm() {
             }
             router.push("/dashboard");
         } catch (err) {
-            setError(err instanceof Error ? err.message : "로그인에 실패했습니다. 다시 시도해주세요.");
+            const errorMsg = err instanceof Error ? err.message : "로그인에 실패했습니다. 다시 시도해주세요.";
+            console.error("[LoginForm] Login error:", err);
+            setError(errorMsg);
         } finally {
             setIsLoading(false);
         }
