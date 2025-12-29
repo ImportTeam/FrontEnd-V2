@@ -333,3 +333,19 @@ export interface CategorySpendingResponse {
   totalValue: number;
   data: CategorySpendingItem[];
 }
+
+// --- Payment Card Methods ---
+export interface PaymentCard {
+  seq: number;
+  uuid: string;
+  last4: string;
+  cardType: string; // VISA, MASTERCARD, AMEX, etc.
+  alias: string;
+  isPrimary: boolean;
+  createdAt: string;
+}
+
+export interface PaymentCardsResponse {
+  message: string;
+  data: PaymentCard[];
+}

@@ -19,6 +19,8 @@ import type {
   RecentTransactionsResponse,
   RecentTransactionItem,
   CategorySpendingResponse,
+  PaymentCard,
+  PaymentCardsResponse,
 } from "./types";
 
 // Base URL handling
@@ -282,34 +284,22 @@ export const api = {
      * Get user's payment methods list
      * GET /api/payment-methods
      */
-    async list(): Promise<CardData[]> {
+    async list(): Promise<PaymentCard[]> {
       return withErrorHandling(async () => {
-        const response = await apiClient.get(apiPath("/payment-methods"));
+        const response = await apiClient.get<PaymentCardsResponse | PaymentCard[]>(apiPath("/payment-methods"));
         
-        // Backend may send array directly or wrapped
-        const payload = (response.data.data || response.data) as unknown;
-        const list = Array.isArray(payload) ? payload : [];
+        // Backend may send PaymentCardsResponse { message, data } or direct array
+        const data = (response.data as unknown);
+        let payload: PaymentCard[] = [];
         
-        return list.map((pm: Record<string, unknown>) => {
-          const seq = pm.seq as number;
-          const last4 = (pm.last4 as string) || "****";
-          const cardType = (pm.cardType as string) || "";
-          const alias = (pm.alias as string) || "카드";
-          const isPrimary = (pm.isPrimary as boolean) || false;
-          
-          return {
-            id: seq || "",
-            bankName: cardType,
-            cardName: alias,
-            cardNumber: last4,
-            balance: "0", 
-            limit: "0",
-            imageSrc: `/assets/card/${cardType.toLowerCase() || 'default'}.svg`,
-            textColor: "text-zinc-900",
-            usagePercent: 0,
-            isPrimary
-          };
-        });
+        if (Array.isArray(data)) {
+          payload = data;
+        } else if (data && typeof data === 'object' && 'data' in data) {
+          const wrapped = data as { data?: unknown };
+          payload = Array.isArray(wrapped.data) ? (wrapped.data as PaymentCard[]) : [];
+        }
+        
+        return payload;
       });
     },
 
