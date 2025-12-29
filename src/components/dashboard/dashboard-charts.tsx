@@ -28,10 +28,22 @@ export function DashboardCharts() {
         ]);
         console.warn("[CHARTS] Recommendations:", topRecs);
         console.warn("[CHARTS] Monthly chart response:", monthlyChart);
-        console.warn("[CHARTS] Monthly chart data array:", monthlyChart.data);
-        console.warn("[CHARTS] Data length:", monthlyChart.data?.length);
+        
+        // Handle different response structures
+        let chartDataArray: MonthlySavingsChartItem[] = [];
+        if (Array.isArray(monthlyChart)) {
+          // Response is direct array
+          chartDataArray = monthlyChart as MonthlySavingsChartItem[];
+        } else if (monthlyChart?.data && Array.isArray(monthlyChart.data)) {
+          // Response has data property
+          chartDataArray = monthlyChart.data;
+        }
+        
+        console.warn("[CHARTS] Final chart data array:", chartDataArray);
+        console.warn("[CHARTS] Data length:", chartDataArray?.length);
+        
         setRecommendations(topRecs);
-        setChartData(monthlyChart.data);
+        setChartData(chartDataArray);
       } catch (error) {
         console.error("Failed to load recommendations:", error);
       } finally {
@@ -89,7 +101,7 @@ export function DashboardCharts() {
                   />
                   <Area 
                     type="monotone" 
-                    dataKey="savings" 
+                    dataKey="savingsAmount" 
                     stroke="#2563eb" 
                     strokeWidth={3}
                     fillOpacity={1} 

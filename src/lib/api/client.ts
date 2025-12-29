@@ -486,16 +486,27 @@ export const api = {
       return withErrorHandling(async () => {
         const url = apiPath("/dashboard/charts/monthly-savings");
         console.warn(`[API] GET ${url}`);
-        const response = await apiClient.get<ApiResponse<MonthlySavingsChartResponse>>(url);
+        const response = await apiClient.get<MonthlySavingsChartResponse | ApiResponse<MonthlySavingsChartResponse>>(url);
         console.warn("[API] Response status:", response.status);
         console.warn("[API] Response data:", response.data);
-        const payload = (response.data.data || response.data) as MonthlySavingsChartResponse;
+        
+        // Backend returns { data: [...], ai: {...} } directly without ApiResponse wrapper
+        const payload = (response.data.data ? response.data.data : response.data) as unknown as MonthlySavingsChartResponse | undefined;
+        
+        if (!payload || !Array.isArray(payload.data)) {
+          // If response is already MonthlySavingsChartResponse, use it directly
+          const directPayload = response.data as unknown as MonthlySavingsChartResponse;
+          console.warn("[API] Payload (direct):", directPayload);
+          console.warn("[API] Payload.data length:", directPayload?.data?.length);
+          return directPayload;
+        }
+        
         console.warn("[API] Payload:", payload);
         console.warn("[API] Payload.data length:", payload?.data?.length);
         return payload;
       });
     },
-
+ 
     /**
      * Get AI recommended payment methods (Top 3)
      * GET /api/dashboard/metrics/ai-top3
