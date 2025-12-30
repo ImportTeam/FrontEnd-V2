@@ -85,6 +85,28 @@ export async function loadRecentTransactionsData(_limit = 10) {
   }
 }
 
+export async function loadAIBenefitsData() {
+  try {
+    const analysis = await dashboardClient.getAIAnalysis();
+    if (!analysis) {
+      return {
+        recommendation: "AI 분석 데이터를 불러올 수 없습니다",
+        reasonSummary: "나중에 다시 시도해주세요",
+      };
+    }
+    return {
+      recommendation: analysis.recommendation || "분석 중입니다",
+      reasonSummary: analysis.reasonSummary || "",
+    };
+  } catch (error) {
+    console.error("[AI_BENEFITS_DATA] Failed to load:", error);
+    return {
+      recommendation: "AI 분석 데이터를 불러올 수 없습니다",
+      reasonSummary: "나중에 다시 시도해주세요",
+    };
+  }
+}
+
 export async function loadAIAnalysisData() {
   try {
     const analysis = await dashboardClient.getAIAnalysis();

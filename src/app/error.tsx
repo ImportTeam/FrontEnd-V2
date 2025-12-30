@@ -28,7 +28,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
   };
 
   return (
-    <div className="w-screen h-screen bg-gradient-to-br from-red-50 to-red-100/50 dark:from-red-950/20 dark:to-red-900/10 flex items-center justify-center px-4 py-8">
+    <div className="w-screen h-screen bg-linear-to-br from-red-50 to-red-100/50 dark:from-red-950/20 dark:to-red-900/10 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
         {/* Error Icon */}
         <div className="flex justify-center mb-8">
@@ -49,13 +49,11 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
             <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
               페이지를 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도하거나, 문제가 지속되면 문의해 주세요.
             </p>
-            {error.digest && (
-              <div className="mt-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+            {error.digest ? <div className="mt-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
                 <p className="text-xs font-mono text-red-700 dark:text-red-300 break-all">
                   오류 코드: {error.digest}
                 </p>
-              </div>
-            )}
+              </div> : null}
           </div>
 
           {/* Action Buttons */}

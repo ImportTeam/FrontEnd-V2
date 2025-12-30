@@ -1,11 +1,14 @@
 "use client";
 
-import { ArrowRight, CreditCard, ShoppingBag, Wallet } from "lucide-react";
+import { ArrowRight, CreditCard, ShoppingBag, Sparkles, ChevronDown } from "lucide-react";
+import { useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface SummaryCardsProps {
   summaryData?: Record<string, unknown> | null;
+  aiBenefits?: { recommendation: string; reasonSummary: string } | null;
 }
 
 /**
@@ -19,20 +22,22 @@ function getSafeString(value: unknown, fallback: string): string {
 }
 
 /**
- * Safely extract numeric values from summary data
+ * Truncate text with ellipsis
  */
-function getSafeNumber(value: unknown, fallback: number = 0): number {
-  if (typeof value === 'number') {
-    return value;
+function truncateText(text: string, maxLength: number = 50): { display: string; full: string; isTruncated: boolean } {
+  if (text.length <= maxLength) {
+    return { display: text, full: text, isTruncated: false };
   }
-  if (typeof value === 'string') {
-    const parsed = parseInt(value, 10);
-    return isNaN(parsed) ? fallback : parsed;
-  }
-  return fallback;
+  return {
+    display: text.substring(0, maxLength) + "...",
+    full: text,
+    isTruncated: true,
+  };
 }
 
-export function SummaryCards({ summaryData }: SummaryCardsProps) {
+export function SummaryCards({ summaryData, aiBenefits }: SummaryCardsProps) {
+  const [expandedCard, setExpandedCard] = useState<string | null>(null);
+
   // Show skeletons while loading or if data is null
   if (!summaryData) {
     return (
@@ -48,8 +53,11 @@ export function SummaryCards({ summaryData }: SummaryCardsProps) {
   const totalSavings = getSafeString(summaryData.totalSavings, "0원");
   const monthlySpending = getSafeString(summaryData.monthlySpending, "0원");
   const monthlySpendingChange = getSafeString(summaryData.totalSavingsChange, "0%");
-  const topCard = getSafeString(summaryData.topPaymentMethod, "데이터 없음");
-  const recentTransactions = getSafeNumber(summaryData.topPaymentMethodCount, 0);
+
+  // AI Benefits data
+  const aiBenefitText = aiBenefits?.recommendation || "AI 분석 중입니다";
+  const truncatedBenefit = truncateText(aiBenefitText, 50);
+  const isExpanded = expandedCard === 'ai-benefit';
 
   return (
     <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
@@ -64,7 +72,7 @@ export function SummaryCards({ summaryData }: SummaryCardsProps) {
         <CardContent>
           <div className="text-3xl sm:text-4xl font-bold truncate">{totalSavings}</div>
           <p className="text-xs text-emerald-400 flex items-center mt-2">
-            <ArrowRight className="h-3 w-3 mr-1 flex-shrink-0" />
+            <ArrowRight className="h-3 w-3 mr-1 shrink-0" />
             <span>{monthlySpendingChange}</span>
             <span className="text-zinc-600 dark:text-zinc-300 ml-1">지난달 대비</span>
           </p>
@@ -77,7 +85,7 @@ export function SummaryCards({ summaryData }: SummaryCardsProps) {
           <CardTitle className="text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-200">
             월간 지출액
           </CardTitle>
-          <ShoppingBag className="h-4 w-4 text-zinc-600 dark:text-zinc-300 flex-shrink-0" />
+          <ShoppingBag className="h-4 w-4 text-zinc-600 dark:text-zinc-300 shrink-0" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 truncate">
@@ -89,17 +97,17 @@ export function SummaryCards({ summaryData }: SummaryCardsProps) {
         </CardContent>
       </Card>
 
-      {/* Card 3: Most Used Card */}
+      {/* Card 3: Top Payment Method */}
       <Card className="bg-white border-zinc-200 shadow-sm hover:shadow-md transition-shadow dark:bg-zinc-900 dark:border-zinc-800">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-200">
             최다 사용 결제수단
           </CardTitle>
-          <CreditCard className="h-4 w-4 text-zinc-600 dark:text-zinc-300 flex-shrink-0" />
+          <CreditCard className="h-4 w-4 text-zinc-600 dark:text-zinc-300 shrink-0" />
         </CardHeader>
         <CardContent>
           <div className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 truncate">
-            {topCard}
+            {getSafeString(summaryData.topPaymentMethod, "데이터 없음")}
           </div>
           <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-2">
             분석 중
@@ -107,21 +115,38 @@ export function SummaryCards({ summaryData }: SummaryCardsProps) {
         </CardContent>
       </Card>
 
-      {/* Card 4: Recent Transactions Count */}
-      <Card className="bg-white border-zinc-200 shadow-sm hover:shadow-md transition-shadow dark:bg-zinc-900 dark:border-zinc-800">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-200">
-            최근 거래
-          </CardTitle>
-          <Wallet className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100">
-            {recentTransactions.toString()}건
+      {/* Card 4: AI Benefits (New) */}
+      <Card className="bg-linear-to-br from-amber-50 to-orange-50 border-amber-200 shadow-sm hover:shadow-md transition-all dark:from-amber-950/30 dark:to-orange-950/30 dark:border-amber-800">
+        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
+            <CardTitle className="text-xs sm:text-sm font-semibold text-amber-900 dark:text-amber-200">
+              AI 추천 혜택
+            </CardTitle>
           </div>
-          <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-2">
-            분석 중
-          </p>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="text-sm font-medium text-amber-900 dark:text-amber-100 leading-snug">
+            {isExpanded ? truncatedBenefit.full : truncatedBenefit.display}
+          </div>
+
+          {truncatedBenefit.isTruncated ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setExpandedCard(isExpanded ? null : 'ai-benefit')}
+              className="w-full h-8 px-2 text-xs text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50"
+            >
+              {isExpanded ? '접기' : '펼쳐보기'}
+              <ChevronDown className={`h-3 w-3 ml-1 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+            </Button>
+          ) : null}
+
+          {aiBenefits?.reasonSummary ? (
+            <p className="text-xs text-amber-700 dark:text-amber-300 bg-amber-100/50 dark:bg-amber-900/20 rounded px-2 py-1.5 border border-amber-200/50 dark:border-amber-800/50">
+              💡 {aiBenefits.reasonSummary}
+            </p>
+          ) : null}
         </CardContent>
       </Card>
     </div>

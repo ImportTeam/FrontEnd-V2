@@ -11,16 +11,18 @@ import {
   loadRecentTransactionsData,
   loadSummaryCardsData,
   loadAIAnalysisData,
+  loadAIBenefitsData,
 } from "./data-actions";
 
 // eslint-disable-next-line no-restricted-syntax
 export default async function DashboardPage() {
   // Load all data server-side
-  const [chartsData, summaryData, transactionsData, aiData] = await Promise.all([
+  const [chartsData, summaryData, transactionsData, aiData, aiBenefits] = await Promise.all([
     loadDashboardChartsData(),
     loadSummaryCardsData(),
     loadRecentTransactionsData(10),
     loadAIAnalysisData(),
+    loadAIBenefitsData(),
   ]);
 
   return (
@@ -56,7 +58,7 @@ export default async function DashboardPage() {
 
       <h2 className="sr-only">요약 카드</h2>
       {/* Row 1: Summary Cards (KPIs) */}
-      <SummaryCards summaryData={summaryData} />
+      <SummaryCards summaryData={summaryData} aiBenefits={aiBenefits} />
 
       <h2 className="sr-only">차트와 추천 리스트</h2>
       {/* Row 2: Charts & Top Recommendations */}
