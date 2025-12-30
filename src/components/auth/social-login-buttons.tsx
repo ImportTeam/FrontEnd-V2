@@ -8,8 +8,7 @@ interface SocialLoginButtonsProps {
 export function SocialLoginButtons({ mode }: SocialLoginButtonsProps) {
   // const actionText = mode === "login" ? "로그인" : "가입";
 
-  const rawBaseUrl = (process.env.NEXT_PUBLIC_API_URL || "https://api.picsel.kr").replace(/\/$/, "");
-  const apiBaseUrl = rawBaseUrl.endsWith("/api") ? rawBaseUrl : `${rawBaseUrl}/api`;
+  const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.picsel.kr/api").replace(/\/$/, "");
   const callbackUrl = typeof window !== "undefined" ? `${window.location.origin}/oauth-callback` : "";
 
   const handleSocialLogin = (provider: "google" | "kakao" | "naver") => {
@@ -17,7 +16,7 @@ export function SocialLoginButtons({ mode }: SocialLoginButtonsProps) {
     console.warn(`[SOCIAL_LOGIN] Starting ${provider} login`);
     console.warn(`[SOCIAL_LOGIN] Callback URL: ${callbackUrl}`);
     
-    // GET /api/auth/{provider}?redirect_uri={callback_url}
+    // POST /api/auth/{provider}?redirect_uri={callback_url}
     const authUrl = new URL(`${apiBaseUrl}/auth/${provider}`);
     authUrl.searchParams.append("redirect_uri", callbackUrl);
     
