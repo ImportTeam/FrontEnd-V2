@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 
 import { loginAction } from "@/app/(marketing)/(auth)/login/actions";
 import { AuthFormField } from "@/components/auth/auth-form-field";
@@ -9,25 +9,11 @@ import { Button } from "@/components/ui/button";
 import { useAuthForm } from "@/hooks/use-auth-form";
 import { loginSchema } from "@/lib/schemas/auth";
 
-import type { LoginSchema } from "@/lib/schemas/auth";
-
-interface LoginFormState {
-  error: string | null;
-  success: boolean;
-}
-
-export function LoginForm() {
-  const [state, formAction, isPending] = useActionState(
-    loginAction,
-    {
-      error: null,
-      success: false,
-    } as LoginFormState
-  );
+function LoginFormContent() {
+  const { pending } = useFormStatus();
 
   const {
     register,
-    handleSubmit,
     formState: { errors },
     watch,
   } = useAuthForm<typeof loginSchema>({
@@ -43,13 +29,6 @@ export function LoginForm() {
   const password = watch("password");
   const isFormFilled = email && password;
 
-  const onSubmit = async (data: LoginSchema) => {
-    const formData = new FormData();
-    formData.append("email", data.email);
-    formData.append("password", data.password);
-    await formAction(formData);
-  };
-
   return (
     <div className="w-full space-y-6">
       <div className="space-y-2 text-center">
@@ -61,14 +40,7 @@ export function LoginForm() {
         </p>
       </div>
 
-      {state.error ? <div
-          className="rounded-lg bg-red-50 dark:bg-red-900/20 p-4 text-sm text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/50"
-          role="alert"
-        >
-          {state.error}
-        </div> : null}
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form action={loginAction} className="space-y-4">
         <div className="space-y-4 text-left">
           <AuthFormField
             id="email"
@@ -77,7 +49,7 @@ export function LoginForm() {
             placeholder="name@example.com"
             registration={register("email")}
             error={errors.email}
-            disabled={isPending}
+            disabled={pending}
           />
           <AuthFormField
             id="password"
@@ -86,14 +58,14 @@ export function LoginForm() {
             placeholder="••••••••"
             registration={register("password")}
             error={errors.password}
-            disabled={isPending}
+            disabled={pending}
           />
         </div>
 
         <div className="flex justify-end">
           <button
             type="button"
-            disabled={isPending}
+            disabled={pending}
             className="text-xs text-zinc-600 hover:text-zinc-800 dark:text-zinc-300 dark:hover:text-zinc-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             비밀번호 찾기
@@ -102,14 +74,18 @@ export function LoginForm() {
 
         <Button
           type="submit"
-          disabled={isPending || !isFormFilled}
+          disabled={pending || !isFormFilled}
           className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-base rounded-lg dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
-          {isPending ? "로그인 중..." : "로그인"}
+          {pending ? "로그인 중..." : "로그인"}
         </Button>
       </form>
 
       <SocialLoginButtons mode="login" />
     </div>
   );
+}
+
+export function LoginForm() {
+  return <LoginFormContent />;
 }

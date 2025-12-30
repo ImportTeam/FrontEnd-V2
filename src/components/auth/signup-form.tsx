@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 
 import { signupAction } from "@/app/(marketing)/(auth)/signup/actions";
 import { AuthFormField } from "@/components/auth/auth-form-field";
@@ -9,27 +9,11 @@ import { Button } from "@/components/ui/button";
 import { useAuthForm } from "@/hooks/use-auth-form";
 import { signupSchema } from "@/lib/schemas/auth";
 
-import type { SignupSchema } from "@/lib/schemas/auth";
-
-interface SignupFormState {
-  error: string | null;
-  success: boolean;
-}
-
-export function SignupForm() {
-  const [state, formAction, isPending] = useActionState<SignupFormState, FormData>(
-    async (prevState, formData) => {
-      return await signupAction(prevState, formData);
-    },
-    {
-      error: null,
-      success: false,
-    }
-  );
+function SignupFormContent() {
+  const { pending } = useFormStatus();
 
   const {
     register,
-    handleSubmit,
     formState: { errors },
     watch,
   } = useAuthForm<typeof signupSchema>({
@@ -47,14 +31,6 @@ export function SignupForm() {
   const password = watch("password");
   const isFormFilled = name && email && password;
 
-  const onSubmit = async (data: SignupSchema) => {
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("email", data.email);
-    formData.append("password", data.password);
-    await formAction(formData);
-  };
-
   return (
     <div className="w-full space-y-6">
       <div className="space-y-2 text-center">
@@ -66,14 +42,7 @@ export function SignupForm() {
         </p>
       </div>
 
-      {state.error ? <div
-          className="rounded-lg bg-red-50 dark:bg-red-900/20 p-4 text-sm text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/50"
-          role="alert"
-        >
-          {state.error}
-        </div> : null}
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form action={signupAction} className="space-y-4">
         <div className="space-y-4 text-left">
           <AuthFormField
             id="name"
@@ -82,7 +51,7 @@ export function SignupForm() {
             placeholder="홍길동"
             registration={register("name")}
             error={errors.name}
-            disabled={isPending}
+            disabled={pending}
           />
           <AuthFormField
             id="email"
@@ -91,7 +60,7 @@ export function SignupForm() {
             placeholder="name@example.com"
             registration={register("email")}
             error={errors.email}
-            disabled={isPending}
+            disabled={pending}
           />
           <AuthFormField
             id="password"
@@ -100,20 +69,24 @@ export function SignupForm() {
             placeholder="••••••••"
             registration={register("password")}
             error={errors.password}
-            disabled={isPending}
+            disabled={pending}
           />
         </div>
 
         <Button
           type="submit"
-          disabled={isPending || !isFormFilled}
+          disabled={pending || !isFormFilled}
           className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-base rounded-lg dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-        >
-          {isPending ? "회원가입 중..." : "회원가입"}
+          >
+          {pending ? "회원가입 중..." : "회원가입"}
         </Button>
       </form>
 
       <SocialLoginButtons mode="signup" />
     </div>
   );
+}
+
+export function SignupForm() {
+  return <SignupFormContent />;
 }

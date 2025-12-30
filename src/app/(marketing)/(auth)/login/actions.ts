@@ -13,11 +13,6 @@ import { parseApiError } from '@/lib/api/error-handler';
 import { loginSchema } from '@/lib/schemas/auth';
 import { useAuthStore } from '@/store/use-auth-store';
 
-interface LoginFormState {
-  error: string | null;
-  success: boolean;
-}
-
 function isNextRedirectError(err: unknown): boolean {
   if (!err || typeof err !== 'object') return false;
   const digest = (err as { digest?: unknown }).digest;
@@ -48,20 +43,18 @@ async function saveTokensToCookies(
   });
 }
 
-export async function loginAction(
-  _prevState: LoginFormState | undefined,
-  formData: FormData
-): Promise<LoginFormState> {
+/**
+ * Form action - <form action={loginAction}>에서 직접 호출
+ * 성공하면 redirect, 실패하면 에러 객체 반환
+ */
+export async function loginAction(formData: FormData): Promise<void> {
   try {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
     // Validate inputs
     if (!email || !password) {
-      return {
-        error: '이메일과 비밀번호를 입력해주세요.',
-        success: false,
-      };
+      throw new Error('이메일과 비밀번호를 입력해주세요.');
     }
 
     // Parse and validate with Zod
@@ -70,10 +63,7 @@ export async function loginAction(
       const errorMessage = validationResult.error.issues
         .map((issue) => issue.message)
         .join(', ');
-      return {
-        error: errorMessage,
-        success: false,
-      };
+      throw new Error(errorMessage);
     }
 
     // Call API through authClient (Server instance with interceptors)
@@ -89,10 +79,7 @@ export async function loginAction(
     // Validate response structure
     if (!response?.user?.uuid) {
       console.error('[LOGIN] Invalid response structure:', response);
-      return {
-        error: '로그인 응답이 불완전합니다. 잠시 후 다시 시도해주세요.',
-        success: false,
-      };
+      throw new Error('로그인 응답이 불완전합니다. 잠시 후 다시 시도해주세요.');
     }
 
     // Save tokens to HttpOnly Cookies
@@ -121,9 +108,8 @@ export async function loginAction(
     });
     const errorDetails = parseApiError(err);
     console.error("[LOGIN] Parsed error:", errorDetails);
-    return {
-      error: errorDetails.message,
-      success: false,
-    };
+    
+    // Re-throw so form can handle the error
+    throw new Error(errorDetails.message);
   }
 }

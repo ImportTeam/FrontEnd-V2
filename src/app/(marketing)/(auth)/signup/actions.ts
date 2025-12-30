@@ -13,11 +13,6 @@ import { parseApiError } from '@/lib/api/error-handler';
 import { signupSchema } from '@/lib/schemas/auth';
 import { useAuthStore } from '@/store/use-auth-store';
 
-interface SignupFormState {
-  error: string | null;
-  success: boolean;
-}
-
 function isNextRedirectError(err: unknown): boolean {
   if (!err || typeof err !== 'object') return false;
   const digest = (err as { digest?: unknown }).digest;
@@ -48,10 +43,11 @@ async function saveTokensToCookies(
   });
 }
 
-export async function signupAction(
-  _prevState: SignupFormState | undefined,
-  formData: FormData
-): Promise<SignupFormState> {
+/**
+ * Form action - <form action={signupAction}>에서 직접 호출
+ * 성공하면 redirect, 실패하면 에러 객체 반환
+ */
+export async function signupAction(formData: FormData): Promise<void> {
   try {
     const name = formData.get('name') as string;
     const email = formData.get('email') as string;
@@ -59,10 +55,7 @@ export async function signupAction(
 
     // Validate inputs
     if (!name || !email || !password) {
-      return {
-        error: '모든 필드를 입력해주세요.',
-        success: false,
-      };
+      throw new Error('모든 필드를 입력해주세요.');
     }
 
     // Parse and validate with Zod
@@ -75,10 +68,7 @@ export async function signupAction(
       const errorMessage = validationResult.error.issues
         .map((issue) => issue.message)
         .join(', ');
-      return {
-        error: errorMessage,
-        success: false,
-      };
+      throw new Error(errorMessage);
     }
 
     // Call API through authClient (Server instance with interceptors)
@@ -94,16 +84,13 @@ export async function signupAction(
     // Validate response structure
     if (!response?.user?.uuid) {
       console.error('[SIGNUP] Invalid response structure:', response);
-      return {
-        error: '회원가입 응답이 불완전합니다. 잠시 후 다시 시도해주세요.',
-        success: false,
-      };
+      throw new Error('회원가입 응답이 불완전합니다. 잠시 후 다시 시도해주세요.');
     }
 
     // Save tokens to HttpOnly Cookies
-    console.log('[SIGNUP] Saving tokens to cookies...');
+    console.warn('[SIGNUP] Saving tokens to cookies...');
     await saveTokensToCookies(response.accessToken, response.refreshToken);
-    console.log('[SIGNUP] Tokens saved successfully');
+    console.warn('[SIGNUP] Tokens saved successfully');
 
     // Update Zustand store
     useAuthStore.getState().login({
@@ -120,9 +107,6 @@ export async function signupAction(
     }
 
     const errorDetails = parseApiError(err);
-    return {
-      error: errorDetails.message,
-      success: false,
-    };
+    throw new Error(errorDetails.message);
   }
 }
