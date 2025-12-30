@@ -34,7 +34,7 @@ export default async function DashboardPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                {user.name}
+                {user.name}님!
             </h1>
             <span className="text-2xl sm:text-3xl">👋</span>
           </div>

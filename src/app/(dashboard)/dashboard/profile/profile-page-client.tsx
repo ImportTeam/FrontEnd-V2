@@ -1,7 +1,7 @@
 "use client";
 
 import { Camera, Calendar, ChevronRight, Mail, Shield, User } from "lucide-react";
-import { useState } from "react";
+import { useActionState, useState } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -16,12 +16,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { logger } from "@/lib/logger";
 
-import { deleteAccount, updateCurrentUser } from "./actions";
+import { changePassword, deleteAccount, updateCurrentUser } from "./actions";
 
 import type { UserCurrentResponse } from "@/lib/api/types";
 
 type ProfilePageClientProps = {
   initialProfile: UserCurrentResponse | null;
+};
+
+type PasswordActionState = {
+  status: "idle" | "success" | "error";
+  message: string;
 };
 
 export function ProfilePageClient({ initialProfile }: ProfilePageClientProps) {
@@ -34,6 +39,34 @@ export function ProfilePageClient({ initialProfile }: ProfilePageClientProps) {
   const [name, setName] = useState(initialProfile?.name ?? "사용자");
   const [email] = useState(initialProfile?.email ?? "user@example.com");
   const [isSaving, setIsSaving] = useState(false);
+
+  const [passwordState, submitPasswordChange, isPasswordPending] = useActionState<
+    PasswordActionState,
+    FormData
+  >(
+    async (_prev, formData) => {
+      const currentPassword = String(formData.get("currentPassword") ?? "").trim();
+      const newPassword = String(formData.get("newPassword") ?? "").trim();
+
+      if (!currentPassword || !newPassword) {
+        return {
+          status: "error",
+          message: "현재 비밀번호와 새 비밀번호를 입력하세요.",
+        };
+      }
+
+      const result = await changePassword(currentPassword, newPassword);
+      if (!result.success) {
+        return {
+          status: "error",
+          message: result.error ?? "비밀번호 변경에 실패했습니다.",
+        };
+      }
+
+      return { status: "success", message: "비밀번호가 변경되었습니다." };
+    },
+    { status: "idle", message: "" }
+  );
 
   const userInitial = (name?.trim() || "사용자").charAt(0).toUpperCase();
 
@@ -243,17 +276,57 @@ export function ProfilePageClient({ initialProfile }: ProfilePageClientProps) {
           <CardHeader>
             <CardTitle className="text-base">빠른 작업</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <button
-              className="w-full flex items-center justify-between p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors text-left group"
-              onClick={() => alert("준비 중인 기능입니다.")}
-              type="button"
-            >
-              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                비밀번호 변경
-              </span>
-              <ChevronRight className="h-4 w-4 text-zinc-400 group-hover:translate-x-0.5 transition-transform" />
-            </button>
+          <CardContent className="space-y-4">
+            <form action={submitPasswordChange} className="space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="currentPassword" className="text-sm font-medium">
+                  현재 비밀번호
+                </Label>
+                <Input
+                  id="currentPassword"
+                  name="currentPassword"
+                  type="password"
+                  autoComplete="current-password"
+                  className="h-11 bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 focus-visible:ring-blue-600"
+                  placeholder="현재 비밀번호"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="newPassword" className="text-sm font-medium">
+                  새 비밀번호
+                </Label>
+                <Input
+                  id="newPassword"
+                  name="newPassword"
+                  type="password"
+                  autoComplete="new-password"
+                  className="h-11 bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 focus-visible:ring-blue-600"
+                  placeholder="NewPassword123!"
+                />
+              </div>
+
+              {passwordState.status !== "idle" ? (
+                <p
+                  className={
+                    passwordState.status === "success"
+                      ? "text-xs text-green-600 dark:text-green-400"
+                      : "text-xs text-red-600 dark:text-red-400"
+                  }
+                  role={passwordState.status === "error" ? "alert" : undefined}
+                >
+                  {passwordState.message}
+                </p>
+              ) : null}
+
+              <Button
+                type="submit"
+                disabled={isPasswordPending}
+                className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20 disabled:opacity-50"
+              >
+                {isPasswordPending ? "변경 중..." : "비밀번호 변경"}
+              </Button>
+            </form>
 
             <button
               className="w-full flex items-center justify-between p-3 rounded-lg border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors text-left group"

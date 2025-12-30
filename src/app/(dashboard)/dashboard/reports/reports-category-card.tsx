@@ -61,6 +61,9 @@ export function ReportsCategoryCard(props: ReportsCategoryCardProps) {
                     background: "var(--color-card)",
                     color: "var(--color-card-foreground)",
                   }}
+                  itemStyle={{ color: "var(--color-card-foreground)" }}
+                  labelStyle={{ color: "var(--color-muted-foreground)" }}
+                  wrapperStyle={{ outline: "none" }}
                 />
                 <Pie
                   data={categoryChartData}

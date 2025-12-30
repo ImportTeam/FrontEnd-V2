@@ -47,7 +47,7 @@ function formatPercent(value: number) {
 }
 
 function paymentCardToCardData(payment: PaymentCard): CardData {
-  const icon = getPaymentIconPath(payment.cardType);
+  const icon = getPaymentIconPath(payment.cardType ?? payment.alias);
   const safeCardType = payment.cardType?.trim();
   const safeAlias = payment.alias?.trim();
   const isUnknownType = !safeCardType || /^unknown$/i.test(safeCardType);
