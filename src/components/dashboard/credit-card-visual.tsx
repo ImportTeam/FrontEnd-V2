@@ -83,7 +83,7 @@ export function CreditCardVisual({
         {/* Footer - Always show number if we want to simulate a real card with dynamic data */}
         <div className="flex items-end justify-between mt-auto">
           <p className="font-mono text-lg tracking-widest opacity-90 drop-shadow-md">
-            **** **** **** {cardNumber}
+            •••• •••• •••• {cardNumber}
           </p>
           <div className="h-6 w-10 rounded bg-white/20" />
         </div>

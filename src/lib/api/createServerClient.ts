@@ -4,6 +4,7 @@ import axios from 'axios';
 import { cookies } from 'next/headers';
 
 import { setupErrorInterceptor } from '@/lib/api/interceptors/error';
+import { setupRefreshInterceptor } from '@/lib/api/interceptors/refresh.server';
 
 import type { AxiosInstance } from 'axios';
 
@@ -31,6 +32,9 @@ export async function createServerClient(): Promise<AxiosInstance> {
       ? { Authorization: `Bearer ${accessToken}` }
       : {},
   });
+
+  // 401 자동 갱신 + 재시도 (server-only)
+  await setupRefreshInterceptor(instance);
 
   // 공통 에러 처리 (401, 500 등)
   setupErrorInterceptor(instance);

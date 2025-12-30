@@ -58,6 +58,14 @@ export interface IconPath {
   alt: string;
 }
 
+function normalizeKey(input: string): string {
+  return input
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/카드$/u, "")
+    .toUpperCase();
+}
+
 /**
  * Get icon path for both credit cards and payment methods
  * @param cardType - Card type (VISA, MASTERCARD, etc)
@@ -65,12 +73,12 @@ export interface IconPath {
  * @returns Icon path object with src and alt text, or null if not found
  */
 export function getPaymentIconPath(
-  cardType: string,
-  paymentProvider?: string
+  cardType: string | null | undefined,
+  paymentProvider?: string | null
 ): IconPath | null {
   // If it's a payment provider (Apple Pay, Kakao Pay, etc)
   if (paymentProvider) {
-    const providerKey = paymentProvider.toUpperCase();
+    const providerKey = normalizeKey(paymentProvider);
     const provider = paymentProviderToIcon[providerKey];
 
     if (provider) {
@@ -82,12 +90,18 @@ export function getPaymentIconPath(
   }
 
   // Otherwise treat as card type
-  const cardTypeKey = cardType.toUpperCase();
+  if (!cardType) return null;
+  const cardTypeKey = normalizeKey(cardType);
   const iconName = cardTypeToIcon[cardTypeKey];
 
-  if (iconName) {
+  // Fuzzy match for variants (e.g. "KB국민카드", "SHINHAN CREDIT")
+  const fuzzyIconName =
+    iconName ??
+    Object.entries(cardTypeToIcon).find(([key]) => cardTypeKey.includes(key))?.[1];
+
+  if (fuzzyIconName) {
     return {
-      src: `/assets/card/${iconName}.webp`,
+      src: `/assets/card/${fuzzyIconName}.webp`,
       alt: cardType,
     };
   }
@@ -101,5 +115,6 @@ export function getPaymentIconPath(
  * @returns Abbreviated display name (first 2 chars uppercase)
  */
 export function getPaymentTypeAbbr(cardType: string): string {
+  if (!cardType) return "??";
   return cardType.substring(0, 2).toUpperCase() || "??";
 }

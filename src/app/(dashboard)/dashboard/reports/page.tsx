@@ -38,6 +38,14 @@ const CHART_COLORS = [
   "var(--color-border)",
 ];
 
+function colorForLabel(label: string): string {
+  let hash = 0;
+  for (let i = 0; i < label.length; i += 1) {
+    hash = (hash * 31 + label.charCodeAt(i)) >>> 0;
+  }
+  return CHART_COLORS[hash % CHART_COLORS.length];
+}
+
 function formatKrw(value: number): string {
   return `${new Intl.NumberFormat("ko-KR").format(value)}원`;
 }
@@ -414,7 +422,7 @@ export default function ReportsPage() {
                           {categoryChartData.map((entry, index) => (
                             <Cell
                               key={`${entry.label}-${index}`}
-                              fill={CHART_COLORS[index % CHART_COLORS.length]}
+                              fill={colorForLabel(entry.label)}
                             />
                           ))}
                         </Pie>
@@ -422,6 +430,31 @@ export default function ReportsPage() {
                     </ResponsiveContainer>
                   )}
                 </div>
+
+                {categoryChartData.length > 0 ? (
+                  <div className="mt-4 grid gap-2">
+                    {categoryChartData.map((item) => (
+                      <div key={item.label} className="flex items-center justify-between gap-3 text-xs sm:text-sm">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span
+                            className="h-2.5 w-2.5 rounded-full shrink-0"
+                            style={{ backgroundColor: colorForLabel(item.label) }}
+                            aria-hidden
+                          />
+                          <span className="truncate text-zinc-700 dark:text-zinc-200">{item.label}</span>
+                        </div>
+                        <div className="shrink-0 text-right">
+                          <span className="tabular-nums text-zinc-700 dark:text-zinc-200">
+                            {formatKrw(item.value)}
+                          </span>
+                          <span className="ml-2 tabular-nums text-zinc-500 dark:text-zinc-400">
+                            {item.ratioPercent.toFixed(1)}%
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
             </CardContent>
         </Card>
 

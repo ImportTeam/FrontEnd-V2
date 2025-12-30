@@ -12,6 +12,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { logger } from "@/lib/logger";
+import { getPaymentIconPath } from "@/lib/payment-icon-mapping";
 
 import {
   deletePaymentMethod,
@@ -19,9 +21,6 @@ import {
   setDefaultPaymentMethod,
   startCardRegistration,
 } from "./actions";
-
-import { logger } from "@/lib/logger";
-import { getPaymentIconPath } from "@/lib/payment-icon-mapping";
 
 import type { PaymentCard } from "@/lib/api/types";
 
@@ -54,7 +53,7 @@ function paymentCardToCardData(payment: PaymentCard): CardData {
     id: payment.seq?.toString() || "unknown",
     bankName: payment.cardType?.split(" ")[0] || "Unknown",
     cardName: payment.alias || `${payment.cardType} ${payment.last4}`,
-    cardNumber: `•••• ${payment.last4}`, // Masked card number
+    cardNumber: payment.last4 || "????", // Last 4 digits
     imageSrc: icon?.src, // Local asset mapping
     balance: undefined, // Payment API doesn't provide balance
     limit: undefined, // Payment API doesn't provide limit
@@ -66,7 +65,7 @@ function paymentCardToCardData(payment: PaymentCard): CardData {
 
 // eslint-disable-next-line no-restricted-syntax
 export default function CardsPage() {
-  const log = logger.scope("CARDS_PAGE");
+  const log = useMemo(() => logger.scope("CARDS_PAGE"), []);
   const [cards, setCards] = useState<CardData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -112,7 +111,7 @@ export default function CardsPage() {
       }
     }
     load();
-  }, []);
+  }, [log]);
 
   const handleStartRegistration = async () => {
     try {
