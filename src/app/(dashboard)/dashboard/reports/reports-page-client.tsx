@@ -4,14 +4,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { logger } from "@/lib/logger";
 
-import { loadTransactionsForMonth } from "./actions";
+import {
+  loadMonthlyFallbackFromTransactions,
+  loadTransactionsForMonth,
+} from "./actions";
 import { ReportsCategoryCard } from "./reports-category-card";
 import { ReportsHeader } from "./reports-header";
 import { ReportsMonthlyCard } from "./reports-monthly-card";
 import { ReportsTransactionsCard } from "./reports-transactions-card";
 import {
   buildCategoryChartDataFromTransactions,
-  lastNMonths,
   monthToRange,
   normalizeMonthlyData,
   pickCategoryRange,
@@ -133,17 +135,9 @@ export function ReportsPageClient(props: ReportsPageClientProps) {
     async function buildFallback() {
       setIsChartsLoading(true);
       try {
-        const months = lastNMonths(selectedMonth, 6);
-        const results = await Promise.all(
-          months.map(async (monthKey) => {
-            const { from, to } = monthToRange(monthKey);
-            const list = await loadTransactionsForMonth(from, to);
-            const totalSpent = (list ?? []).reduce(
-              (sum, tx) => sum + (tx.paidAmount ?? tx.spendAmount ?? 0),
-              0
-            );
-            return { month: monthKey, totalSpent };
-          })
+        const results = await loadMonthlyFallbackFromTransactions(
+          selectedMonth,
+          6
         );
 
         if (cancelled) return;

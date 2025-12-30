@@ -18,16 +18,25 @@ export const CHART_COLORS = [
   "#DB2777", // pink
 ] as const;
 
+const colorCache = new Map<string, string>();
+const krwFormatter = new Intl.NumberFormat("ko-KR");
+
 export function colorForLabel(label: string): string {
+  const cached = colorCache.get(label);
+  if (cached) return cached;
+
   let hash = 0;
   for (let i = 0; i < label.length; i += 1) {
     hash = (hash * 31 + label.charCodeAt(i)) >>> 0;
   }
-  return CHART_COLORS[hash % CHART_COLORS.length];
+
+  const color = CHART_COLORS[hash % CHART_COLORS.length];
+  colorCache.set(label, color);
+  return color;
 }
 
 export function formatKrw(value: number): string {
-  return `${new Intl.NumberFormat("ko-KR").format(value)}원`;
+  return `${krwFormatter.format(value)}원`;
 }
 
 export type CategoryChartDatum = {
