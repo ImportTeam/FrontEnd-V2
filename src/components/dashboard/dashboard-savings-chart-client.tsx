@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -39,6 +40,18 @@ export function DashboardSavingsChartClient({
   chartData = [],
   loading = false,
 }: DashboardSavingsChartClientProps) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useLayoutEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Recharts + SSR can cause hydration mismatch (React #418) in production.
+  // Render a stable placeholder for SSR/first paint, then hydrate on client.
+  if (!isMounted) {
+    return <div className="h-full w-full bg-muted/50 animate-pulse rounded-xl" />;
+  }
+
   if (loading) {
     return <div className="h-full w-full bg-muted/50 animate-pulse rounded-xl" />;
   }

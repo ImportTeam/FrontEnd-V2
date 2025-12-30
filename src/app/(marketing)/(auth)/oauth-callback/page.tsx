@@ -35,7 +35,7 @@ type OAuthCallbackPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function OAuthCallbackPage(props: OAuthCallbackPageProps) {
+async function OAuthCallbackPage(props: OAuthCallbackPageProps) {
   // Some backends finish OAuth server-side and redirect here without query params.
   // In that case, just trust the HttpOnly cookie and continue to the app.
   const cookieStore = await cookies();
@@ -58,7 +58,7 @@ export default async function OAuthCallbackPage(props: OAuthCallbackPageProps) {
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-6">
-        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm break-keep">
+        <div className="flex-none w-full max-w-md min-w-72 rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm break-keep">
           <h1 className="text-lg font-bold">소셜 로그인 오류</h1>
           <p className="mt-2 text-sm text-muted-foreground">{error}</p>
           <a
@@ -75,7 +75,7 @@ export default async function OAuthCallbackPage(props: OAuthCallbackPageProps) {
   if (!provider || !code) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-6">
-        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm break-keep">
+        <div className="flex-none w-full max-w-md min-w-72 rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm break-keep">
           <h1 className="text-lg font-bold">소셜 로그인 오류</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             콜백 파라미터가 누락되었습니다. 다시 시도해주세요.
@@ -99,7 +99,7 @@ export default async function OAuthCallbackPage(props: OAuthCallbackPageProps) {
     const details = parseApiError(err);
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-6">
-        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm break-keep">
+        <div className="flex-none w-full max-w-md min-w-72 rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm break-keep">
           <h1 className="text-lg font-bold">소셜 로그인 실패</h1>
           <p className="mt-2 text-sm text-muted-foreground">{details.message}</p>
           <a
@@ -113,3 +113,5 @@ export default async function OAuthCallbackPage(props: OAuthCallbackPageProps) {
     );
   }
 }
+
+export default OAuthCallbackPage;
