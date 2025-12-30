@@ -85,24 +85,46 @@ export const authClient = {
 
   /**
    * OAuth 로그인 시작
-   * POST /api/auth/{provider}
+   * Backend may implement either:
+   * - GET  /api/auth/{provider}?redirect_uri=... (302 Location)
+   * - POST /api/auth/{provider}?redirect_uri=... ({ redirectUrl })
    * provider: 'kakao' | 'naver' | 'google'
    */
   startOAuth: async (provider: string, redirectUri: string) => {
     const instance = await createServerClient();
+
+    // 1) Try GET first (common OAuth start pattern: 302 redirect)
+    try {
+      const response = await instance.get(`/auth/${provider}`, {
+        params: { redirect_uri: redirectUri },
+        maxRedirects: 0,
+        // Accept 2xx and 3xx (we want Location)
+        validateStatus: (status) => status >= 200 && status < 400,
+      });
+
+      const location = (response.headers?.location as string | undefined) ?? "";
+      const body = response.data as { redirectUrl?: string; redirect_url?: string } | undefined;
+      const redirectUrl = body?.redirectUrl ?? body?.redirect_url ?? location;
+
+      return { redirectUrl: redirectUrl ?? "" };
+    } catch {
+      // Continue to POST fallback below.
+    }
+
+    // 2) Fallback: POST (some backends return JSON)
     const response = await instance.post<{ redirectUrl?: string; redirect_url?: string }>(
       `/auth/${provider}`,
       undefined,
       {
-        params: {
-          redirect_uri: redirectUri,
-        },
+        params: { redirect_uri: redirectUri },
+        maxRedirects: 0,
+        validateStatus: (status) => status >= 200 && status < 400,
       }
     );
 
-    return {
-      redirectUrl: response.data.redirectUrl ?? response.data.redirect_url ?? "",
-    };
+    const location = (response.headers?.location as string | undefined) ?? "";
+    const redirectUrl = response.data.redirectUrl ?? response.data.redirect_url ?? location;
+    return { redirectUrl: redirectUrl ?? "" };
   },
 
   /**
