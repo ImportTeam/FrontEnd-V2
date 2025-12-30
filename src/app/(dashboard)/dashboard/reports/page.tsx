@@ -76,6 +76,53 @@ function normalizeMonthlyData(responses: MonthlySavingsChartResponse[]): Array<{
   });
 }
 
+function buildCategoryChartDataFromTransactions(transactions: TransactionListItem[]):
+  Array<{ label: string; value: number; ratioPercent: number }> {
+  const totals = new Map<string, number>();
+  for (const tx of transactions) {
+    const label = tx.category?.trim() || "기타";
+    const value = (tx.paidAmount ?? tx.spendAmount ?? 0) || 0;
+    totals.set(label, (totals.get(label) ?? 0) + value);
+  }
+
+  const entries = Array.from(totals.entries())
+    .map(([label, value]) => ({ label, value }))
+    .filter((x) => x.value > 0)
+    .sort((a, b) => b.value - a.value);
+
+  const total = entries.reduce((sum, x) => sum + x.value, 0);
+  if (total <= 0) return [];
+
+  return entries.map((x) => ({
+    label: x.label,
+    value: x.value,
+    ratioPercent: Math.round((x.value / total) * 1000) / 10,
+  }));
+}
+
+function monthToRange(monthKey: string): { from: string; to: string } {
+  const [year, month] = monthKey.split("-");
+  const from = `${year}-${month}-01T00:00:00.000Z`;
+  const lastDay = new Date(Number.parseInt(year, 10), Number.parseInt(month, 10), 0).getDate();
+  const to = `${year}-${month}-${lastDay}T23:59:59.999Z`;
+  return { from, to };
+}
+
+function lastNMonths(endMonthKey: string, n: number): string[] {
+  const [yearStr, monthStr] = endMonthKey.split("-");
+  const year = Number.parseInt(yearStr, 10);
+  const monthIndex = Number.parseInt(monthStr, 10) - 1;
+
+  const result: string[] = [];
+  for (let i = n - 1; i >= 0; i -= 1) {
+    const d = new Date(Date.UTC(year, monthIndex - i, 1));
+    const y = d.getUTCFullYear();
+    const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+    result.push(`${y}-${m}`);
+  }
+  return result;
+}
+
 // eslint-disable-next-line no-restricted-syntax
 export default function ReportsPage() {
   const log = useMemo(() => logger.scope("REPORTS_PAGE"), []);
@@ -88,6 +135,7 @@ export default function ReportsPage() {
   const [categoryResponses, setCategoryResponses] = useState<CategorySpendingResponse[]>([]);
   const [monthlyResponses, setMonthlyResponses] = useState<MonthlySavingsChartResponse[]>([]);
   const [isChartsLoading, setIsChartsLoading] = useState(false);
+  const [monthlyFallbackData, setMonthlyFallbackData] = useState<Array<{ month: string; totalSpent: number }>>([]);
 
   useEffect(() => {
     async function loadTransactions() {
@@ -117,10 +165,28 @@ export default function ReportsPage() {
         ]);
         setCategoryResponses(categories ?? []);
         setMonthlyResponses(months ?? []);
+
+        const normalized = normalizeMonthlyData(months ?? []);
+        if (normalized.length === 0) {
+          const monthKeys = lastNMonths(selectedMonth, 6);
+          const totals = await Promise.all(
+            monthKeys.map(async (monthKey) => {
+              const { from, to } = monthToRange(monthKey);
+              const list = await loadTransactionsForMonth(from, to);
+              const txs = list ?? [];
+              const totalSpent = txs.reduce((sum, tx) => sum + ((tx.paidAmount ?? tx.spendAmount ?? 0) || 0), 0);
+              return { month: monthKey, totalSpent };
+            })
+          );
+          setMonthlyFallbackData(totals);
+        } else {
+          setMonthlyFallbackData([]);
+        }
       } catch (error) {
         log.error("Failed to load charts:", error);
         setCategoryResponses([]);
         setMonthlyResponses([]);
+        setMonthlyFallbackData([]);
       } finally {
         setIsChartsLoading(false);
       }
@@ -131,12 +197,22 @@ export default function ReportsPage() {
 
   const selectedCategory = pickCategoryRange(categoryResponses, selectedMonth);
   const categoryData: CategorySpendingItem[] = selectedCategory?.data ?? [];
-  const categoryChartData = categoryData.map((item) => ({
+  const categoryChartDataFromApi = categoryData.map((item) => ({
     label: item.label,
     value: item.value,
     ratioPercent: item.ratioPercent,
   }));
-  const monthlyData = normalizeMonthlyData(monthlyResponses);
+
+  const categoryChartDataFromTransactions = useMemo(
+    () => buildCategoryChartDataFromTransactions(transactions),
+    [transactions]
+  );
+
+  const categoryChartData =
+    categoryChartDataFromApi.length > 0 ? categoryChartDataFromApi : categoryChartDataFromTransactions;
+
+  const monthlyDataFromApi = normalizeMonthlyData(monthlyResponses);
+  const monthlyData = monthlyDataFromApi.length > 0 ? monthlyDataFromApi : monthlyFallbackData;
 
   const downloadJSON = () => {
     setIsDownloading(true);
