@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { logger } from "@/lib/logger";
 
 import { deleteUserSession, loadUserSessions } from "./actions";
 
@@ -15,6 +16,7 @@ import type { SessionData } from "@/lib/api/types";
 
 // eslint-disable-next-line no-restricted-syntax
 export default function SettingsPage() {
+  const log = logger.scope("SETTINGS_PAGE");
   const { setTheme, theme } = useTheme();
   const [showDevices, setShowDevices] = useState(false);
   const [sessions, setSessions] = useState<SessionData[]>([]);
@@ -39,9 +41,9 @@ export default function SettingsPage() {
     try {
       const sessionList = await loadUserSessions();
       setSessions(sessionList ?? []);
-      console.warn("[SETTINGS] Sessions loaded:", sessionList);
+      log.warn("Sessions loaded:", sessionList);
     } catch (error) {
-      console.error("Failed to load sessions:", error);
+      log.error("Failed to load sessions:", error);
     } finally {
       setIsLoadingSessions(false);
     }
@@ -56,9 +58,9 @@ export default function SettingsPage() {
           return;
         }
         setSessions(prev => prev.filter(s => s.id !== seq));
-        console.warn("[SETTINGS] Session deleted:", seq);
+        log.warn("Session deleted:", seq);
       } catch (error) {
-        console.error("Failed to logout session:", error);
+        log.error("Failed to logout session:", error);
         alert("기기 로그아웃에 실패했습니다.");
       }
     }

@@ -1,6 +1,7 @@
 "use server";
 
 import { userClient } from "@/lib/api/clients/user.server";
+import { logger } from "@/lib/logger";
 
 import type { UserCurrentResponse } from "@/lib/api/types";
 
@@ -9,10 +10,11 @@ type UpdateCurrentUserInput = Partial<Omit<UserCurrentResponse, "settings">> & {
 };
 
 export async function loadCurrentUser(): Promise<UserCurrentResponse | null> {
+  const log = logger.scope("PROFILE");
   try {
     return await userClient.getCurrent();
   } catch (error) {
-    console.error("[PROFILE] Failed to load user profile:", error);
+    log.error("Failed to load user profile:", error);
     return null;
   }
 }
@@ -20,11 +22,12 @@ export async function loadCurrentUser(): Promise<UserCurrentResponse | null> {
 export async function updateCurrentUser(
   data: UpdateCurrentUserInput
 ): Promise<{ success: boolean; profile?: UserCurrentResponse; error?: string }> {
+  const log = logger.scope("PROFILE");
   try {
     const profile = await userClient.updateCurrent(data);
     return { success: true, profile };
   } catch (error) {
-    console.error("[PROFILE] Failed to update profile:", error);
+    log.error("Failed to update profile:", error);
     return {
       success: false,
       error:
@@ -36,11 +39,12 @@ export async function updateCurrentUser(
 }
 
 export async function deleteAccount(): Promise<{ success: boolean; error?: string }> {
+  const log = logger.scope("PROFILE");
   try {
     await userClient.deleteCurrent();
     return { success: true };
   } catch (error) {
-    console.error("[PROFILE] Failed to delete account:", error);
+    log.error("Failed to delete account:", error);
     return {
       success: false,
       error:
@@ -53,11 +57,12 @@ export async function changePassword(
   currentPassword: string,
   newPassword: string
 ): Promise<{ success: boolean; error?: string }> {
+  const log = logger.scope("PROFILE");
   try {
     await userClient.changePassword(currentPassword, newPassword);
     return { success: true };
   } catch (error) {
-    console.error("[PROFILE] Failed to change password:", error);
+    log.error("Failed to change password:", error);
     return {
       success: false,
       error:

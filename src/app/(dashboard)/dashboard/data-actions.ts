@@ -1,6 +1,7 @@
 "use server";
 
 import { dashboardClient } from "@/lib/api/clients/dashboard.server";
+import { logger } from "@/lib/logger";
 
 /**
  * Safe data loading with fallbacks
@@ -8,6 +9,7 @@ import { dashboardClient } from "@/lib/api/clients/dashboard.server";
  */
 
 export async function loadDashboardChartsData() {
+  const log = logger.scope("CHARTS_DATA");
   try {
     const [monthlySavings, recommendations] = await Promise.allSettled([
       dashboardClient.getMonthlySavingsChart(),
@@ -22,7 +24,7 @@ export async function loadDashboardChartsData() {
       recommendations: recsData,
     };
   } catch (error) {
-    console.error("[CHARTS_DATA] Failed to load:", error);
+    log.error("Failed to load:", error);
     return {
       chartData: [],
       recommendations: [],
@@ -31,6 +33,7 @@ export async function loadDashboardChartsData() {
 }
 
 export async function loadSummaryCardsData(): Promise<Record<string, unknown> | null> {
+  const log = logger.scope("SUMMARY_DATA");
   try {
     const summary = await dashboardClient.getSummary();
     if (!summary) {
@@ -44,7 +47,7 @@ export async function loadSummaryCardsData(): Promise<Record<string, unknown> | 
     }
     return summary as unknown as Record<string, unknown>;
   } catch (error) {
-    console.error("[SUMMARY_DATA] Failed to load:", error);
+    log.error("Failed to load:", error);
     // Return placeholder data instead of null
     return {
       totalSavings: "0원",
@@ -57,15 +60,17 @@ export async function loadSummaryCardsData(): Promise<Record<string, unknown> | 
 }
 
 export async function loadRecentActivityData() {
+  const log = logger.scope("ACTIVITY_DATA");
   try {
     return [];
   } catch (error) {
-    console.error("[ACTIVITY_DATA] Failed to load:", error);
+    log.error("Failed to load:", error);
     return [];
   }
 }
 
 export async function loadRecentTransactionsData(_limit = 10) {
+  const log = logger.scope("TRANSACTIONS_DATA");
   try {
     const items = await dashboardClient.getRecentBySite();
     if (!Array.isArray(items) || items.length === 0) {
@@ -80,12 +85,13 @@ export async function loadRecentTransactionsData(_limit = 10) {
       benefit: `${(item.discountOrRewardAmount ?? 0).toLocaleString()}원`,
     }));
   } catch (error) {
-    console.error("[TRANSACTIONS_DATA] Failed to load:", error);
+    log.error("Failed to load:", error);
     return [];
   }
 }
 
 export async function loadAIBenefitsData() {
+  const log = logger.scope("AI_BENEFITS_DATA");
   try {
     const analysis = await dashboardClient.getAIAnalysis();
     if (!analysis) {
@@ -99,7 +105,7 @@ export async function loadAIBenefitsData() {
       reasonSummary: analysis.reasonSummary || "",
     };
   } catch (error) {
-    console.error("[AI_BENEFITS_DATA] Failed to load:", error);
+    log.error("Failed to load:", error);
     return {
       recommendation: "AI 분석 데이터를 불러올 수 없습니다",
       reasonSummary: "나중에 다시 시도해주세요",
@@ -108,6 +114,7 @@ export async function loadAIBenefitsData() {
 }
 
 export async function loadAIAnalysisData() {
+  const log = logger.scope("AI_ANALYSIS_DATA");
   try {
     const analysis = await dashboardClient.getAIAnalysis();
     if (!analysis) {
@@ -121,7 +128,7 @@ export async function loadAIAnalysisData() {
       reasonSummary: analysis.reasonSummary || "",
     };
   } catch (error) {
-    console.error("[AI_ANALYSIS_DATA] Failed to load:", error);
+    log.error("Failed to load:", error);
     return {
       recommendation: "AI 분석 데이터를 불러올 수 없습니다",
       reasonSummary: "나중에 다시 시도해주세요",

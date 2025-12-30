@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/use-auth-store";
+import { logger } from "@/lib/logger";
 
 import { deleteAccount, loadCurrentUser, updateCurrentUser } from "./actions";
 
@@ -16,6 +17,7 @@ import type { UserCurrentResponse } from "@/lib/api/types";
 
 // eslint-disable-next-line no-restricted-syntax
 export default function ProfilePage() {
+  const log = logger.scope("PROFILE_PAGE");
   const user = useAuthStore((state) => state.user);
   const userName = user?.name || "사용자";
   const userEmail = user?.email || "user@example.com";
@@ -40,9 +42,9 @@ export default function ProfilePage() {
         setUserProfile(profile);
         setName(profile.name || userName);
         setEmail(profile.email || userEmail);
-        console.warn("[PROFILE] Loaded user profile:", profile);
+        log.warn("Loaded user profile:", profile);
       } catch (error) {
-        console.error("Failed to load profile:", error);
+        log.error("Failed to load profile:", error);
       } finally {
         setIsLoading(false);
       }
@@ -77,7 +79,7 @@ export default function ProfilePage() {
 
       alert("프로필이 저장되었습니다.");
     } catch (error) {
-      console.error("Failed to update profile:", error);
+      log.error("Failed to update profile:", error);
       alert("프로필 저장에 실패했습니다.");
     } finally {
       setIsSaving(false);
@@ -94,7 +96,7 @@ export default function ProfilePage() {
         }
         window.location.href = "/";
       } catch (error) {
-        console.error("Failed to delete account:", error);
+        log.error("Failed to delete account:", error);
         alert("계정 삭제에 실패했습니다.");
       }
     }

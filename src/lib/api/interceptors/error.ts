@@ -3,7 +3,10 @@
  * 공통 에러 포매팅 및 로깅
  */
 
+import { logger } from '@/lib/logger';
+
 import type { AxiosInstance } from 'axios';
+
 
 // Cloudflare challenge detection
 function isCloudflareChallenge(data: unknown): boolean {
@@ -12,6 +15,7 @@ function isCloudflareChallenge(data: unknown): boolean {
 }
 
 export function setupErrorInterceptor(instance: AxiosInstance) {
+  const log = logger.scope('API_ERROR');
   instance.interceptors.response.use(
     (response) => response,
     (error) => {
@@ -22,7 +26,7 @@ export function setupErrorInterceptor(instance: AxiosInstance) {
         
         // Cloudflare DDoS protection detection
         if (isCloudflareChallenge(data)) {
-          console.error('[API Error] Cloudflare Challenge detected - API may be protected by DDoS protection');
+          log.error('Cloudflare Challenge detected - API may be protected by DDoS protection');
           return Promise.reject({
             ...error,
             response: {
@@ -35,17 +39,17 @@ export function setupErrorInterceptor(instance: AxiosInstance) {
           });
         }
         
-        console.error(`[API Error] ${status}:`, {
+        log.error(`${status}:`, {
           message: data?.message || data?.error?.message,
           code: data?.error?.code,
           details: data?.error?.details,
         });
       } else if (error.request) {
         // Request made but no response received
-        console.error('[API Error] No response:', error.message);
+        log.error('No response:', error.message);
       } else {
         // Error setting up the request
-        console.error('[API Error] Request setup failed:', error.message);
+        log.error('Request setup failed:', error.message);
       }
 
       return Promise.reject(error);

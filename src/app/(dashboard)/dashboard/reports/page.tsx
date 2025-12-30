@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { logger } from "@/lib/logger";
 
 import { loadTransactionsForMonth } from "./actions";
 
@@ -12,6 +13,7 @@ import type { TransactionListItem } from "@/lib/api/types";
 
 // eslint-disable-next-line no-restricted-syntax
 export default function ReportsPage() {
+  const log = logger.scope("REPORTS_PAGE");
   const [selectedMonth, setSelectedMonth] = useState<string>(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -29,9 +31,9 @@ export default function ReportsPage() {
 
         const list = await loadTransactionsForMonth(from, to);
         setTransactions(list ?? []);
-        console.warn("[REPORTS] Loaded transactions:", list);
+        log.warn("Loaded transactions:", list);
       } catch (error) {
-        console.error("Failed to load transactions:", error);
+        log.error("Failed to load transactions:", error);
       }
     }
     void loadTransactions();
@@ -58,9 +60,9 @@ export default function ReportsPage() {
       link.download = `report_${selectedMonth}.json`;
       link.click();
       URL.revokeObjectURL(url);
-      console.warn("[REPORTS] JSON download completed:", selectedMonth);
+      log.warn("JSON download completed:", selectedMonth);
     } catch (error) {
-      console.error("Failed to download JSON:", error);
+      log.error("Failed to download JSON:", error);
       alert("JSON 다운로드에 실패했습니다.");
     } finally {
       setIsDownloading(false);
@@ -92,9 +94,9 @@ export default function ReportsPage() {
       link.download = `report_${selectedMonth}.csv`;
       link.click();
       URL.revokeObjectURL(url);
-      console.warn("[REPORTS] CSV download completed:", selectedMonth);
+      log.warn("CSV download completed:", selectedMonth);
     } catch (error) {
-      console.error("Failed to download CSV:", error);
+      log.error("Failed to download CSV:", error);
       alert("CSV 다운로드에 실패했습니다.");
     } finally {
       setIsDownloading(false);

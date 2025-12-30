@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { logger } from "@/lib/logger";
+
 /**
  * OAuth Handler Component
  * Per PRD: Backend sets HttpOnly cookies with tokens
@@ -20,15 +22,17 @@ export function OAuthHandler() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
+  const log = logger.scope("OAUTH");
+
   useEffect(() => {
     async function handleCallback() {
       try {
-        console.warn("[OAUTH] OAuth callback page loaded");
-        console.warn("[OAUTH] Backend should have set HttpOnly cookies by now");
+        log.info("OAuth callback page loaded");
+        log.debug("Backend should have set HttpOnly cookies by now");
 
         // No need to process tokens - backend already set them in HttpOnly cookies
         // Just verify we got here and redirect to dashboard
-        console.warn("[OAUTH] Redirecting to dashboard...");
+        log.info("Redirecting to dashboard...");
 
         // Small delay to ensure cookies are set
         setTimeout(() => {
@@ -36,7 +40,7 @@ export function OAuthHandler() {
         }, 500);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
-        console.error("[OAUTH] Error:", message);
+        log.error("Error:", message);
         setError(message);
       }
     }

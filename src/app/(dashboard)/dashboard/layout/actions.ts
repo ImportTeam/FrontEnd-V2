@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 
 import { authClient } from "@/lib/api/clients/auth.server";
+import { logger } from "@/lib/logger";
 
 const STORAGE_KEYS = {
   accessToken: "access_token",
@@ -10,6 +11,7 @@ const STORAGE_KEYS = {
 };
 
 export async function logoutAction(): Promise<{ success: boolean; error?: string }> {
+  const log = logger.scope("LOGOUT");
   try {
     const cookieStore = await cookies();
     const refreshToken = cookieStore.get(STORAGE_KEYS.refreshToken)?.value;
@@ -25,7 +27,7 @@ export async function logoutAction(): Promise<{ success: boolean; error?: string
 
     return { success: true };
   } catch (error) {
-    console.error("[LOGOUT] Failed to logout:", error);
+    log.error("Failed to logout:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "로그아웃에 실패했습니다.",

@@ -8,9 +8,11 @@ import { AuthFormField } from "@/components/auth/auth-form-field";
 import { SocialLoginButtons } from "@/components/auth/social-login-buttons";
 import { Button } from "@/components/ui/button";
 import { useAuthForm } from "@/hooks/use-auth-form";
+import { logger } from "@/lib/logger";
 import { loginSchema } from "@/lib/schemas/auth";
 
 function LoginFormContent() {
+  const log = logger.scope("LOGIN_FORM");
   const [state, formAction, isPending] = useActionState(loginAction, {
     status: "idle",
     message: null,
@@ -46,13 +48,15 @@ function LoginFormContent() {
   const onSubmit = handleSubmit(
     (_values, event) => {
       setSubmitAttempted(true);
-      const formEl = event?.currentTarget as HTMLFormElement | undefined;
+      log.info("submit (valid)");
+      const formEl = (event?.target as HTMLFormElement | null) ?? null;
       if (!formEl) return;
       const formData = new FormData(formEl);
       formAction(formData);
     },
-    () => {
+    (formErrors) => {
       setSubmitAttempted(true);
+      log.warn("submit (invalid)", formErrors);
     }
   );
 
@@ -90,7 +94,7 @@ function LoginFormContent() {
         </div>
       ) : null}
 
-      <form action={formAction} onSubmit={onSubmit} className="space-y-4">
+      <form action={formAction} onSubmit={onSubmit} noValidate className="space-y-4">
         <div className="space-y-4 text-left">
           <AuthFormField
             id="email"

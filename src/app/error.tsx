@@ -5,16 +5,18 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
+import { logger } from "@/lib/logger";
 
 // Next.js error boundary requires a default export
 // eslint-disable-next-line no-restricted-syntax
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   const router = useRouter();
+  const log = logger.scope("GLOBAL_ERROR");
 
   useEffect(() => {
     // Log error details only in development
     if (process.env.NODE_ENV === 'development') {
-      console.error("Global error boundary:", error);
+      log.error("Global error boundary:", error);
     }
   }, [error]);
 

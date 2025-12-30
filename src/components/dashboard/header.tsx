@@ -17,10 +17,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { IconButton } from "@/components/ui/icon-button";
+import { logger } from "@/lib/logger";
 import { useAuthStore } from "@/store/use-auth-store";
 import { useUIStore } from "@/store/use-ui-store";
 
 export function DashboardHeader() {
+  const log = logger.scope("DASHBOARD_HEADER");
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
   const { user, logout } = useAuthStore();
   const router = useRouter();
@@ -32,10 +34,10 @@ export function DashboardHeader() {
         logout();
         router.push("/");
       } else {
-        console.error("Logout failed:", result.error);
+        log.error("Logout failed:", result.error);
       }
     } catch (error) {
-      console.error("Logout failed:", error);
+      log.error("Logout failed:", error);
     }
   };
 

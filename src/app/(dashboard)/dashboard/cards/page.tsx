@@ -20,6 +20,8 @@ import {
   startCardRegistration,
 } from "./actions";
 
+import { logger } from "@/lib/logger";
+
 import type { PaymentCard } from "@/lib/api/types";
 
 // CardData 타입 정의
@@ -62,6 +64,7 @@ function paymentCardToCardData(payment: PaymentCard): CardData {
 
 // eslint-disable-next-line no-restricted-syntax
 export default function CardsPage() {
+  const log = logger.scope("CARDS_PAGE");
   const [cards, setCards] = useState<CardData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +87,7 @@ export default function CardsPage() {
           try {
             return paymentCardToCardData(payment);
           } catch (e) {
-            console.error("[CARDS_PAGE] Error converting payment card:", payment, e);
+            log.error("Error converting payment card:", payment, e);
             // Return minimal CardData on conversion error
             return {
               id: payment.uuid || "unknown",
@@ -99,7 +102,7 @@ export default function CardsPage() {
         setCards(cardDataList);
       } catch (e) {
         const errorMsg = e instanceof Error ? e.message : "결제수단을 불러오지 못했습니다.";
-        console.error("[CARDS_PAGE] Error loading payment methods:", errorMsg, e);
+        log.error("Error loading payment methods:", errorMsg, e);
         setError(errorMsg);
         setCards([]);
       } finally {
@@ -119,7 +122,7 @@ export default function CardsPage() {
       window.location.href = result.redirectUrl;
     } catch (e) {
       const errorMsg = e instanceof Error ? e.message : "카드 등록을 시작할 수 없습니다.";
-      console.error("[CARDS_PAGE] Error starting card registration:", errorMsg, e);
+      log.error("Error starting card registration:", errorMsg, e);
       setError(errorMsg);
     }
   };
@@ -137,7 +140,7 @@ export default function CardsPage() {
       setError(null);
     } catch (e) {
       const errorMsg = e instanceof Error ? e.message : "삭제에 실패했습니다.";
-      console.error("[CARDS_PAGE] Error deleting card:", id, errorMsg, e);
+      log.error("Error deleting card:", id, errorMsg, e);
       setError(errorMsg);
     }
   };
@@ -155,7 +158,7 @@ export default function CardsPage() {
       setError(null);
     } catch (e) {
       const errorMsg = e instanceof Error ? e.message : "주 결제수단 설정에 실패했습니다.";
-      console.error("[CARDS_PAGE] Error setting primary card:", id, errorMsg, e);
+      log.error("Error setting primary card:", id, errorMsg, e);
       setError(errorMsg);
     }
   };

@@ -10,6 +10,7 @@ import { redirect } from 'next/navigation';
 
 import { authClient } from '@/lib/api/clients/auth.server';
 import { parseApiError } from '@/lib/api/error-handler';
+import { logger } from '@/lib/logger';
 import { loginSchema } from '@/lib/schemas/auth';
 
 function isNextRedirectError(err: unknown): boolean {
@@ -72,6 +73,7 @@ export async function loginAction(
   prevState: AuthActionState,
   formData: FormData
 ): Promise<AuthActionState> {
+  const log = logger.scope('LOGIN_ACTION');
   try {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
@@ -103,7 +105,7 @@ export async function loginAction(
     // Call API through authClient (Server instance with interceptors)
     const response = await authClient.login(email, password);
 
-    console.warn('[LOGIN] API Response:', {
+    log.debug('API Response:', {
       hasUser: !!response?.user,
       user: response?.user,
       hasAccessToken: !!response?.accessToken,
@@ -112,7 +114,7 @@ export async function loginAction(
 
     // Validate response structure
     if (!response?.user?.uuid) {
-      console.error('[LOGIN] Invalid response structure:', response);
+      log.error('Invalid response structure:', response);
       return {
         status: 'error',
         message: '로그인 응답이 불완전합니다. 잠시 후 다시 시도해주세요.',
@@ -121,9 +123,9 @@ export async function loginAction(
     }
 
     // Save tokens to HttpOnly Cookies
-    console.warn('[LOGIN] Saving tokens to cookies...');
+    log.debug('Saving tokens to cookies...');
     await saveTokensToCookies(response.accessToken, response.refreshToken);
-    console.warn('[LOGIN] Tokens saved successfully');
+    log.debug('Tokens saved successfully');
 
     // 리다이렉트 (Server Action에서 자동 처리)
     redirect('/dashboard');
@@ -133,13 +135,13 @@ export async function loginAction(
       throw err;
     }
 
-    console.error("[LOGIN] Error details:", {
+    log.error("Error details:", {
       error: err,
       errorType: err instanceof Error ? err.constructor.name : typeof err,
       errorMessage: err instanceof Error ? err.message : String(err),
     });
     const errorDetails = parseApiError(err);
-    console.error("[LOGIN] Parsed error:", errorDetails);
+    log.error("Parsed error:", errorDetails);
 
     // IMPORTANT: Never throw here (except NEXT_REDIRECT). Return error state so UI can render it.
     return {

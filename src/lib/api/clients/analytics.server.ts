@@ -10,6 +10,8 @@
 
 import { createServerClient } from '@/lib/api/createServerClient';
 
+import { logger } from '@/lib/logger';
+
 import type {
   ApiEnvelope,
   CategorySpendingResponse,
@@ -25,6 +27,7 @@ import type {
  * - 실패 시 []
  */
 function unwrapArray<T>(data: unknown): T[] {
+  const log = logger.scope('ANALYTICS_CLIENT');
   if (!data) return [];
 
   // 직접 배열인 경우
@@ -37,7 +40,7 @@ function unwrapArray<T>(data: unknown): T[] {
   }
 
   // 예상 밖의 구조
-  console.error('[unwrapArray] Unexpected data structure:', data);
+  log.error('unwrapArray unexpected data structure:', data);
   return [];
 }
 
@@ -46,6 +49,7 @@ function unwrapArray<T>(data: unknown): T[] {
  * { data: { data: [...], pagination: {...} } } 구조
  */
 function unwrapTransactionList(data: unknown): TransactionListItem[] {
+  const log = logger.scope('ANALYTICS_CLIENT');
   if (!data) return [];
 
   // 직접 배열인 경우
@@ -61,7 +65,7 @@ function unwrapTransactionList(data: unknown): TransactionListItem[] {
     if (Array.isArray(envelope.data)) return envelope.data;
   }
 
-  console.error('[unwrapTransactionList] Unexpected data structure:', data);
+  log.error('unwrapTransactionList unexpected data structure:', data);
   return [];
 }
 
@@ -73,6 +77,7 @@ export const analyticsClient = {
    * @returns 카테고리별 소비 데이터 배열
    */
   getCategories: async (): Promise<CategorySpendingResponse[]> => {
+    const log = logger.scope('ANALYTICS_CLIENT');
     try {
       const instance = await createServerClient();
       const response = await instance.get<ApiEnvelope<CategorySpendingResponse[]>>(
@@ -80,7 +85,7 @@ export const analyticsClient = {
       );
       return unwrapArray<CategorySpendingResponse>(response.data);
     } catch (error) {
-      console.error('[analyticsClient] getCategories failed:', error);
+      log.error('getCategories failed:', error);
       return [];
     }
   },
@@ -92,6 +97,7 @@ export const analyticsClient = {
    * @returns 월별 지출 데이터 배열
    */
   getMonths: async (): Promise<MonthlySavingsChartResponse[]> => {
+    const log = logger.scope('ANALYTICS_CLIENT');
     try {
       const instance = await createServerClient();
       const response = await instance.get<ApiEnvelope<MonthlySavingsChartResponse[]>>(
@@ -99,7 +105,7 @@ export const analyticsClient = {
       );
       return unwrapArray<MonthlySavingsChartResponse>(response.data);
     } catch (error) {
-      console.error('[analyticsClient] getMonths failed:', error);
+      log.error('getMonths failed:', error);
       return [];
     }
   },
@@ -116,6 +122,7 @@ export const analyticsClient = {
     page?: number;
     size?: number;
   }): Promise<TransactionListItem[]> => {
+    const log = logger.scope('ANALYTICS_CLIENT');
     try {
       const instance = await createServerClient();
       const response = await instance.get<ApiEnvelope<TransactionListResponse>>(
@@ -124,7 +131,7 @@ export const analyticsClient = {
       );
       return unwrapTransactionList(response.data);
     } catch (error) {
-      console.error('[analyticsClient] getTransactions failed:', error);
+      log.error('getTransactions failed:', error);
       return [];
     }
   },

@@ -10,6 +10,8 @@
 
 import { cookies } from 'next/headers';
 
+import { logger } from '@/lib/logger';
+
 import type { AxiosInstance, AxiosResponse } from 'axios';
 
 const STORAGE_KEYS = {
@@ -39,6 +41,7 @@ async function getServerRefreshToken(): Promise<string | null> {
 }
 
 async function saveTokens(accessToken: string, refreshToken: string) {
+  const log = logger.scope('REFRESH_INTERCEPTOR');
   try {
     const cookieStore = await cookies();
     cookieStore.set(STORAGE_KEYS.accessToken, accessToken, {
@@ -56,17 +59,18 @@ async function saveTokens(accessToken: string, refreshToken: string) {
       });
     }
   } catch {
-    console.error('Failed to save tokens');
+    log.error('Failed to save tokens');
   }
 }
 
 async function clearTokens() {
+  const log = logger.scope('REFRESH_INTERCEPTOR');
   try {
     const cookieStore = await cookies();
     cookieStore.delete(STORAGE_KEYS.accessToken);
     cookieStore.delete(STORAGE_KEYS.refreshToken);
   } catch {
-    console.error('Failed to clear tokens');
+    log.error('Failed to clear tokens');
   }
 }
 

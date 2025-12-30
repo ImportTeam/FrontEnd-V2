@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger';
 /**
  * Dashboard API Client (7/9)
  * 대시보드 데이터 (요약, 차트 등) - 명확한 반환 타입
@@ -69,7 +70,8 @@ function unwrapObject<T>(data: unknown): T | null {
     return data as T;
   }
 
-  console.error('[unwrapObject] Unexpected data structure:', data);
+    const log = logger.scope('DASHBOARD_CLIENT');
+    log.error('unwrapObject unexpected data structure:', data);
   return null;
 }
 
@@ -89,7 +91,8 @@ function unwrapArray<T>(data: unknown): T[] {
     if (Array.isArray(envelope.data)) return envelope.data;
   }
 
-  console.error('[unwrapArray] Unexpected data structure:', data);
+    const log = logger.scope('DASHBOARD_CLIENT');
+    log.error('unwrapArray unexpected data structure:', data);
   return [];
 }
 
@@ -131,7 +134,8 @@ export const dashboardClient = {
         topCategoryPercent: '',
       };
     } catch (error) {
-      console.error('[dashboardClient] getSummary failed:', error);
+        const log = logger.scope('DASHBOARD_CLIENT');
+        log.error('getSummary failed:', error);
       return {
         totalSavings: '0원',
         totalSavingsChange: '0%',
@@ -158,7 +162,8 @@ export const dashboardClient = {
       const all = unwrapArray<MonthlySavingsChartResponse>(response.data);
       return months > 0 ? all.slice(-months) : all;
     } catch (error) {
-      console.error('[dashboardClient] getMonthlySavingsChart failed:', error);
+      const log = logger.scope('DASHBOARD_CLIENT');
+      log.error('getMonthlySavingsChart failed:', error);
       return [];
     }
   },
@@ -185,7 +190,8 @@ export const dashboardClient = {
         isRecommended: index === 0,
       }));
     } catch (error) {
-      console.error('[dashboardClient] getRecommendedCards failed:', error);
+      const log = logger.scope('DASHBOARD_CLIENT');
+      log.error('getRecommendedCards failed:', error);
       return [];
     }
   },
@@ -203,7 +209,8 @@ export const dashboardClient = {
       );
       return unwrapObject<DashboardAiBenefitsPRD>(response.data);
     } catch (error) {
-      console.error('[dashboardClient] getAIAnalysis failed:', error);
+      const log = logger.scope('DASHBOARD_CLIENT');
+      log.error('getAIAnalysis failed:', error);
       return null;
     }
   },
@@ -222,7 +229,8 @@ export const dashboardClient = {
       const single = unwrapObject<TopMerchantData>(response.data);
       return single ? [single].slice(0, limit) : [];
     } catch (error) {
-      console.error('[dashboardClient] getTopMerchants failed:', error);
+      const log = logger.scope('DASHBOARD_CLIENT');
+      log.error('getTopMerchants failed:', error);
       return [];
     }
   },
@@ -241,7 +249,8 @@ export const dashboardClient = {
       const data = unwrapObject<RecentTransactionsResponse>(response.data);
       return data?.data ?? [];
     } catch (error) {
-      console.error('[dashboardClient] getRecentBySite failed:', error);
+      const log = logger.scope('DASHBOARD_CLIENT');
+      log.error('getRecentBySite failed:', error);
       return [];
     }
   },
@@ -259,7 +268,8 @@ export const dashboardClient = {
       );
       return unwrapArray<DashboardAiBenefitsPRD>(response.data);
     } catch (error) {
-      console.error('[dashboardClient] getAIBenefits failed:', error);
+      const log = logger.scope('DASHBOARD_CLIENT');
+      log.error('getAIBenefits failed:', error);
       return [];
     }
   },

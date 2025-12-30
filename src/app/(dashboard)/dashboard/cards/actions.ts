@@ -1,14 +1,16 @@
 "use server";
 
 import { paymentMethodClient } from "@/lib/api/clients/payment-method.server";
+import { logger } from "@/lib/logger";
 
 import type { PaymentCard } from "@/lib/api/types";
 
 export async function loadPaymentMethods(): Promise<PaymentCard[] | null> {
+  const log = logger.scope("CARDS_PAGE");
   try {
     return await paymentMethodClient.listPaymentMethods();
   } catch (error) {
-    console.error("[CARDS_PAGE] Failed to load payment methods:", error);
+    log.error("Failed to load payment methods:", error);
     return null;
   }
 }
@@ -16,6 +18,7 @@ export async function loadPaymentMethods(): Promise<PaymentCard[] | null> {
 export async function startCardRegistration(returnUrl: string): Promise<
   { success: true; redirectUrl: string } | { success: false; error: string }
 > {
+  const log = logger.scope("CARDS_PAGE");
   try {
     const result = await paymentMethodClient.startCardRegistration(returnUrl);
     if (!result.redirectUrl) {
@@ -23,7 +26,7 @@ export async function startCardRegistration(returnUrl: string): Promise<
     }
     return { success: true, redirectUrl: result.redirectUrl };
   } catch (error) {
-    console.error("[CARDS_PAGE] Failed to start card registration:", error);
+    log.error("Failed to start card registration:", error);
     return {
       success: false,
       error:
@@ -37,11 +40,12 @@ export async function startCardRegistration(returnUrl: string): Promise<
 export async function setDefaultPaymentMethod(
   paymentMethodId: string
 ): Promise<{ success: boolean; error?: string }> {
+  const log = logger.scope("CARDS_PAGE");
   try {
     await paymentMethodClient.setPrimaryPaymentMethod(paymentMethodId);
     return { success: true };
   } catch (error) {
-    console.error("[CARDS_PAGE] Failed to set default payment method:", error);
+    log.error("Failed to set default payment method:", error);
     return {
       success: false,
       error:
@@ -53,11 +57,12 @@ export async function setDefaultPaymentMethod(
 export async function deletePaymentMethod(
   paymentMethodId: string
 ): Promise<{ success: boolean; error?: string }> {
+  const log = logger.scope("CARDS_PAGE");
   try {
     await paymentMethodClient.deletePaymentMethod(paymentMethodId);
     return { success: true };
   } catch (error) {
-    console.error("[CARDS_PAGE] Failed to delete payment method:", error);
+    log.error("Failed to delete payment method:", error);
     return {
       success: false,
       error:

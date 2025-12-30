@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { LoginForm } from "@/components/auth/login-form";
 import { SignupForm } from "@/components/auth/signup-form";
 import { Button } from "@/components/ui/button";
+import { logger } from "@/lib/logger";
 import { useAuthStore } from "@/store/use-auth-store";
 
 import type { Route } from "next";
@@ -15,6 +16,7 @@ interface AuthPageClientProps {
 }
 
 export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
+    const log = logger.scope("AUTH_PAGE");
     const pathname = usePathname();
     const router = useRouter();
     const { isAuthenticated } = useAuthStore();
@@ -24,23 +26,23 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
     // 🔴 인증된 사용자는 로그인 페이지에서 대시보드로 즉시 리다이렉트
     useEffect(() => {
         if (!isAuthenticated) {
-            console.warn('[AUTH_PAGE] User not authenticated, staying on auth page');
+            log.debug('User not authenticated, staying on auth page');
             return;
         }
 
-        console.warn('[AUTH_PAGE] User authenticated, redirecting to dashboard');
+        log.info('User authenticated, redirecting to dashboard');
         
         const params = new URLSearchParams(window.location.search);
         const next = params.get("next");
         const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
 
         if (safeNext) {
-            console.warn('[AUTH_PAGE] Redirecting to:', safeNext);
+            log.info('Redirecting to:', safeNext);
             router.replace(safeNext as unknown as Route);
             return;
         }
         
-        console.warn('[AUTH_PAGE] Redirecting to /dashboard');
+        log.info('Redirecting to /dashboard');
         router.replace("/dashboard");
     }, [isAuthenticated, router]);
 

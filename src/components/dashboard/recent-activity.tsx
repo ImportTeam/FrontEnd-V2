@@ -4,6 +4,7 @@ import { ShoppingBag } from "lucide-react";
 import Image from "next/image";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { logger } from "@/lib/logger";
 import { getPaymentIconPath, getPaymentTypeAbbr } from "@/lib/payment-icon-mapping";
 
 import type { PaymentCard } from "@/lib/api/types";
@@ -70,6 +71,7 @@ interface PaymentCardItemProps {
 }
 
 function PaymentCardItem({ method }: PaymentCardItemProps) {
+  const log = logger.scope("RECENT_ACTIVITY");
   const iconPath = getPaymentIconPath(method.cardType);
   const createdDate = method.createdAt
     ? new Date(method.createdAt).toLocaleDateString("ko-KR")
@@ -90,7 +92,7 @@ function PaymentCardItem({ method }: PaymentCardItemProps) {
               className="object-contain"
               priority={false}
               onError={(e) => {
-                console.warn(`[RECENT_ACTIVITY] Failed to load image: ${iconPath.src}`);
+                log.warn("Failed to load image:", iconPath.src);
                 const img = e.currentTarget as HTMLImageElement;
                 const svgPath = iconPath.src.replace(/\.webp$/, ".svg");
                 img.src = svgPath;

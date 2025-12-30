@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
+import { logger } from "@/lib/logger";
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -13,9 +14,10 @@ interface ErrorProps {
 
 // eslint-disable-next-line no-restricted-syntax
 export default function DashboardError({ error, reset }: ErrorProps) {
+  const log = logger.scope("DASHBOARD_ERROR");
   useEffect(() => {
     // Log the error to an error reporting service
-    console.error("Dashboard Error:", error);
+    log.error("Dashboard Error:", error);
   }, [error]);
 
   return (

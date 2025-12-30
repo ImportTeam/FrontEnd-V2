@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { GoogleIcon, KakaoIcon, NaverIcon } from "@/components/ui/icons";
+import { logger } from "@/lib/logger";
 
 interface SocialLoginButtonsProps {
   mode: "login" | "signup";
@@ -7,20 +8,21 @@ interface SocialLoginButtonsProps {
 
 export function SocialLoginButtons({ mode }: SocialLoginButtonsProps) {
   // const actionText = mode === "login" ? "로그인" : "가입";
+  const log = logger.scope("SOCIAL_LOGIN");
 
   const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.picsel.kr/api").replace(/\/$/, "");
   const callbackUrl = typeof window !== "undefined" ? `${window.location.origin}/oauth-callback` : "";
 
   const handleSocialLogin = (provider: "google" | "kakao" | "naver") => {
     // Log for debugging
-    console.warn(`[SOCIAL_LOGIN] Starting ${provider} login`);
-    console.warn(`[SOCIAL_LOGIN] Callback URL: ${callbackUrl}`);
+    log.info(`Starting ${provider} login`);
+    log.debug("Callback URL:", callbackUrl);
     
     // POST /api/auth/{provider}?redirect_uri={callback_url}
     const authUrl = new URL(`${apiBaseUrl}/auth/${provider}`);
     authUrl.searchParams.append("redirect_uri", callbackUrl);
     
-    console.warn(`[SOCIAL_LOGIN] Auth URL: ${authUrl.toString()}`);
+    log.debug("Auth URL:", authUrl.toString());
     window.location.href = authUrl.toString();
   };
 

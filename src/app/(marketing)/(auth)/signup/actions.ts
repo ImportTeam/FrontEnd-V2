@@ -10,6 +10,7 @@ import { redirect } from 'next/navigation';
 
 import { authClient } from '@/lib/api/clients/auth.server';
 import { parseApiError } from '@/lib/api/error-handler';
+import { logger } from '@/lib/logger';
 import { signupSchema } from '@/lib/schemas/auth';
 
 function isNextRedirectError(err: unknown): boolean {
@@ -73,6 +74,7 @@ export async function signupAction(
   prevState: SignupActionState,
   formData: FormData
 ): Promise<SignupActionState> {
+  const log = logger.scope('SIGNUP_ACTION');
   try {
     const name = formData.get('name') as string;
     const email = formData.get('email') as string;
@@ -110,7 +112,7 @@ export async function signupAction(
     // Call API through authClient (Server instance with interceptors)
     const response = await authClient.signup(name, email, password);
 
-    console.warn('[SIGNUP] API Response:', {
+    log.debug('API Response:', {
       hasUser: !!response?.user,
       user: response?.user,
       hasAccessToken: !!response?.accessToken,
@@ -119,7 +121,7 @@ export async function signupAction(
 
     // Validate response structure
     if (!response?.user?.uuid) {
-      console.error('[SIGNUP] Invalid response structure:', response);
+      log.error('Invalid response structure:', response);
       return {
         status: 'error',
         message: '회원가입 응답이 불완전합니다. 잠시 후 다시 시도해주세요.',
@@ -128,9 +130,9 @@ export async function signupAction(
     }
 
     // Save tokens to HttpOnly Cookies
-    console.warn('[SIGNUP] Saving tokens to cookies...');
+    log.debug('Saving tokens to cookies...');
     await saveTokensToCookies(response.accessToken, response.refreshToken);
-    console.warn('[SIGNUP] Tokens saved successfully');
+    log.debug('Tokens saved successfully');
 
     // 리다이렉트 (Server Action에서 자동 처리)
     redirect('/dashboard');
@@ -141,6 +143,7 @@ export async function signupAction(
     }
 
     const errorDetails = parseApiError(err);
+    log.error('Parsed error:', errorDetails);
 
     const isEmailExists = errorDetails.type === 'CONFLICT' || errorDetails.statusCode === 409;
 
