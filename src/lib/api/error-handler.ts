@@ -9,6 +9,7 @@ export type ApiErrorType =
   | "VALIDATION_ERROR"
   | "UNAUTHORIZED"
   | "FORBIDDEN"
+  | "CONFLICT"
   | "NOT_FOUND"
   | "SERVER_ERROR"
   | "CLOUDFLARE_CHALLENGE"
@@ -78,6 +79,18 @@ export function parseApiError(error: unknown): ApiErrorDetails {
         message: (errorData?.message as string) || "인증이 필요합니다. 다시 로그인해주세요.",
         statusCode: status,
         isRetryable: false, // Interceptor handles retry
+        originalError: error,
+      };
+    }
+
+    // Conflict (409)
+    if (status === 409) {
+      const errorData = data as Record<string, unknown> | undefined;
+      return {
+        type: "CONFLICT",
+        message: (errorData?.message as string) || "이미 가입된 정보입니다.",
+        statusCode: status,
+        isRetryable: false,
         originalError: error,
       };
     }

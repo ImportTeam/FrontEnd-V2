@@ -21,6 +21,7 @@ export function useAuthForm<Schema extends FormSchema>({
   return useForm<FormValues<Schema>>({
     resolver,
     defaultValues,
-    mode: "onBlur",
+    mode: "onChange",
+    reValidateMode: "onChange",
   });
 }

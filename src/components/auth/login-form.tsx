@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useFormStatus } from "react-dom";
+import { useActionState, useEffect, useState } from "react";
 
 import { loginAction } from "@/app/(marketing)/(auth)/login/actions";
 import { AuthFormField } from "@/components/auth/auth-form-field";
@@ -11,12 +11,18 @@ import { useAuthForm } from "@/hooks/use-auth-form";
 import { loginSchema } from "@/lib/schemas/auth";
 
 function LoginFormContent() {
-  const { pending } = useFormStatus();
+  const [state, formAction, isPending] = useActionState(loginAction, {
+    status: "idle",
+    message: null,
+    fieldErrors: {},
+    nonce: 0,
+  });
 
   const {
     register,
-    formState: { errors },
+    formState: { errors, isValid },
     watch,
+    handleSubmit,
   } = useAuthForm<typeof loginSchema>({
     schema: loginSchema,
     defaultValues: {
@@ -25,10 +31,30 @@ function LoginFormContent() {
     },
   });
 
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
   // Watch form values to enable button when fields have content
   const email = watch("email");
   const password = watch("password");
   const isFormFilled = email && password;
+
+  useEffect(() => {
+    // If server returned fieldErrors, RHF already validates client-side.
+    // Keep the server message rendered as a banner.
+  }, [state.nonce]);
+
+  const onSubmit = handleSubmit(
+    (_values, event) => {
+      setSubmitAttempted(true);
+      const formEl = event?.currentTarget as HTMLFormElement | undefined;
+      if (!formEl) return;
+      const formData = new FormData(formEl);
+      formAction(formData);
+    },
+    () => {
+      setSubmitAttempted(true);
+    }
+  );
 
   return (
     <div className="w-full space-y-6">
@@ -42,7 +68,7 @@ function LoginFormContent() {
       </div>
 
       {/* Loading State */}
-      {pending ? (
+      {isPending ? (
         <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 p-4 flex items-start gap-3">
           <Loader2 className="h-5 w-5 text-blue-600 dark:text-blue-400 animate-spin shrink-0" />
           <div>
@@ -56,7 +82,15 @@ function LoginFormContent() {
         </div>
       ) : null}
 
-      <form action={loginAction} className="space-y-4">
+      {/* Server Error */}
+      {state.status === "error" && state.message ? (
+        <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 p-4">
+          <p className="text-sm font-semibold text-red-900 dark:text-red-100">로그인 실패</p>
+          <p className="text-xs text-red-700 dark:text-red-200 mt-1">{state.message}</p>
+        </div>
+      ) : null}
+
+      <form action={formAction} onSubmit={onSubmit} className="space-y-4">
         <div className="space-y-4 text-left">
           <AuthFormField
             id="email"
@@ -65,7 +99,7 @@ function LoginFormContent() {
             placeholder="name@example.com"
             registration={register("email")}
             error={errors.email}
-            disabled={pending}
+            disabled={isPending}
           />
           <AuthFormField
             id="password"
@@ -74,14 +108,14 @@ function LoginFormContent() {
             placeholder="••••••••"
             registration={register("password")}
             error={errors.password}
-            disabled={pending}
+            disabled={isPending}
           />
         </div>
 
         <div className="flex justify-end">
           <button
             type="button"
-            disabled={pending}
+            disabled={isPending}
             className="text-xs text-zinc-600 hover:text-zinc-800 dark:text-zinc-300 dark:hover:text-zinc-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             비밀번호 찾기
@@ -90,12 +124,25 @@ function LoginFormContent() {
 
         <Button
           type="submit"
-          disabled={pending || !isFormFilled}
+          onClick={() => setSubmitAttempted(true)}
+          disabled={isPending}
           className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-base rounded-lg dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
         >
-          {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-          <span>{pending ? "로그인 중..." : "로그인"}</span>
+          {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+          <span>
+            {isPending
+              ? "로그인 중..."
+              : submitAttempted && (!isFormFilled || !isValid)
+                ? "입력 확인 필요"
+                : "로그인"}
+          </span>
         </Button>
+
+        {submitAttempted && (!isFormFilled || !isValid) ? (
+          <p className="text-xs text-red-600 dark:text-red-300">
+            입력값을 확인해주세요.
+          </p>
+        ) : null}
       </form>
 
       <SocialLoginButtons mode="login" />

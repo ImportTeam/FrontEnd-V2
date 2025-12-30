@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useFormStatus } from "react-dom";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 import { signupAction } from "@/app/(marketing)/(auth)/signup/actions";
 import { AuthFormField } from "@/components/auth/auth-form-field";
@@ -11,12 +11,21 @@ import { useAuthForm } from "@/hooks/use-auth-form";
 import { signupSchema } from "@/lib/schemas/auth";
 
 function SignupFormContent() {
-  const { pending } = useFormStatus();
+  const [state, formAction, isPending] = useActionState(signupAction, {
+    status: "idle",
+    message: null,
+    fieldErrors: {},
+    popup: undefined,
+    nonce: 0,
+  });
+
+  const lastPopupNonceRef = useRef<number>(0);
 
   const {
     register,
-    formState: { errors },
+    formState: { errors, isValid },
     watch,
+    handleSubmit,
   } = useAuthForm<typeof signupSchema>({
     schema: signupSchema,
     defaultValues: {
@@ -26,11 +35,36 @@ function SignupFormContent() {
     },
   });
 
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
   // Watch form values to enable button when fields have content
   const name = watch("name");
   const email = watch("email");
   const password = watch("password");
   const isFormFilled = name && email && password;
+
+  useEffect(() => {
+    if (state.popup !== "EMAIL_EXISTS") return;
+    if (!state.nonce) return;
+    if (lastPopupNonceRef.current === state.nonce) return;
+
+    lastPopupNonceRef.current = state.nonce;
+    // Minimal popup UX per request
+    window.alert("이미 가입된 이메일입니다. 로그인 페이지에서 로그인해주세요.");
+  }, [state.popup, state.nonce]);
+
+  const onSubmit = handleSubmit(
+    (_values, event) => {
+      setSubmitAttempted(true);
+      const formEl = event?.currentTarget as HTMLFormElement | undefined;
+      if (!formEl) return;
+      const formData = new FormData(formEl);
+      formAction(formData);
+    },
+    () => {
+      setSubmitAttempted(true);
+    }
+  );
 
   return (
     <div className="w-full space-y-6">
@@ -44,7 +78,7 @@ function SignupFormContent() {
       </div>
 
       {/* Loading State */}
-      {pending ? (
+      {isPending ? (
         <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 p-4 flex items-start gap-3">
           <Loader2 className="h-5 w-5 text-blue-600 dark:text-blue-400 animate-spin shrink-0" />
           <div>
@@ -58,7 +92,15 @@ function SignupFormContent() {
         </div>
       ) : null}
 
-      <form action={signupAction} className="space-y-4">
+      {/* Server Error */}
+      {state.status === "error" && state.message ? (
+        <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 p-4">
+          <p className="text-sm font-semibold text-red-900 dark:text-red-100">회원가입 실패</p>
+          <p className="text-xs text-red-700 dark:text-red-200 mt-1">{state.message}</p>
+        </div>
+      ) : null}
+
+      <form action={formAction} onSubmit={onSubmit} className="space-y-4">
         <div className="space-y-4 text-left">
           <AuthFormField
             id="name"
@@ -67,7 +109,7 @@ function SignupFormContent() {
             placeholder="홍길동"
             registration={register("name")}
             error={errors.name}
-            disabled={pending}
+            disabled={isPending}
           />
           <AuthFormField
             id="email"
@@ -76,7 +118,7 @@ function SignupFormContent() {
             placeholder="name@example.com"
             registration={register("email")}
             error={errors.email}
-            disabled={pending}
+            disabled={isPending}
           />
           <AuthFormField
             id="password"
@@ -85,18 +127,31 @@ function SignupFormContent() {
             placeholder="••••••••"
             registration={register("password")}
             error={errors.password}
-            disabled={pending}
+            disabled={isPending}
           />
         </div>
 
         <Button
           type="submit"
-          disabled={pending || !isFormFilled}
+          onClick={() => setSubmitAttempted(true)}
+          disabled={isPending}
           className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-base rounded-lg dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
         >
-          {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-          <span>{pending ? "회원가입 중..." : "회원가입"}</span>
+          {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+          <span>
+            {isPending
+              ? "회원가입 중..."
+              : submitAttempted && (!isFormFilled || !isValid)
+                ? "입력 확인 필요"
+                : "회원가입"}
+          </span>
         </Button>
+
+        {submitAttempted && (!isFormFilled || !isValid) ? (
+          <p className="text-xs text-red-600 dark:text-red-300">
+            입력값을 확인해주세요.
+          </p>
+        ) : null}
       </form>
 
       <SocialLoginButtons mode="signup" />

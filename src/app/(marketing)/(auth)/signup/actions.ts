@@ -11,12 +11,32 @@ import { redirect } from 'next/navigation';
 import { authClient } from '@/lib/api/clients/auth.server';
 import { parseApiError } from '@/lib/api/error-handler';
 import { signupSchema } from '@/lib/schemas/auth';
-import { useAuthStore } from '@/store/use-auth-store';
 
 function isNextRedirectError(err: unknown): boolean {
   if (!err || typeof err !== 'object') return false;
   const digest = (err as { digest?: unknown }).digest;
   return typeof digest === 'string' && digest.startsWith('NEXT_REDIRECT');
+}
+
+export interface SignupActionState {
+  status: 'idle' | 'error';
+  message: string | null;
+  fieldErrors?: Record<string, string>;
+  popup?: 'EMAIL_EXISTS';
+  nonce: number;
+}
+
+const initialNonce = 0;
+
+function toFieldErrors(
+  issues: Array<{ path: ReadonlyArray<PropertyKey>; message: string }>
+): Record<string, string> {
+  const fieldErrors: Record<string, string> = {};
+  for (const issue of issues) {
+    const key = String(issue.path?.[0] ?? 'form');
+    if (!fieldErrors[key]) fieldErrors[key] = issue.message;
+  }
+  return fieldErrors;
 }
 
 /**
@@ -47,9 +67,12 @@ async function saveTokensToCookies(
 
 /**
  * Form action - <form action={signupAction}>에서 직접 호출
- * 성공하면 redirect, 실패하면 에러 객체 반환
+ * 성공하면 redirect, 실패하면 state 반환 (UI에서 에러 표시)
  */
-export async function signupAction(formData: FormData): Promise<void> {
+export async function signupAction(
+  prevState: SignupActionState,
+  formData: FormData
+): Promise<SignupActionState> {
   try {
     const name = formData.get('name') as string;
     const email = formData.get('email') as string;
@@ -57,7 +80,16 @@ export async function signupAction(formData: FormData): Promise<void> {
 
     // Validate inputs
     if (!name || !email || !password) {
-      throw new Error('모든 필드를 입력해주세요.');
+      return {
+        status: 'error',
+        message: '모든 필드를 입력해주세요.',
+        fieldErrors: {
+          ...(name ? {} : { name: '이름을 입력해주세요.' }),
+          ...(email ? {} : { email: '이메일을 입력해주세요.' }),
+          ...(password ? {} : { password: '비밀번호를 입력해주세요.' }),
+        },
+        nonce: Date.now(),
+      };
     }
 
     // Parse and validate with Zod
@@ -67,10 +99,12 @@ export async function signupAction(formData: FormData): Promise<void> {
       password,
     });
     if (!validationResult.success) {
-      const errorMessage = validationResult.error.issues
-        .map((issue) => issue.message)
-        .join(', ');
-      throw new Error(errorMessage);
+      return {
+        status: 'error',
+        message: validationResult.error.issues.map((issue) => issue.message).join(', '),
+        fieldErrors: toFieldErrors(validationResult.error.issues),
+        nonce: Date.now(),
+      };
     }
 
     // Call API through authClient (Server instance with interceptors)
@@ -86,19 +120,17 @@ export async function signupAction(formData: FormData): Promise<void> {
     // Validate response structure
     if (!response?.user?.uuid) {
       console.error('[SIGNUP] Invalid response structure:', response);
-      throw new Error('회원가입 응답이 불완전합니다. 잠시 후 다시 시도해주세요.');
+      return {
+        status: 'error',
+        message: '회원가입 응답이 불완전합니다. 잠시 후 다시 시도해주세요.',
+        nonce: Date.now(),
+      };
     }
 
     // Save tokens to HttpOnly Cookies
     console.warn('[SIGNUP] Saving tokens to cookies...');
     await saveTokensToCookies(response.accessToken, response.refreshToken);
     console.warn('[SIGNUP] Tokens saved successfully');
-
-    // Update Zustand store
-    useAuthStore.getState().login({
-      ...response.user,
-      id: response.user.id || response.user.uuid,
-    });
 
     // 리다이렉트 (Server Action에서 자동 처리)
     redirect('/dashboard');
@@ -109,6 +141,22 @@ export async function signupAction(formData: FormData): Promise<void> {
     }
 
     const errorDetails = parseApiError(err);
-    throw new Error(errorDetails.message);
+
+    const isEmailExists = errorDetails.type === 'CONFLICT' || errorDetails.statusCode === 409;
+
+    return {
+      status: 'error',
+      message: errorDetails.message,
+      fieldErrors: prevState.fieldErrors,
+      popup: isEmailExists ? 'EMAIL_EXISTS' : undefined,
+      nonce: Date.now(),
+    };
   }
+
+  // Unreachable because redirect throws, but keeps TS happy.
+  return {
+    status: 'idle',
+    message: null,
+    nonce: initialNonce,
+  };
 }
