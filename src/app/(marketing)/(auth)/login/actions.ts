@@ -50,7 +50,7 @@ async function saveTokensToCookies(
 
   cookieStore.set('access_token', accessToken, {
     httpOnly: true,
-    secure: true,  // Always true in prod, accept in dev
+    secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',  // Strong CSRF protection
     path: '/',
     maxAge: 3600, // 1시간
@@ -58,7 +58,7 @@ async function saveTokensToCookies(
 
   cookieStore.set('refresh_token', refreshToken, {
     httpOnly: true,
-    secure: true,  // Always true in prod
+    secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
     path: '/',
     maxAge: 604800, // 7일
