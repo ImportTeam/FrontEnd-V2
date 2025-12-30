@@ -1,3 +1,28 @@
+/**
+ * ✅ 실무 표준: 모든 API 응답은 이 구조를 따름
+ * 
+ * 규칙:
+ * - 배열 API: ApiEnvelope<T[]>
+ * - 객체 API: ApiEnvelope<T>
+ * - 에러: error 객체 포함
+ */
+export interface ApiEnvelope<T> {
+  data: T;
+  message?: string;
+  statusCode?: number;
+  error?: {
+    code: string;
+    message: string;
+    details?: unknown;
+  };
+}
+
+/**
+ * ❌ DEPRECATED: ApiResponse는 더 이상 사용하지 않음
+ * 대신 ApiEnvelope 사용
+ * 
+ * 사유: data가 optional이면 FE에서 항상 방어 코드 필요
+ */
 export interface ApiResponse<T> {
   message?: string;
   data?: T;

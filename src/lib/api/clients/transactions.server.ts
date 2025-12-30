@@ -5,7 +5,7 @@
  * 특징: Server-only 유틸 객체
  */
 
-import { getServerInstance } from '@/lib/api/http/http.server';
+import { createServerClient } from '@/lib/api/createServerClient';
 
 import type { ApiResponse } from '@/lib/api/types';
 
@@ -40,7 +40,7 @@ export const transactionsClient = {
     startDate?: string;
     endDate?: string;
   }) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.get<ApiResponse<TransactionListResponse>>(
       '/transactions',
       { params: options }
@@ -52,7 +52,7 @@ export const transactionsClient = {
    * 결제 내역 상세 조회
    */
   getTransaction: async (id: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.get<Transaction>(`/transactions/${id}`);
     return response.data;
   },
@@ -61,7 +61,7 @@ export const transactionsClient = {
    * 카테고리별 결제 내역
    */
   getTransactionsByCategory: async (category: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.get<ApiResponse<Transaction[]>>(
       `/transactions/category/${category}`
     );
@@ -72,7 +72,7 @@ export const transactionsClient = {
    * 최근 결제 내역 (대시보드용)
    */
   getRecentTransactions: async (limit = 10) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.get<ApiResponse<Transaction[]>>(
       '/transactions/recent',
       { params: { limit } }

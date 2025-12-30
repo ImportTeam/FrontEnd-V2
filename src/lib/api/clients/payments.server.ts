@@ -8,7 +8,7 @@
  * - POST /api/payments
  */
 
-import { getServerInstance } from '@/lib/api/http/http.server';
+import { createServerClient } from '@/lib/api/createServerClient';
 
 type DataWrapped<T> = { data: T };
 
@@ -33,7 +33,7 @@ export const paymentsClient = {
    * POST /api/payments
    */
   recordPayment: async (data: RecordPaymentInput) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.post<DataWrapped<Record<string, unknown>> | Record<string, unknown>>(
       '/payments',
       data

@@ -5,7 +5,7 @@
  * 특징: Server-only 유틸 객체
  */
 
-import { getServerInstance } from '@/lib/api/http/http.server';
+import { createServerClient } from '@/lib/api/createServerClient';
 
 export type VerificationStatus = 'SENT' | 'VERIFIED' | 'FAILED' | 'EXPIRED';
 
@@ -26,7 +26,7 @@ export const verificationClient = {
     portoneId: string,
     data: { name: string; phoneNumber: string; birthday: string }
   ) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.post<IdentityVerification>(
       `/identity/verifications/${portoneId}/requests`,
       data
@@ -39,7 +39,7 @@ export const verificationClient = {
    * POST /api/identity/verifications/{portoneId}/confirmation
    */
   confirmIdentityVerification: async (portoneId: string, otp: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.post<IdentityVerification>(
       `/identity/verifications/${portoneId}/confirmation`,
       { otp }
@@ -55,7 +55,7 @@ export const verificationClient = {
     portoneId: string,
     options?: { storeId?: string; method?: 'SMS' }
   ) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.post<IdentityVerification>(
       `/identity/verifications/${portoneId}/requests/resend`,
       { method: options?.method ?? 'SMS' },
@@ -69,7 +69,7 @@ export const verificationClient = {
    * POST /api/identity/verifications/pass-verification
    */
   passVerification: async (returnedIdentityId: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.post<IdentityVerification>(
       '/identity/verifications/pass-verification',
       { returnedIdentityId }
@@ -82,7 +82,7 @@ export const verificationClient = {
    * POST /api/identity/verifications/certified-verification
    */
   certifiedVerification: async (impUid: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.post<IdentityVerification>(
       '/identity/verifications/certified-verification',
       { impUid }
@@ -95,7 +95,7 @@ export const verificationClient = {
    * GET /api/identity/verifications/{portoneId}
    */
   getStatus: async (portoneId: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.get<IdentityVerification>(
       `/identity/verifications/${portoneId}`
     );

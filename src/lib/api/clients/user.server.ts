@@ -5,7 +5,7 @@
  * 특징: Server-only 유틸 객체
  */
 
-import { getServerInstance } from '@/lib/api/http/http.server';
+import { createServerClient } from '@/lib/api/createServerClient';
 
 import type { SessionData, UserCurrentResponse } from '@/lib/api/types';
 
@@ -62,7 +62,7 @@ export const userClient = {
    * GET /api/users/current
    */
   getCurrent: async () => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.get<UserCurrentResponsePRD>('/users/current');
     return mapUserCurrentResponse(response.data);
   },
@@ -72,7 +72,7 @@ export const userClient = {
    * PATCH /api/users/current
    */
   updateCurrent: async (data: UpdateCurrentUserInput) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.patch<UserCurrentResponsePRD>('/users/current', data);
     return mapUserCurrentResponse(response.data);
   },
@@ -82,7 +82,7 @@ export const userClient = {
    * DELETE /api/users/current
    */
   deleteCurrent: async () => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     await instance.delete('/users/current');
   },
 
@@ -91,7 +91,7 @@ export const userClient = {
    * GET /api/users/sessions
    */
   listSessions: async () => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.get<SessionData[]>('/users/sessions');
     return response.data;
   },
@@ -101,7 +101,7 @@ export const userClient = {
    * DELETE /api/users/sessions/{id}
    */
   deleteSession: async (id: string | number) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     await instance.delete(`/users/sessions/${id}`);
   },
 
@@ -109,7 +109,7 @@ export const userClient = {
    * 비밀번호 변경
    */
   changePassword: async (currentPassword: string, newPassword: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.post<{ message?: string }>(
       '/users/current/password',
       { currentPassword, newPassword }
@@ -129,7 +129,7 @@ export const userClient = {
    * 사용자 설정 업데이트
    */
   updateSettings: async (settings: Record<string, unknown>) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.patch<UserCurrentResponsePRD>('/users/current', {
       settings,
     });

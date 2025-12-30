@@ -1,35 +1,13 @@
 /**
- * Server-only Axios Instance
- * - Auth interceptor (토큰 주입)
- * - Refresh interceptor (401 자동 갱신)
- * - Error interceptor (공용)
+ * ❌ DEPRECATED: 이 파일은 더 이상 사용되지 않습니다.
  * 
- * 사용처: Server Actions, API Routes (server-only)
+ * 📌 대신 createServerClient() 사용:
+ * import { createServerClient } from '@/lib/api/createServerClient'
+ * 
+ * 이유:
+ * - 싱글톤 인스턴스는 Server Action 컨텍스트를 보장할 수 없음
+ * - 동시 요청에서 쿠키가 섞일 수 있음
+ * - 요청 단위로 클라이언트를 생성해야 함
  */
 
 'use server';
-
-import { setupAuthInterceptor } from '@/lib/api/interceptors/auth.server';
-import { setupErrorInterceptor } from '@/lib/api/interceptors/error';
-import { setupRefreshInterceptor } from '@/lib/api/interceptors/refresh.server';
-
-import { createBaseAxiosInstance, DEFAULT_API_BASE_URL } from './http.base';
-
-// 싱글톤: 서버 인스턴스는 요청당 한 번만 생성
-let serverInstance: ReturnType<typeof createBaseAxiosInstance> | null = null;
-
-async function getServerInstance() {
-  if (!serverInstance) {
-    serverInstance = createBaseAxiosInstance(DEFAULT_API_BASE_URL);
-
-    // 인터셉터 등록 순서: 요청 → 응답 → 에러
-    await setupAuthInterceptor(serverInstance);
-    await setupRefreshInterceptor(serverInstance);
-    setupErrorInterceptor(serverInstance);
-  }
-
-  return serverInstance;
-}
-
-// Server Actions / API Routes에서만 import해서 사용
-export { getServerInstance };

@@ -5,7 +5,7 @@
  * 특징: Server-only 유틸 객체
  */
 
-import { getServerInstance } from '@/lib/api/http/http.server';
+import { createServerClient } from '@/lib/api/createServerClient';
 
 import type { ApiResponse } from '@/lib/api/types';
 
@@ -28,7 +28,7 @@ export const reportsClient = {
    * 리포트 목록 조회
    */
   listReports: async (options?: { type?: string; status?: string }) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.get<ApiResponse<Report[]>>('/reports', {
       params: options,
     });
@@ -39,7 +39,7 @@ export const reportsClient = {
    * 리포트 상세 조회
    */
   getReport: async (id: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.get<Report>(`/reports/${id}`);
     return response.data;
   },
@@ -52,7 +52,7 @@ export const reportsClient = {
     startDate?: string;
     endDate?: string;
   }) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.post<Report>('/reports', data);
     return response.data;
   },
@@ -61,7 +61,7 @@ export const reportsClient = {
    * 리포트 다운로드 URL 생성
    */
   generateDownloadUrl: async (id: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.post<{ downloadUrl: string }>(
       `/reports/${id}/download`
     );
@@ -72,7 +72,7 @@ export const reportsClient = {
    * 리포트 삭제
    */
   deleteReport: async (id: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     await instance.delete(`/reports/${id}`);
   },
 };

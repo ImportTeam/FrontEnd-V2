@@ -5,7 +5,7 @@
  * 특징: Server-only 유틸 객체
  */
 
-import { getServerInstance } from '@/lib/api/http/http.server';
+import { createServerClient } from '@/lib/api/createServerClient';
 
 export interface SystemHealthResponse {
   status: 'ok' | 'degraded' | 'down';
@@ -18,7 +18,7 @@ export const systemClient = {
    * 시스템 헬스체크
    */
   getHealth: async () => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.get<SystemHealthResponse>('/system/health');
     return response.data;
   },
@@ -27,7 +27,7 @@ export const systemClient = {
    * API 버전 정보
    */
   getVersion: async () => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.get<{ version: string }>('/system/version');
     return response.data;
   },

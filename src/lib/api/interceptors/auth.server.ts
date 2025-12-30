@@ -1,63 +1,17 @@
 /**
- * Auth Interceptor (Server-Only)
- * HttpOnly Cookie에서 토큰을 읽어 Authorization 헤더에 주입
+ * ❌ DEPRECATED: Server 환경에서의 Auth Interceptor 패턴은 작동하지 않습니다.
  * 
- * 💡 Server Actions / API Routes에서만 실행됨
- * ❌ Client Component에서는 실행 불가
+ * 📌 문제점:
+ * - Interceptor는 "프로세스 전역"에서 실행됨
+ * - cookies()는 "요청 컨텍스트"가 필요함
+ * - Server Action의 요청 컨텍스트를 보장할 수 없음
+ * - 동시 요청에서 쿠키 섞임
+ * 
+ * ✅ 해결책:
+ * - createServerClient()에서 요청 생성 시점에 토큰을 직접 주입
+ * - 각 요청마다 신선한 쿠키 읽기
+ * 
+ * @see src/lib/api/createServerClient.ts
  */
 
 'use server';
-
-import { cookies } from 'next/headers';
-
-import type { AxiosInstance } from 'axios';
-
-const STORAGE_KEYS = {
-  accessToken: 'access_token',
-} as const;
-
-/**
- * Server-side: HttpOnly Cookie에서 토큰 읽기
- * 클라이언트 JS에서 접근 불가능한 보안 저장소
- */
-async function getServerAccessToken(): Promise<string | null> {
-  try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get(STORAGE_KEYS.accessToken)?.value;
-    
-    if (token) {
-      console.warn('[AUTH_INTERCEPTOR] Token found:', {
-        length: token.length,
-        prefix: token.substring(0, 10) + '...',
-      });
-    } else {
-      console.warn('[AUTH_INTERCEPTOR] No access token in cookies');
-    }
-    
-    return token ?? null;
-  } catch (error) {
-    console.error('[AUTH_INTERCEPTOR] Error reading token:', error);
-    return null;
-  }
-}
-
-export async function setupAuthInterceptor(instance: AxiosInstance) {
-  instance.interceptors.request.use(
-    async (config) => {
-      const token = await getServerAccessToken();
-      
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-        console.warn('[AUTH_INTERCEPTOR] Authorization header set');
-      } else {
-        console.warn('[AUTH_INTERCEPTOR] No token, request without auth');
-      }
-      
-      return config;
-    },
-    (error) => {
-      console.error('[AUTH_INTERCEPTOR] Request error:', error);
-      return Promise.reject(error);
-    }
-  );
-}

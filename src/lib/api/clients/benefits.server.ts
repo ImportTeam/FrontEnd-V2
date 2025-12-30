@@ -5,7 +5,7 @@
  * 특징: Server-only 유틸 객체
  */
 
-import { getServerInstance } from '@/lib/api/http/http.server';
+import { createServerClient } from '@/lib/api/createServerClient';
 
 export interface BenefitItem {
   type: 'PERCENT' | 'AMOUNT' | string;
@@ -41,7 +41,7 @@ export const benefitsClient = {
     category?: string;
     merchant?: string;
   }) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.get<DataWrapped<BenefitCardResult[]>>(
       '/benefits/comparisons',
       { params: options }
@@ -57,7 +57,7 @@ export const benefitsClient = {
     amount: number;
     merchant?: string;
   }) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.get<DataWrapped<BenefitCardResult[]>>(
       '/benefits/recommendations/top-three',
       { params: options }
@@ -70,7 +70,7 @@ export const benefitsClient = {
    * GET /api/benefits/extractions
    */
   extractBenefitsFromHtml: async (html: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.get<{ benefits: BenefitItem[] }>(
       '/benefits/extractions',
       { params: { html } }
@@ -88,7 +88,7 @@ export const benefitsClient = {
     amount: number;
     html: string;
   }) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.post<DataWrapped<BenefitCardResult[]>>(
       '/benefits/recommendations/from-html',
       data

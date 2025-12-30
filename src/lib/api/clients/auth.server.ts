@@ -13,7 +13,7 @@
  * - POST /api/auth/{provider}/callback - OAuth 콜백
  */
 
-import { getServerInstance } from '@/lib/api/http/http.server';
+import { createServerClient } from '@/lib/api/createServerClient';
 
 import type { AuthResponse, AuthResponseNormalized, RefreshTokenResponse, UserProfile } from '@/lib/api/types';
 
@@ -40,7 +40,7 @@ export const authClient = {
    * POST /api/auth/register
    */
   signup: async (name: string, email: string, password: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.post<AuthResponse>('/auth/register', {
       name,
       email,
@@ -54,7 +54,7 @@ export const authClient = {
    * POST /api/auth/login
    */
   login: async (email: string, password: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.post<AuthResponse>('/auth/login', {
       email,
       password,
@@ -67,7 +67,7 @@ export const authClient = {
    * POST /api/auth/refresh
    */
   refreshToken: async (refreshToken: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.post<RefreshTokenResponse>('/auth/refresh', { 
       refresh_token: refreshToken 
     });
@@ -79,7 +79,7 @@ export const authClient = {
    * POST /api/auth/logout
    */
   logout: async (refreshToken: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     await instance.post('/auth/logout', { refresh_token: refreshToken });
   },
 
@@ -89,7 +89,7 @@ export const authClient = {
    * provider: 'kakao' | 'naver' | 'google'
    */
   startOAuth: async (provider: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.post<{ redirectUrl: string }>(
       `/auth/${provider}`
     );
@@ -102,7 +102,7 @@ export const authClient = {
    * provider: 'kakao' | 'naver' | 'google'
    */
   oauthCallback: async (provider: string, code: string, state?: string) => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.post<AuthResponse>(
       `/auth/${provider}/callback`,
       { code, state }
@@ -115,7 +115,7 @@ export const authClient = {
    * GET /api/auth/me
    */
   getCurrentUser: async () => {
-    const instance = await getServerInstance();
+    const instance = await createServerClient();
     const response = await instance.get<UserProfile>('/auth/me');
     return response.data;
   },
