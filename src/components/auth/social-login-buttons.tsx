@@ -10,20 +10,37 @@ export function SocialLoginButtons({ mode }: SocialLoginButtonsProps) {
   // const actionText = mode === "login" ? "로그인" : "가입";
   const log = logger.scope("SOCIAL_LOGIN");
 
-  const apiBaseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.picsel.kr/api").replace(/\/$/, "");
-  const callbackUrl = typeof window !== "undefined" ? `${window.location.origin}/oauth-callback` : "";
+  const handleSocialLogin = async (provider: "google" | "kakao" | "naver") => {
+    try {
+      log.info(`Starting ${provider} login`);
 
-  const handleSocialLogin = (provider: "google" | "kakao" | "naver") => {
-    // Log for debugging
-    log.info(`Starting ${provider} login`);
-    log.debug("Callback URL:", callbackUrl);
-    
-    // POST /api/auth/{provider}?redirect_uri={callback_url}
-    const authUrl = new URL(`${apiBaseUrl}/auth/${provider}`);
-    authUrl.searchParams.append("redirect_uri", callbackUrl);
-    
-    log.debug("Auth URL:", authUrl.toString());
-    window.location.href = authUrl.toString();
+      const callbackUrl = `${window.location.origin}/oauth-callback?provider=${provider}`;
+      const startUrl = new URL(`/api/auth/oauth-start/${provider}`, window.location.origin);
+      startUrl.searchParams.set("redirect_uri", callbackUrl);
+
+      const response = await fetch(startUrl.toString(), {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      });
+
+      if (!response.ok) {
+        const body = (await response.json().catch(() => null)) as
+          | { error?: { message?: string } }
+          | null;
+        throw new Error(body?.error?.message || "소셜 로그인을 시작할 수 없습니다.");
+      }
+
+      const data = (await response.json()) as { redirectUrl?: string };
+      if (!data.redirectUrl) {
+        throw new Error("OAuth redirect URL이 비어있습니다.");
+      }
+
+      window.location.assign(data.redirectUrl);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "소셜 로그인에 실패했습니다.";
+      log.error("Social login start failed:", message, err);
+      alert(message);
+    }
   };
 
   return (

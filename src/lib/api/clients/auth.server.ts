@@ -88,12 +88,21 @@ export const authClient = {
    * POST /api/auth/{provider}
    * provider: 'kakao' | 'naver' | 'google'
    */
-  startOAuth: async (provider: string) => {
+  startOAuth: async (provider: string, redirectUri: string) => {
     const instance = await createServerClient();
-    const response = await instance.post<{ redirectUrl: string }>(
-      `/auth/${provider}`
+    const response = await instance.post<{ redirectUrl?: string; redirect_url?: string }>(
+      `/auth/${provider}`,
+      undefined,
+      {
+        params: {
+          redirect_uri: redirectUri,
+        },
+      }
     );
-    return response.data;
+
+    return {
+      redirectUrl: response.data.redirectUrl ?? response.data.redirect_url ?? "",
+    };
   },
 
   /**

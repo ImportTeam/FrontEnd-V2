@@ -1,28 +1,107 @@
-"use client";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-import { Suspense } from "react";
-
-import { OAuthHandler } from "./oauth-handler";
+import { authClient } from "@/lib/api/clients/auth.server";
+import { parseApiError } from "@/lib/api/error-handler";
 
 /**
  * OAuth Callback Page
- * Wrapped with Suspense for useSearchParams() hook
+ * Server-side handler:
+ * - Exchanges code for tokens through backend
+ * - Saves tokens into HttpOnly cookies on this app domain
+ * - Redirects to /dashboard
  */
-export function OAuthCallbackPage() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <Suspense
-        fallback={
-          <div className="text-center space-y-4">
-            <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto" />
-            <p className="text-zinc-600 dark:text-zinc-400">로그인 처리 중...</p>
-          </div>
-        }
-      >
-        <OAuthHandler />
-      </Suspense>
-    </div>
-  );
+async function saveTokensToCookies(accessToken: string, refreshToken: string) {
+  const cookieStore = await cookies();
+
+  cookieStore.set("access_token", accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+    maxAge: 3600,
+  });
+
+  cookieStore.set("refresh_token", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+    maxAge: 604800,
+  });
 }
 
-export { OAuthCallbackPage as default };
+type OAuthCallbackPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function OAuthCallbackPage(props: OAuthCallbackPageProps) {
+  const searchParams = await props.searchParams;
+  const providerRaw = searchParams.provider;
+  const codeRaw = searchParams.code;
+  const stateRaw = searchParams.state;
+  const errorRaw = searchParams.error;
+
+  const provider = Array.isArray(providerRaw) ? providerRaw[0] : providerRaw;
+  const code = Array.isArray(codeRaw) ? codeRaw[0] : codeRaw;
+  const state = Array.isArray(stateRaw) ? stateRaw[0] : stateRaw;
+  const error = Array.isArray(errorRaw) ? errorRaw[0] : errorRaw;
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-6">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm">
+          <h1 className="text-lg font-bold">소셜 로그인 오류</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{error}</p>
+          <a
+            href="/login"
+            className="mt-4 inline-flex text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            로그인으로 돌아가기
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  if (!provider || !code) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-6">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm">
+          <h1 className="text-lg font-bold">소셜 로그인 오류</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            콜백 파라미터가 누락되었습니다. 다시 시도해주세요.
+          </p>
+          <a
+            href="/login"
+            className="mt-4 inline-flex text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            로그인으로 돌아가기
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  try {
+    const response = await authClient.oauthCallback(provider, code, state);
+    await saveTokensToCookies(response.accessToken, response.refreshToken);
+    redirect("/dashboard");
+  } catch (err) {
+    const details = parseApiError(err);
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-6">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm">
+          <h1 className="text-lg font-bold">소셜 로그인 실패</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{details.message}</p>
+          <a
+            href="/login"
+            className="mt-4 inline-flex text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            로그인으로 돌아가기
+          </a>
+        </div>
+      </div>
+    );
+  }
+}
