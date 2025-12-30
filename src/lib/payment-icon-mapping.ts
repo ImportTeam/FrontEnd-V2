@@ -51,6 +51,27 @@ const paymentProviderToIcon: Record<string, { icon: string; folder: string }> = 
   PAYCO: { icon: "payco.webp", folder: "payments/payco" },
   SAMSUNG_PAY: { icon: "Samsung Pay.webp", folder: "payments/samsung" },
   TOSS: { icon: "Toss.webp", folder: "payments/toss" },
+
+  // Alias / locale variants
+  "애플페이": { icon: "apple.webp", folder: "payments/apple" },
+  "APPLE PAY": { icon: "apple.webp", folder: "payments/apple" },
+
+  "카카오페이": { icon: "kakaoPay.webp", folder: "payments/kakao" },
+  "KAKAOPAY": { icon: "kakaoPay.webp", folder: "payments/kakao" },
+  "KAKAO PAY": { icon: "kakaoPay.webp", folder: "payments/kakao" },
+
+  "네이버페이": { icon: "naver.webp", folder: "payments/naver" },
+  "NAVERPAY": { icon: "naver.webp", folder: "payments/naver" },
+  "NAVER PAY": { icon: "naver.webp", folder: "payments/naver" },
+
+  "삼성페이": { icon: "Samsung Pay.webp", folder: "payments/samsung" },
+  "SAMSUNG PAY": { icon: "Samsung Pay.webp", folder: "payments/samsung" },
+
+  "토스": { icon: "Toss.webp", folder: "payments/toss" },
+  "토스페이": { icon: "Toss.webp", folder: "payments/toss" },
+  "TOSS PAY": { icon: "Toss.webp", folder: "payments/toss" },
+
+  "페이코": { icon: "payco.webp", folder: "payments/payco" },
 };
 
 export interface IconPath {
@@ -61,6 +82,7 @@ export interface IconPath {
 function normalizeKey(input: string): string {
   return input
     .trim()
+    .replace(/[_-]+/g, " ")
     .replace(/\s+/g, " ")
     .replace(/카드$/u, "")
     .toUpperCase();
@@ -76,15 +98,16 @@ export function getPaymentIconPath(
   cardType: string | null | undefined,
   paymentProvider?: string | null
 ): IconPath | null {
-  // If it's a payment provider (Apple Pay, Kakao Pay, etc)
-  if (paymentProvider) {
-    const providerKey = normalizeKey(paymentProvider);
+  // Try payment provider resolution first (explicit provider, then cardType as provider)
+  const rawProvider = paymentProvider ?? cardType ?? null;
+  if (rawProvider) {
+    const providerKey = normalizeKey(rawProvider);
     const provider = paymentProviderToIcon[providerKey];
-
     if (provider) {
+      const encodedIcon = encodeURIComponent(provider.icon);
       return {
-        src: `/assets/${provider.folder}/${provider.icon}`,
-        alt: paymentProvider,
+        src: `/assets/${provider.folder}/${encodedIcon}`,
+        alt: rawProvider,
       };
     }
   }

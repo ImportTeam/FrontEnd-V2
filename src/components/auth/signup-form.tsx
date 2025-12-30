@@ -81,21 +81,6 @@ function SignupFormContent() {
         </p>
       </div>
 
-      {/* Loading State */}
-      {isPending ? (
-        <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 p-4 flex items-start gap-3">
-          <Loader2 className="h-5 w-5 text-blue-600 dark:text-blue-400 animate-spin shrink-0" />
-          <div>
-            <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-              회원가입 중입니다...
-            </p>
-            <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-              계정을 생성 중입니다. 잠시만 기다려주세요.
-            </p>
-          </div>
-        </div>
-      ) : null}
-
       {/* Server Error */}
       {state.status === "error" && state.message ? (
         <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 p-4">

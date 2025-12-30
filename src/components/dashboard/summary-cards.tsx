@@ -116,17 +116,17 @@ export function SummaryCards({ summaryData, aiBenefits }: SummaryCardsProps) {
       </Card>
 
       {/* Card 4: AI Benefits (New) */}
-      <Card className="bg-linear-to-br from-amber-50 to-orange-50 border-amber-200 shadow-sm hover:shadow-md transition-all dark:from-amber-950/30 dark:to-orange-950/30 dark:border-amber-800">
+      <Card className="bg-white border-zinc-200 shadow-sm hover:shadow-md transition-shadow dark:bg-zinc-900 dark:border-zinc-800">
         <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
-            <CardTitle className="text-xs sm:text-sm font-semibold text-amber-900 dark:text-amber-200">
+            <Sparkles className="h-4 w-4 text-zinc-600 dark:text-zinc-300 shrink-0" />
+            <CardTitle className="text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-200">
               AI 추천 혜택
             </CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="text-sm font-medium text-amber-900 dark:text-amber-100 leading-snug">
+          <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100 leading-snug">
             {isExpanded ? truncatedBenefit.full : truncatedBenefit.display}
           </div>
 
@@ -135,7 +135,7 @@ export function SummaryCards({ summaryData, aiBenefits }: SummaryCardsProps) {
               variant="ghost"
               size="sm"
               onClick={() => setExpandedCard(isExpanded ? null : 'ai-benefit')}
-              className="w-full h-8 px-2 text-xs text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50"
+              className="w-full h-8 px-2 text-xs text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
             >
               {isExpanded ? '접기' : '펼쳐보기'}
               <ChevronDown className={`h-3 w-3 ml-1 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
@@ -143,8 +143,8 @@ export function SummaryCards({ summaryData, aiBenefits }: SummaryCardsProps) {
           ) : null}
 
           {aiBenefits?.reasonSummary ? (
-            <p className="text-xs text-amber-700 dark:text-amber-300 bg-amber-100/50 dark:bg-amber-900/20 rounded px-2 py-1.5 border border-amber-200/50 dark:border-amber-800/50">
-              💡 {aiBenefits.reasonSummary}
+            <p className="text-xs text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-800/40 rounded px-2 py-1.5 border border-zinc-200/60 dark:border-zinc-800/60">
+              {aiBenefits.reasonSummary}
             </p>
           ) : null}
         </CardContent>

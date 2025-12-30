@@ -1,6 +1,6 @@
 "use client";
 
-import { FileJson, FileText } from "lucide-react";
+import { CalendarDays, FileJson, FileText } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
   Bar,
@@ -29,13 +29,16 @@ import type {
   TransactionListItem,
 } from "@/lib/api/types";
 
+// Vivid, distinct RGB colors for high visibility
 const CHART_COLORS = [
-  "var(--color-primary)",
-  "var(--color-secondary)",
-  "var(--color-accent-foreground)",
-  "var(--color-muted-foreground)",
-  "var(--color-foreground)",
-  "var(--color-border)",
+  "#2563EB", // blue
+  "#DC2626", // red
+  "#16A34A", // green
+  "#F97316", // orange
+  "#9333EA", // purple
+  "#0891B2", // cyan
+  "#CA8A04", // amber
+  "#DB2777", // pink
 ];
 
 function colorForLabel(label: string): string {
@@ -66,7 +69,7 @@ function renderPieCalloutLabel(props: PieLabelProps): React.ReactNode {
   const { cx, cy, midAngle, outerRadius, payload } = props;
   if (cx === undefined || cy === undefined || midAngle === undefined || outerRadius === undefined) return null;
   const label = payload?.label ?? "";
-  const ratio = payload?.ratioPercent;
+  const value = typeof payload?.value === "number" ? payload.value : undefined;
 
   const RADIAN = Math.PI / 180;
   const sin = Math.sin(-RADIAN * midAngle);
@@ -82,7 +85,7 @@ function renderPieCalloutLabel(props: PieLabelProps): React.ReactNode {
   const textAnchor = cos >= 0 ? "start" : "end";
   const tx = x2 + (cos >= 0 ? 6 : -6);
   const ty = y2;
-  const ratioText = typeof ratio === "number" ? `${ratio.toFixed(1)}%` : "";
+  const valueText = typeof value === "number" ? formatKrw(value) : "";
 
   return (
     <g>
@@ -92,9 +95,11 @@ function renderPieCalloutLabel(props: PieLabelProps): React.ReactNode {
         <tspan x={tx} dy={-6}>
           {label}
         </tspan>
-        <tspan x={tx} dy={14} fill="var(--color-muted-foreground)">
-          {ratioText}
-        </tspan>
+        {valueText ? (
+          <tspan x={tx} dy={14} fill="var(--color-muted-foreground)">
+            {valueText}
+          </tspan>
+        ) : null}
       </text>
     </g>
   );
@@ -349,12 +354,16 @@ export default function ReportsPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2 sm:gap-3">
-          <input
-            type="month"
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            className="px-3 py-2 text-xs sm:text-sm rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
-          />
+          <label className="relative inline-flex items-center">
+            <span className="sr-only">월 선택</span>
+            <CalendarDays className="pointer-events-none absolute left-3 h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+            <input
+              type="month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="h-9 sm:h-10 pl-9 pr-3 text-xs sm:text-sm rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900/10 dark:focus-visible:ring-zinc-100/10"
+            />
+          </label>
           <Button 
             variant="outline" 
             size="sm" 
@@ -434,22 +443,25 @@ export default function ReportsPage() {
                 {categoryChartData.length > 0 ? (
                   <div className="mt-4 grid gap-2">
                     {categoryChartData.map((item) => (
-                      <div key={item.label} className="flex items-center justify-between gap-3 text-xs sm:text-sm">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span
-                            className="h-2.5 w-2.5 rounded-full shrink-0"
-                            style={{ backgroundColor: colorForLabel(item.label) }}
-                            aria-hidden
-                          />
-                          <span className="truncate text-zinc-700 dark:text-zinc-200">{item.label}</span>
-                        </div>
-                        <div className="shrink-0 text-right">
-                          <span className="tabular-nums text-zinc-700 dark:text-zinc-200">
-                            {formatKrw(item.value)}
-                          </span>
-                          <span className="ml-2 tabular-nums text-zinc-500 dark:text-zinc-400">
-                            {item.ratioPercent.toFixed(1)}%
-                          </span>
+                      <div key={item.label} className="flex items-start gap-3 text-xs sm:text-sm">
+                        <span
+                          className="mt-1 h-3 w-3 rounded-[4px] shrink-0"
+                          style={{ backgroundColor: colorForLabel(item.label) }}
+                          aria-hidden
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-3">
+                            <span className="truncate text-zinc-700 dark:text-zinc-200">{item.label}</span>
+                            <span className="shrink-0 tabular-nums text-zinc-700 dark:text-zinc-200">
+                              {formatKrw(item.value)}
+                            </span>
+                          </div>
+                          <div className="mt-1 h-1.5 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden" aria-hidden>
+                            <div
+                              className="h-full rounded-full"
+                              style={{ width: `${Math.max(2, Math.min(100, item.ratioPercent))}%`, backgroundColor: colorForLabel(item.label) }}
+                            />
+                          </div>
                         </div>
                       </div>
                     ))}

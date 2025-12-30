@@ -48,11 +48,15 @@ function formatPercent(value: number) {
  * Maps backend payment card data to the expected CardData structure
  */
 function paymentCardToCardData(payment: PaymentCard): CardData {
-  const icon = getPaymentIconPath(payment.cardType);
+  const icon = getPaymentIconPath(payment.cardType, payment.alias);
+  const safeCardType = payment.cardType?.trim();
+  const safeAlias = payment.alias?.trim();
+  const isUnknownType = !safeCardType || /^unknown$/i.test(safeCardType);
+  const bankName = (isUnknownType ? safeAlias : safeCardType)?.split(" ")[0] || safeAlias || safeCardType || "Unknown";
   return {
     id: payment.seq?.toString() || "unknown",
-    bankName: payment.cardType?.split(" ")[0] || "Unknown",
-    cardName: payment.alias || `${payment.cardType} ${payment.last4}`,
+    bankName,
+    cardName: safeAlias || `${safeCardType} ${payment.last4}`,
     cardNumber: payment.last4 || "????", // Last 4 digits
     imageSrc: icon?.src, // Local asset mapping
     balance: undefined, // Payment API doesn't provide balance

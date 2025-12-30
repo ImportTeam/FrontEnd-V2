@@ -45,20 +45,15 @@ function LoginFormContent() {
     // If server returned fieldErrors, RHF already validates client-side.
     // Keep the server message rendered as a banner.
   }, [state.nonce]);
-  // Use trigger() for client-side validation, then use native submission
-  // so Server Action redirect() will perform a browser navigation.
-  const handleSubmitClick = async () => {
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     setSubmitAttempted(true);
     log.info("submit (attempt)");
+
     const valid = await trigger();
     if (!valid) {
       log.warn("submit (invalid)");
-      return;
-    }
-
-    // Native submit so redirect() in Server Action navigates the browser.
-    if (formRef.current) {
-      formRef.current.requestSubmit();
+      event.preventDefault();
     }
   };
 
@@ -73,21 +68,6 @@ function LoginFormContent() {
         </p>
       </div>
 
-      {/* Loading State */}
-      {isPending ? (
-        <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 p-4 flex items-start gap-3">
-          <Loader2 className="h-5 w-5 text-blue-600 dark:text-blue-400 animate-spin shrink-0" />
-          <div>
-            <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-              로그인 중입니다...
-            </p>
-            <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-              인증을 처리 중입니다. 잠시만 기다려주세요.
-            </p>
-          </div>
-        </div>
-      ) : null}
-
       {/* Server Error */}
       {state.status === "error" && state.message ? (
         <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 p-4">
@@ -96,7 +76,7 @@ function LoginFormContent() {
         </div>
       ) : null}
 
-      <form ref={formRef} action={formAction} noValidate className="space-y-4">
+      <form ref={formRef} action={formAction} onSubmit={handleSubmit} noValidate className="space-y-4">
         <div className="space-y-4 text-left">
           <AuthFormField
             id="email"
@@ -129,8 +109,7 @@ function LoginFormContent() {
         </div>
 
         <Button
-          type="button"
-          onClick={handleSubmitClick}
+          type="submit"
           disabled={isPending}
           className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-base rounded-lg dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
         >

@@ -1,6 +1,5 @@
 import { Download, Plus, Sparkles } from "lucide-react";
 
-import { AIReportCard } from "@/components/dashboard/ai-report-card";
 import { DashboardCharts } from "@/components/dashboard/dashboard-charts";
 import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 import { SummaryCards } from "@/components/dashboard/summary-cards";
@@ -10,7 +9,6 @@ import {
   loadDashboardChartsData,
   loadRecentTransactionsData,
   loadSummaryCardsData,
-  loadAIAnalysisData,
   loadAIBenefitsData,
 } from "./data-actions";
 
@@ -20,11 +18,10 @@ export const dynamic = 'force-dynamic';
 // eslint-disable-next-line no-restricted-syntax
 export default async function DashboardPage() {
   // Load all data server-side
-  const [chartsData, summaryData, transactionsData, aiData, aiBenefits] = await Promise.all([
+  const [chartsData, summaryData, transactionsData, aiBenefits] = await Promise.all([
     loadDashboardChartsData(),
     loadSummaryCardsData(),
     loadRecentTransactionsData(10),
-    loadAIAnalysisData(),
     loadAIBenefitsData(),
   ]);
 
@@ -69,10 +66,6 @@ export default async function DashboardPage() {
         chartData={chartsData?.chartData}
         recommendations={chartsData?.recommendations}
       />
-
-      <h2 className="sr-only">AI 추천 혜택</h2>
-      {/* Row 2.5: AI Report Card */}
-      <AIReportCard data={aiData} />
 
       <h2 className="sr-only">최근 결제 내역</h2>
       {/* Row 3: Recent Transactions */}
