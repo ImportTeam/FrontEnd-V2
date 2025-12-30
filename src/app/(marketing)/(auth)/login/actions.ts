@@ -18,6 +18,12 @@ interface LoginFormState {
   success: boolean;
 }
 
+function isNextRedirectError(err: unknown): boolean {
+  if (!err || typeof err !== 'object') return false;
+  const digest = (err as { digest?: unknown }).digest;
+  return typeof digest === 'string' && digest.startsWith('NEXT_REDIRECT');
+}
+
 /**
  * 토큰을 HttpOnly Cookie에 저장
  */
@@ -93,6 +99,11 @@ export async function loginAction(
     // 리다이렉트 (Server Action에서 자동 처리)
     redirect('/dashboard');
   } catch (err) {
+    // redirect() throws a special error that must bubble up to Next.js
+    if (isNextRedirectError(err)) {
+      throw err;
+    }
+
     console.error("[LOGIN] Error details:", {
       error: err,
       errorType: err instanceof Error ? err.constructor.name : typeof err,
