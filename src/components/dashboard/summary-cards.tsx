@@ -23,8 +23,9 @@ export function SummaryCards({ summaryData }: SummaryCardsProps) {
 
   const totalSavings = (summaryData?.totalSavings as string) || "0원";
   const monthlySpending = (summaryData?.monthlySpending as string) || "0원";
-  const monthlySpendingChange = (summaryData?.monthlySpendingChange as string) || "0%";
-  const topCard = (summaryData?.topCard as string) || "분석 중";
+  const monthlySpendingChange = (summaryData?.totalSavingsChange as string) || "0%";
+  const topCard = (summaryData?.topPaymentMethod as string) || "분석 중";
+  const recentTransactions = (summaryData?.topPaymentMethodCount as number) || 0;
 
   return (
     <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
@@ -91,7 +92,7 @@ export function SummaryCards({ summaryData }: SummaryCardsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100 line-clamp-2">
-            {((summaryData?.recentTransactions as number) || 0).toString()}건
+            {recentTransactions.toString()}건
           </div>
           <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1 line-clamp-2">
             분석 중

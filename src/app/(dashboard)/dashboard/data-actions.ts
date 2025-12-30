@@ -57,3 +57,17 @@ export async function loadRecentTransactionsData(_limit = 10) {
     return [];
   }
 }
+
+export async function loadAIAnalysisData() {
+  try {
+    const analysis = await dashboardClient.getAIAnalysis();
+    if (!analysis) return null;
+    return {
+      recommendation: analysis.recommendation,
+      reasonSummary: analysis.reasonSummary,
+    };
+  } catch (error) {
+    console.error("[AI_ANALYSIS_DATA] Failed to load:", error);
+    return null;
+  }
+}
