@@ -3,8 +3,10 @@
  * 모든 API 클라이언트와 유틸리티를 공개
  */
 
-// HTTP Instances
-export { getServerInstance } from '@/lib/api/http/http.server';
+// HTTP Instances (Server)
+export { createServerClient } from '@/lib/api/createServerClient';
+
+// HTTP Instances (Client)
 export { getClientInstance } from '@/lib/api/http/http.client';
 
 // API Clients (Server-only)

@@ -14,6 +14,9 @@ import {
   loadAIBenefitsData,
 } from "./data-actions";
 
+// Force dynamic rendering - cookies() require runtime context
+export const dynamic = 'force-dynamic';
+
 // eslint-disable-next-line no-restricted-syntax
 export default async function DashboardPage() {
   // Load all data server-side
