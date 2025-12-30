@@ -21,6 +21,7 @@ import {
 } from "./actions";
 
 import { logger } from "@/lib/logger";
+import { getPaymentIconPath } from "@/lib/payment-icon-mapping";
 
 import type { PaymentCard } from "@/lib/api/types";
 
@@ -48,12 +49,13 @@ function formatPercent(value: number) {
  * Maps backend payment card data to the expected CardData structure
  */
 function paymentCardToCardData(payment: PaymentCard): CardData {
+  const icon = getPaymentIconPath(payment.cardType);
   return {
     id: payment.seq?.toString() || "unknown",
     bankName: payment.cardType?.split(" ")[0] || "Unknown",
     cardName: payment.alias || `${payment.cardType} ${payment.last4}`,
     cardNumber: `•••• ${payment.last4}`, // Masked card number
-    imageSrc: undefined, // Payment API doesn't provide image
+    imageSrc: icon?.src, // Local asset mapping
     balance: undefined, // Payment API doesn't provide balance
     limit: undefined, // Payment API doesn't provide limit
     textColor: undefined, // Will use default

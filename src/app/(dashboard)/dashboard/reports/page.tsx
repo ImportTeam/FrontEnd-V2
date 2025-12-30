@@ -7,7 +7,6 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
-  Legend,
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -41,6 +40,56 @@ const CHART_COLORS = [
 
 function formatKrw(value: number): string {
   return `${new Intl.NumberFormat("ko-KR").format(value)}원`;
+}
+
+type PieLabelProps = {
+  cx?: number;
+  cy?: number;
+  midAngle?: number;
+  outerRadius?: number;
+  payload?: {
+    label?: string;
+    ratioPercent?: number;
+    value?: number;
+  };
+};
+
+function renderPieCalloutLabel(props: PieLabelProps): React.ReactNode {
+  const { cx, cy, midAngle, outerRadius, payload } = props;
+  if (cx === undefined || cy === undefined || midAngle === undefined || outerRadius === undefined) return null;
+  const label = payload?.label ?? "";
+  const ratio = payload?.ratioPercent;
+
+  const RADIAN = Math.PI / 180;
+  const sin = Math.sin(-RADIAN * midAngle);
+  const cos = Math.cos(-RADIAN * midAngle);
+
+  const x0 = cx + outerRadius * cos;
+  const y0 = cy + outerRadius * sin;
+  const x1 = cx + (outerRadius + 10) * cos;
+  const y1 = cy + (outerRadius + 10) * sin;
+  const x2 = x1 + (cos >= 0 ? 18 : -18);
+  const y2 = y1;
+
+  const textAnchor = cos >= 0 ? "start" : "end";
+  const tx = x2 + (cos >= 0 ? 6 : -6);
+  const ty = y2;
+  const ratioText = typeof ratio === "number" ? `${ratio.toFixed(1)}%` : "";
+
+  return (
+    <g>
+      <path d={`M${x0},${y0}L${x1},${y1}L${x2},${y2}`} stroke="var(--color-muted-foreground)" fill="none" />
+      <circle cx={x0} cy={y0} r={3} fill="var(--color-muted-foreground)" />
+      <text x={tx} y={ty} textAnchor={textAnchor} dominantBaseline="central" fill="var(--color-foreground)" fontSize={12}>
+        <tspan x={tx} dy={-6}>
+          {label}
+        </tspan>
+        <tspan x={tx} dy={14} fill="var(--color-muted-foreground)">
+          {ratioText}
+        </tspan>
+      </text>
+    </g>
+  );
 }
 
 function pickCategoryRange(
@@ -350,7 +399,6 @@ export default function ReportsPage() {
                             color: "var(--color-card-foreground)",
                           }}
                         />
-                        <Legend wrapperStyle={{ fontSize: 12 }} />
                         <Pie
                           data={categoryChartData}
                           dataKey="value"
@@ -360,6 +408,8 @@ export default function ReportsPage() {
                           paddingAngle={2}
                           stroke="var(--color-card)"
                           strokeWidth={2}
+                          // Recharts passes a wider prop shape; we accept a subset and guard.
+                          label={renderPieCalloutLabel as unknown as (props: unknown) => React.ReactNode}
                         >
                           {categoryChartData.map((entry, index) => (
                             <Cell
