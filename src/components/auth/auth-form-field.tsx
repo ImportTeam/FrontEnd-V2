@@ -11,6 +11,7 @@ interface AuthFormFieldProps {
   placeholder: string;
   registration: UseFormRegisterReturn;
   error?: FieldError;
+  disabled?: boolean;
 }
 
 export function AuthFormField({
@@ -20,6 +21,7 @@ export function AuthFormField({
   placeholder,
   registration,
   error,
+  disabled = false,
 }: AuthFormFieldProps) {
   return (
     <div className="space-y-2">
@@ -30,7 +32,8 @@ export function AuthFormField({
         id={id}
         type={type}
         placeholder={placeholder}
-        className="h-10 rounded-none border-0 border-b border-zinc-200 bg-transparent px-0 shadow-none focus-visible:ring-0 focus-visible:border-blue-600 dark:border-zinc-700 dark:focus-visible:border-blue-400 placeholder:text-zinc-300"
+        disabled={disabled}
+        className="h-10 rounded-none border-0 border-b border-zinc-200 bg-transparent px-0 shadow-none focus-visible:ring-0 focus-visible:border-blue-600 dark:border-zinc-700 dark:focus-visible:border-blue-400 placeholder:text-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed"
         aria-invalid={error ? "true" : "false"}
         aria-describedby={error ? `${id}-error` : undefined}
         {...registration}
