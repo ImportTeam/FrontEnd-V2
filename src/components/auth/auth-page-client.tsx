@@ -21,17 +21,26 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
     const [isSignup, setIsSignup] = useState(initialSignup);
     const [isTransitioning, setIsTransitioning] = useState(false);
 
+    // 🔴 인증된 사용자는 로그인 페이지에서 대시보드로 즉시 리다이렉트
     useEffect(() => {
-        if (!isAuthenticated) return;
+        if (!isAuthenticated) {
+            console.warn('[AUTH_PAGE] User not authenticated, staying on auth page');
+            return;
+        }
 
+        console.warn('[AUTH_PAGE] User authenticated, redirecting to dashboard');
+        
         const params = new URLSearchParams(window.location.search);
         const next = params.get("next");
         const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
 
         if (safeNext) {
+            console.warn('[AUTH_PAGE] Redirecting to:', safeNext);
             router.replace(safeNext as unknown as Route);
             return;
         }
+        
+        console.warn('[AUTH_PAGE] Redirecting to /dashboard');
         router.replace("/dashboard");
     }, [isAuthenticated, router]);
 

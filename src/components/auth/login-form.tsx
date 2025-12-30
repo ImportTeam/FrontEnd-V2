@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
 import { useFormStatus } from "react-dom";
 
 import { loginAction } from "@/app/(marketing)/(auth)/login/actions";
@@ -40,6 +41,21 @@ function LoginFormContent() {
         </p>
       </div>
 
+      {/* Loading State */}
+      {pending ? (
+        <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 p-4 flex items-start gap-3">
+          <Loader2 className="h-5 w-5 text-blue-600 dark:text-blue-400 animate-spin shrink-0" />
+          <div>
+            <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+              로그인 중입니다...
+            </p>
+            <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+              인증을 처리 중입니다. 잠시만 기다려주세요.
+            </p>
+          </div>
+        </div>
+      ) : null}
+
       <form action={loginAction} className="space-y-4">
         <div className="space-y-4 text-left">
           <AuthFormField
@@ -75,9 +91,10 @@ function LoginFormContent() {
         <Button
           type="submit"
           disabled={pending || !isFormFilled}
-          className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-base rounded-lg dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-base rounded-lg dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
         >
-          {pending ? "로그인 중..." : "로그인"}
+          {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+          <span>{pending ? "로그인 중..." : "로그인"}</span>
         </Button>
       </form>
 

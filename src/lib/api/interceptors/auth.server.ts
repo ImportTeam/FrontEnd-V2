@@ -23,8 +23,20 @@ const STORAGE_KEYS = {
 async function getServerAccessToken(): Promise<string | null> {
   try {
     const cookieStore = await cookies();
-    return cookieStore.get(STORAGE_KEYS.accessToken)?.value ?? null;
-  } catch {
+    const token = cookieStore.get(STORAGE_KEYS.accessToken)?.value;
+    
+    if (token) {
+      console.warn('[AUTH_INTERCEPTOR] Token found:', {
+        length: token.length,
+        prefix: token.substring(0, 10) + '...',
+      });
+    } else {
+      console.warn('[AUTH_INTERCEPTOR] No access token in cookies');
+    }
+    
+    return token ?? null;
+  } catch (error) {
+    console.error('[AUTH_INTERCEPTOR] Error reading token:', error);
     return null;
   }
 }
@@ -33,11 +45,19 @@ export async function setupAuthInterceptor(instance: AxiosInstance) {
   instance.interceptors.request.use(
     async (config) => {
       const token = await getServerAccessToken();
+      
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+        console.warn('[AUTH_INTERCEPTOR] Authorization header set');
+      } else {
+        console.warn('[AUTH_INTERCEPTOR] No token, request without auth');
       }
+      
       return config;
     },
-    (error) => Promise.reject(error)
+    (error) => {
+      console.error('[AUTH_INTERCEPTOR] Request error:', error);
+      return Promise.reject(error);
+    }
   );
 }
