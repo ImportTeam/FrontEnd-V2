@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 interface User {
   id: string;
@@ -10,27 +9,19 @@ interface User {
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
-  hasHydrated: boolean;
   login: (user: User) => void;
   logout: () => void;
-  setHasHydrated: (value: boolean) => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      user: null,
-      isAuthenticated: false,
-      hasHydrated: false,
-      login: (user) => set({ user, isAuthenticated: true }),
-      logout: () => set({ user: null, isAuthenticated: false }),
-      setHasHydrated: (value) => set({ hasHydrated: value }),
-    }),
-    {
-      name: "auth-storage", // unique name for localStorage
-      onRehydrateStorage: () => (state) => {
-        state?.setHasHydrated(true);
-      },
-    }
-  )
-);
+/**
+ * Zustand Auth Store (Server Action 호환)
+ * - localStorage 제거 (Server Action에서 사용 불가)
+ * - 토큰은 HttpOnly Cookie로 관리
+ * - 클라이언트 UI 상태만 동기화
+ */
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  isAuthenticated: false,
+  login: (user) => set({ user, isAuthenticated: true }),
+  logout: () => set({ user: null, isAuthenticated: false }),
+}));

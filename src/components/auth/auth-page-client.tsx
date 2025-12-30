@@ -17,12 +17,11 @@ interface AuthPageClientProps {
 export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
     const pathname = usePathname();
     const router = useRouter();
-    const { isAuthenticated, hasHydrated } = useAuthStore();
+    const { isAuthenticated } = useAuthStore();
     const [isSignup, setIsSignup] = useState(initialSignup);
     const [isTransitioning, setIsTransitioning] = useState(false);
 
     useEffect(() => {
-        if (!hasHydrated) return;
         if (!isAuthenticated) return;
 
         const params = new URLSearchParams(window.location.search);
@@ -34,7 +33,7 @@ export function AuthPageClient({ initialSignup = false }: AuthPageClientProps) {
             return;
         }
         router.replace("/dashboard");
-    }, [hasHydrated, isAuthenticated, router]);
+    }, [isAuthenticated, router]);
 
     useEffect(() => {
         setIsSignup(pathname === "/signup");

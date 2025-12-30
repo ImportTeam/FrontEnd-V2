@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/lib/api/client";
 import { useAuthStore } from "@/store/use-auth-store";
+
+import { deleteAccount, loadCurrentUser, updateCurrentUser } from "./actions";
 
 import type { UserCurrentResponse } from "@/lib/api/types";
 
@@ -32,7 +33,10 @@ export default function ProfilePage() {
   useEffect(() => {
     async function loadProfile() {
       try {
-        const profile = await api.users.getCurrent() as unknown as UserCurrentResponse;
+        const profile = await loadCurrentUser();
+        if (!profile) {
+          return;
+        }
         setUserProfile(profile);
         setName(profile.name || userName);
         setEmail(profile.email || userEmail);
@@ -51,15 +55,26 @@ export default function ProfilePage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await api.users.updateProfile({
+      const result = await updateCurrentUser({
         name,
         settings: {
           notificationEnabled: userProfile?.settings?.notificationEnabled ?? true,
           darkMode: userProfile?.settings?.darkMode ?? false,
           compareMode: userProfile?.settings?.compareMode ?? "AUTO",
           currencyPreference: userProfile?.settings?.currencyPreference ?? "KRW",
-        }
+        },
       });
+
+      if (!result.success) {
+        alert(result.error ?? "프로필 저장에 실패했습니다.");
+        return;
+      }
+
+      const nextProfile = result.profile;
+      if (nextProfile) {
+        setUserProfile(nextProfile);
+      }
+
       alert("프로필이 저장되었습니다.");
     } catch (error) {
       console.error("Failed to update profile:", error);
@@ -72,7 +87,11 @@ export default function ProfilePage() {
   const handleDeleteAccount = async () => {
     if (window.confirm("정말 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) {
       try {
-        await api.users.deleteAccount();
+        const result = await deleteAccount();
+        if (!result.success) {
+          alert(result.error ?? "계정 삭제에 실패했습니다.");
+          return;
+        }
         window.location.href = "/";
       } catch (error) {
         console.error("Failed to delete account:", error);

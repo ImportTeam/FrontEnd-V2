@@ -6,20 +6,31 @@ import type { PaymentCard } from "@/lib/api/types";
 
 export async function loadPaymentMethods(): Promise<PaymentCard[] | null> {
   try {
-    const cards = await paymentMethodClient.listPaymentMethods();
-    // Map client PaymentCard to API PaymentCard type
-    return cards.map((card) => ({
-      seq: parseInt(card.id),
-      uuid: card.id,
-      last4: card.cardNumber?.slice(-4) || "",
-      cardType: card.cardBrand,
-      alias: card.cardName,
-      isPrimary: card.isDefault,
-      createdAt: card.createdAt,
-    }));
+    return await paymentMethodClient.listPaymentMethods();
   } catch (error) {
     console.error("[CARDS_PAGE] Failed to load payment methods:", error);
     return null;
+  }
+}
+
+export async function startCardRegistration(returnUrl: string): Promise<
+  { success: true; redirectUrl: string } | { success: false; error: string }
+> {
+  try {
+    const result = await paymentMethodClient.startCardRegistration(returnUrl);
+    if (!result.redirectUrl) {
+      return { success: false, error: "카드 등록 URL을 받지 못했습니다." };
+    }
+    return { success: true, redirectUrl: result.redirectUrl };
+  } catch (error) {
+    console.error("[CARDS_PAGE] Failed to start card registration:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "카드 등록을 시작할 수 없습니다.",
+    };
   }
 }
 
@@ -27,7 +38,7 @@ export async function setDefaultPaymentMethod(
   paymentMethodId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    await paymentMethodClient.setDefaultPaymentMethod(paymentMethodId);
+    await paymentMethodClient.setPrimaryPaymentMethod(paymentMethodId);
     return { success: true };
   } catch (error) {
     console.error("[CARDS_PAGE] Failed to set default payment method:", error);

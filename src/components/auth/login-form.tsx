@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 
 import { loginAction } from "@/app/(marketing)/(auth)/login/actions";
@@ -11,7 +10,6 @@ import { useAuthForm } from "@/hooks/use-auth-form";
 import { loginSchema } from "@/lib/schemas/auth";
 
 import type { LoginSchema } from "@/lib/schemas/auth";
-import type { Route } from "next";
 
 interface LoginFormState {
   error: string | null;
@@ -19,7 +17,6 @@ interface LoginFormState {
 }
 
 export function LoginForm() {
-  const router = useRouter();
   const [state, formAction, isPending] = useActionState(
     loginAction,
     {
@@ -45,21 +42,6 @@ export function LoginForm() {
   const email = watch("email");
   const password = watch("password");
   const isFormFilled = email && password;
-
-  // Handle successful login
-  if (state.success) {
-    const params = new URLSearchParams(
-      typeof window !== "undefined" ? window.location.search : ""
-    );
-    const next = params.get("next");
-    const safeNext =
-      next && next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard";
-
-    // Redirect after state update
-    if (typeof window !== "undefined") {
-      router.push(safeNext as Route);
-    }
-  }
 
   const onSubmit = async (data: LoginSchema) => {
     const formData = new FormData();

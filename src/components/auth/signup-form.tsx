@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 
 import { signupAction } from "@/app/(marketing)/(auth)/signup/actions";
@@ -11,7 +10,6 @@ import { useAuthForm } from "@/hooks/use-auth-form";
 import { signupSchema } from "@/lib/schemas/auth";
 
 import type { SignupSchema } from "@/lib/schemas/auth";
-import type { Route } from "next";
 
 interface SignupFormState {
   error: string | null;
@@ -19,7 +17,6 @@ interface SignupFormState {
 }
 
 export function SignupForm() {
-  const router = useRouter();
   const [state, formAction, isPending] = useActionState<SignupFormState, FormData>(
     async (prevState, formData) => {
       return await signupAction(prevState, formData);
@@ -49,20 +46,6 @@ export function SignupForm() {
   const email = watch("email");
   const password = watch("password");
   const isFormFilled = name && email && password;
-
-  // Handle successful signup
-  if (state.success) {
-    const params = new URLSearchParams(
-      typeof window !== "undefined" ? window.location.search : ""
-    );
-    const next = params.get("next");
-    const safeNext =
-      next && next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard";
-
-    if (typeof window !== "undefined") {
-      router.push(safeNext as Route);
-    }
-  }
 
   const onSubmit = async (data: SignupSchema) => {
     const formData = new FormData();

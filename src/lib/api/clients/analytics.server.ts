@@ -7,92 +7,65 @@
 
 import { getServerInstance } from '@/lib/api/http/http.server';
 
-import type { ApiResponse } from '@/lib/api/types';
+import type {
+  ApiResponse,
+  CategorySpendingResponse,
+  MonthlySavingsChartResponse,
+  TransactionListItem,
+  TransactionListResponse,
+} from '@/lib/api/types';
 
-export interface CategorySpending {
-  category: string;
-  amount: number;
-  percentage: number;
-  count: number;
-}
-
-export interface AnalyticsData {
-  period: string;
-  totalSpending: number;
-  averageTransaction: number;
-  topCategory: string;
-  categoryBreakdown: CategorySpending[];
+function unwrapApiResponse<T>(body: unknown): T {
+  if (body && typeof body === 'object' && 'data' in body) {
+    const maybe = body as { data?: T };
+    if (maybe.data !== undefined) return maybe.data;
+  }
+  return body as T;
 }
 
 export const analyticsClient = {
   /**
-   * 소비 분석 - 기간별
+   * 카테고리별 소비 차트
+   * GET /api/analytics/charts/category
    */
-  getSpendingAnalysis: async (options?: {
-    startDate?: string;
-    endDate?: string;
-    period?: 'daily' | 'weekly' | 'monthly';
-  }) => {
+  getCategories: async () => {
     const instance = await getServerInstance();
-    const response = await instance.get<ApiResponse<AnalyticsData>>(
-      '/analytics/spending',
-      { params: options }
-    );
-    return response.data.data ?? {
-      period: '',
-      totalSpending: 0,
-      averageTransaction: 0,
-      topCategory: '',
-      categoryBreakdown: [],
-    };
+
+    const response = await instance.get<
+      ApiResponse<CategorySpendingResponse> | CategorySpendingResponse
+    >('/analytics/charts/category');
+
+    const body = unwrapApiResponse<CategorySpendingResponse>(response.data);
+    return body?.data ?? [];
   },
 
   /**
-   * 카테고리별 소비 분석
+   * 월별 지출 추이 차트
+   * GET /api/analytics/charts/monthly
    */
-  getCategoryAnalysis: async (category: string) => {
+  getMonths: async () => {
     const instance = await getServerInstance();
-    const response = await instance.get<ApiResponse<CategorySpending>>(
-      `/analytics/category/${category}`
-    );
-    return response.data.data ?? {
-      category: '',
-      amount: 0,
-      percentage: 0,
-      count: 0,
-    };
+
+    const response = await instance.get<
+      ApiResponse<MonthlySavingsChartResponse> | MonthlySavingsChartResponse
+    >('/analytics/charts/monthly');
+
+    const body = unwrapApiResponse<MonthlySavingsChartResponse>(response.data);
+    return body?.data ?? [];
   },
 
   /**
-   * 시간대별 소비 패턴
+   * 상세 지출 내역(거래 단위)
+   * GET /api/analytics/transactions
    */
-  getTimePatternAnalysis: async () => {
+  getTransactions: async (options?: { startDate?: string; endDate?: string; page?: number; size?: number }) => {
     const instance = await getServerInstance();
-    const response = await instance.get<ApiResponse<unknown[]>>(
-      '/analytics/time-patterns'
-    );
-    return response.data.data ?? [];
-  },
 
-  /**
-   * 예산 대비 실제 지출
-   */
-  getBudgetComparison: async () => {
-    const instance = await getServerInstance();
-    const response = await instance.get<ApiResponse<unknown>>(
-      '/analytics/budget-comparison'
-    );
-    return response.data.data ?? null;
-  },
+    const response = await instance.get<
+      ApiResponse<TransactionListResponse> | TransactionListResponse
+    >('/analytics/transactions', { params: options });
 
-  /**
-   * 개인화된 추천 분석
-   */
-  getPersonalizedRecommendations: async () => {
-    const instance = await getServerInstance();
-    const response = await instance.get<ApiResponse<unknown[]>>(
-      '/analytics/recommendations'
-    );
-    return response.data.data ?? [];
+    const body = unwrapApiResponse<TransactionListResponse>(response.data);
+    return (body?.data ?? []) as TransactionListItem[];
   },
 };

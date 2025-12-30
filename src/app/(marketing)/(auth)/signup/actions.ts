@@ -6,6 +6,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 import { authClient } from '@/lib/api/clients/auth.server';
 import { parseApiError } from '@/lib/api/error-handler';
@@ -94,10 +95,8 @@ export async function signupAction(
       id: response.user.uuid,
     });
 
-    return {
-      error: null,
-      success: true,
-    };
+    // 리다이렉트 (Server Action에서 자동 처리)
+    redirect('/dashboard');
   } catch (err) {
     const errorDetails = parseApiError(err);
     return {

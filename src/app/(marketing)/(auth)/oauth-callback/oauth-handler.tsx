@@ -97,7 +97,6 @@ export function OAuthHandler() {
           </div> : null}
         <div className="text-xs text-zinc-500">
           <p>잠시만 기다려주세요...</p>
-          <p>토큰이 URL에 없으면 백엔드에서 리다이렉트 설정 필요</p>
         </div>
         <a href="/login" className="text-blue-600 hover:underline text-sm">
           로그인 페이지로 돌아가기
@@ -110,7 +109,6 @@ export function OAuthHandler() {
     <div className="text-center space-y-4">
       <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto" />
       <p className="text-zinc-600 dark:text-zinc-400">로그인 처리 중입니다...</p>
-      <p className="text-xs text-zinc-500">토큰 확인 및 인증 상태 업데이트 중</p>
     </div>
   );
 }

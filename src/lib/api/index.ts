@@ -11,13 +11,12 @@ export { getClientInstance } from '@/lib/api/http/http.client';
 export { authClient } from '@/lib/api/clients/auth.server';
 export { systemClient } from '@/lib/api/clients/system.server';
 export { userClient } from '@/lib/api/clients/user.server';
-export { verificationClient } from '@/lib/api/clients/verification.server';
 export { paymentMethodClient } from '@/lib/api/clients/payment-method.server';
 export { transactionsClient } from '@/lib/api/clients/transactions.server';
+export { paymentsClient } from '@/lib/api/clients/payments.server';
 export { benefitsClient } from '@/lib/api/clients/benefits.server';
 export { dashboardClient } from '@/lib/api/clients/dashboard.server';
 export { analyticsClient } from '@/lib/api/clients/analytics.server';
-export { reportsClient } from '@/lib/api/clients/reports.server';
 
 // Normalizers
 export { normalizeArray, normalizeMultipleArrays } from '@/lib/api/normalizers/array';

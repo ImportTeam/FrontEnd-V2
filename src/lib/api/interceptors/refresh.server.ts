@@ -2,14 +2,15 @@
  * Refresh Token Interceptor (Server-Only)
  * 401 응답 시 자동 토큰 갱신 및 재시도
  * 
- * 💡 Server Actions / API Routes에서만 실행됨
- * ❌ Client에서 실행하면 race condition 발생
+ * Server Actions / API Routes에서만 실행됨
+ * Client에서 실행하면 race condition 발생
  */
 
 'use server';
 
 import { cookies } from 'next/headers';
 
+import type { ApiResponse, RefreshTokenResponse } from '@/lib/api/types';
 import type { AxiosInstance, AxiosResponse } from 'axios';
 
 const STORAGE_KEYS = {
@@ -47,12 +48,14 @@ async function saveTokens(accessToken: string, refreshToken: string) {
       sameSite: 'lax',
       maxAge: 3600, // 1시간
     });
-    cookieStore.set(STORAGE_KEYS.refreshToken, refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 604800, // 7일
-    });
+    if (refreshToken) {
+      cookieStore.set(STORAGE_KEYS.refreshToken, refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 604800, // 7일
+      });
+    }
   } catch {
     console.error('Failed to save tokens');
   }
@@ -82,14 +85,19 @@ async function refreshAccessTokenFromServer(
     }
 
     // refresh API 호출 (interceptor 미적용)
-    const response = await instance.post<{
-      accessToken: string;
-      refreshToken: string;
-    }>('/auth/refresh', { refreshToken });
+    const response = await instance.post<
+      ApiResponse<RefreshTokenResponse> | RefreshTokenResponse
+    >('/auth/refresh', { refresh_token: refreshToken });
 
-    if (response.data?.accessToken) {
-      await saveTokens(response.data.accessToken, response.data.refreshToken);
-      return response.data.accessToken;
+    const data =
+      response.data && typeof response.data === 'object' && 'data' in response.data
+        ? (response.data as ApiResponse<RefreshTokenResponse>).data
+        : (response.data as RefreshTokenResponse);
+
+    if (data?.accessToken) {
+      // Refresh endpoint may not return a new refresh token.
+      await saveTokens(data.accessToken, refreshToken);
+      return data.accessToken;
     }
 
     return null;
@@ -104,6 +112,16 @@ export async function setupRefreshInterceptor(instance: AxiosInstance) {
     (response: AxiosResponse) => response,
     async (error) => {
       const originalRequest = error.config;
+
+      // Prevent infinite loop when refresh endpoint itself fails with 401.
+      if (
+        error.response?.status === 401 &&
+        typeof originalRequest?.url === 'string' &&
+        originalRequest.url.includes('/auth/refresh')
+      ) {
+        await clearTokens();
+        return Promise.reject(error);
+      }
 
       // 401 에러이고, 아직 재시도하지 않은 경우
       if (error.response?.status === 401 && !originalRequest._retry) {

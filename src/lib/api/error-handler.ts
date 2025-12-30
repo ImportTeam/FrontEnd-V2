@@ -11,6 +11,7 @@ export type ApiErrorType =
   | "FORBIDDEN"
   | "NOT_FOUND"
   | "SERVER_ERROR"
+  | "CLOUDFLARE_CHALLENGE"
   | "UNKNOWN_ERROR";
 
 export interface ApiErrorDetails {
@@ -84,6 +85,18 @@ export function parseApiError(error: unknown): ApiErrorDetails {
     // Forbidden (403)
     if (status === 403) {
       const errorData = data as Record<string, unknown> | undefined;
+      
+      // Check if it's Cloudflare challenge
+      if (errorData?.code === "CLOUDFLARE_CHALLENGE") {
+        return {
+          type: "CLOUDFLARE_CHALLENGE",
+          message: (errorData?.message as string) || "API 서버가 보호 중입니다. 잠시 후 다시 시도해주세요.",
+          statusCode: status,
+          isRetryable: true,
+          originalError: error,
+        };
+      }
+      
       return {
         type: "FORBIDDEN",
         message: (errorData?.message as string) || "접근 권한이 없습니다.",

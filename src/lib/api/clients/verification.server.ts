@@ -7,64 +7,97 @@
 
 import { getServerInstance } from '@/lib/api/http/http.server';
 
-export interface VerificationResponse {
-  verificationId: string;
-  status: 'pending' | 'verified' | 'expired';
-  timestamp: string;
+export type VerificationStatus = 'SENT' | 'VERIFIED' | 'FAILED' | 'EXPIRED';
+
+export interface IdentityVerification {
+  id: string;
+  portoneId: string;
+  status: VerificationStatus;
+  message?: string;
+  requestedAt?: string;
 }
 
 export const verificationClient = {
   /**
-   * 본인인증 시작 (실명인증)
+   * 본인인증 요청 전송
+   * POST /api/identity/verifications/{portoneId}/requests
    */
-  startIdentityVerification: async (data: {
-    name: string;
-    phoneNumber: string;
-    idType: string;
-  }) => {
+  requestIdentityVerification: async (
+    portoneId: string,
+    data: { name: string; phoneNumber: string; birthday: string }
+  ) => {
     const instance = await getServerInstance();
-    const response = await instance.post<VerificationResponse>(
-      '/verification/identity/start',
+    const response = await instance.post<IdentityVerification>(
+      `/identity/verifications/${portoneId}/requests`,
       data
     );
     return response.data;
   },
 
   /**
-   * 본인인증 확인
+   * 본인인증 확인 (OTP)
+   * POST /api/identity/verifications/{portoneId}/confirmation
    */
-  confirmIdentityVerification: async (
-    verificationId: string,
-    code: string
+  confirmIdentityVerification: async (portoneId: string, otp: string) => {
+    const instance = await getServerInstance();
+    const response = await instance.post<IdentityVerification>(
+      `/identity/verifications/${portoneId}/confirmation`,
+      { otp }
+    );
+    return response.data;
+  },
+
+  /**
+   * OTP 재전송
+   * POST /api/identity/verifications/{portoneId}/requests/resend
+   */
+  resendOtp: async (
+    portoneId: string,
+    options?: { storeId?: string; method?: 'SMS' }
   ) => {
     const instance = await getServerInstance();
-    const response = await instance.post<VerificationResponse>(
-      '/verification/identity/confirm',
-      { verificationId, code }
+    const response = await instance.post<IdentityVerification>(
+      `/identity/verifications/${portoneId}/requests/resend`,
+      { method: options?.method ?? 'SMS' },
+      { params: options?.storeId ? { storeId: options.storeId } : undefined }
     );
     return response.data;
   },
 
   /**
-   * 휴대폰 인증 시작
+   * PASS 본인인증 검증
+   * POST /api/identity/verifications/pass-verification
    */
-  startPhoneVerification: async (phoneNumber: string) => {
+  passVerification: async (returnedIdentityId: string) => {
     const instance = await getServerInstance();
-    const response = await instance.post<VerificationResponse>(
-      '/verification/phone/start',
-      { phoneNumber }
+    const response = await instance.post<IdentityVerification>(
+      '/identity/verifications/pass-verification',
+      { returnedIdentityId }
     );
     return response.data;
   },
 
   /**
-   * 휴대폰 인증 확인
+   * Certified 본인인증 검증
+   * POST /api/identity/verifications/certified-verification
    */
-  confirmPhoneVerification: async (verificationId: string, code: string) => {
+  certifiedVerification: async (impUid: string) => {
     const instance = await getServerInstance();
-    const response = await instance.post<VerificationResponse>(
-      '/verification/phone/confirm',
-      { verificationId, code }
+    const response = await instance.post<IdentityVerification>(
+      '/identity/verifications/certified-verification',
+      { impUid }
+    );
+    return response.data;
+  },
+
+  /**
+   * 본인인증 상태 조회
+   * GET /api/identity/verifications/{portoneId}
+   */
+  getStatus: async (portoneId: string) => {
+    const instance = await getServerInstance();
+    const response = await instance.get<IdentityVerification>(
+      `/identity/verifications/${portoneId}`
     );
     return response.data;
   },

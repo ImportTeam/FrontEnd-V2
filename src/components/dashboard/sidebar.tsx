@@ -12,7 +12,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-
+import { logoutAction } from "@/app/(dashboard)/dashboard/layout/actions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/store/use-ui-store";
@@ -120,16 +120,12 @@ export function Sidebar() {
             <div className="p-6 mt-auto shrink-0 border-t border-zinc-100 dark:border-zinc-800 md:border-t-0">
                 <button
                     onClick={async () => {
-                        try {
-                            const { api } = await import("@/lib/api/client");
-                            await api.auth.logout();
-                            window.location.href = "/";
-                        } catch (error) {
-                            console.error("Logout failed:", error);
-                            // Force logout even if API fails
-                            localStorage.clear();
-                            window.location.href = "/";
+                        const result = await logoutAction();
+                        if (!result.success) {
+                            alert(result.error ?? "로그아웃에 실패했습니다.");
+                            return;
                         }
+                        window.location.href = "/";
                     }}
                     className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
                 >

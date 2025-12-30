@@ -5,7 +5,10 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { api } from "@/lib/api/client";
+
+import { loadTransactionsForMonth } from "./actions";
+
+import type { TransactionListItem } from "@/lib/api/types";
 
 // eslint-disable-next-line no-restricted-syntax
 export default function ReportsPage() {
@@ -14,7 +17,7 @@ export default function ReportsPage() {
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   });
   const [isDownloading, setIsDownloading] = useState(false);
-  const [transactions, setTransactions] = useState<unknown[]>([]);
+  const [transactions, setTransactions] = useState<TransactionListItem[]>([]);
 
   useEffect(() => {
     async function loadTransactions() {
@@ -24,8 +27,8 @@ export default function ReportsPage() {
         const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
         const to = `${year}-${month}-${lastDay}T23:59:59.999Z`;
 
-        const list = await api.analytics.getTransactionList({ from, to });
-        setTransactions(list);
+        const list = await loadTransactionsForMonth(from, to);
+        setTransactions(list ?? []);
         console.warn("[REPORTS] Loaded transactions:", list);
       } catch (error) {
         console.error("Failed to load transactions:", error);
@@ -43,10 +46,7 @@ export default function ReportsPage() {
         transactions: transactions,
         summary: {
           totalCount: transactions.length,
-          totalAmount: (transactions as Record<string, unknown>[]).reduce(
-            (sum, tx) => sum + ((tx.paidAmount as number) || 0),
-            0
-          ),
+          totalAmount: transactions.reduce((sum, tx) => sum + (tx.paidAmount || 0), 0),
         },
       };
 
@@ -71,12 +71,12 @@ export default function ReportsPage() {
     setIsDownloading(true);
     try {
       const headers = ['거래처', '카테고리', '거래일시', '결제금액', '혜택금액', '결제수단'];
-      const rows = (transactions as Record<string, unknown>[]).map(tx => [
+      const rows = transactions.map((tx) => [
         tx.merchantName || '',
         tx.category || '',
-        new Date(tx.transactionAt as string).toLocaleString('ko-KR'),
-        ((tx.paidAmount as number) || 0).toLocaleString(),
-        ((tx.discountOrRewardAmount as number) || 0).toLocaleString(),
+        new Date(tx.transactionAt).toLocaleString('ko-KR'),
+        (tx.paidAmount || 0).toLocaleString(),
+        (tx.discountOrRewardAmount || 0).toLocaleString(),
         tx.paymentMethodName || '',
       ]);
 
@@ -186,24 +186,21 @@ export default function ReportsPage() {
               </div>
             ) : (
               <div className="space-y-2 sm:space-y-4">
-                {(transactions as Record<string, unknown>[]).map((tx) => (
-                    <div key={tx.id as string} className="flex items-center justify-between p-3 sm:p-4 rounded-lg border border-zinc-100 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                {transactions.map((tx) => (
+                  <div key={tx.id} className="flex items-center justify-between p-3 sm:p-4 rounded-lg border border-zinc-100 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                         <div className="flex items-center gap-2 sm:gap-4">
                             <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-zinc-100 dark:bg-zinc-800 shrink-0 flex items-center justify-center text-xs font-medium text-zinc-600 dark:text-zinc-400">
-                              {(tx.category as string)?.[0]?.toUpperCase() || '거'}
+                              {tx.category?.[0]?.toUpperCase() || '거'}
                             </div>
                             <div className="min-w-0">
-                                <p className="font-medium text-sm sm:text-base text-zinc-900 dark:text-zinc-100 truncate">{tx.merchantName as string}</p>
-                                <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400">{new Date(tx.transactionAt as string).toLocaleString('ko-KR')}</p>
-                                <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400">{tx.category as string}</p>
+                        <p className="font-medium text-sm sm:text-base text-zinc-900 dark:text-zinc-100 truncate">{tx.merchantName}</p>
+                        <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400">{new Date(tx.transactionAt).toLocaleString('ko-KR')}</p>
+                                <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400">{tx.category}</p>
                             </div>
                         </div>
                         <div className="text-right shrink-0 ml-2">
-                            <p className="font-bold text-sm sm:text-base text-zinc-900 dark:text-zinc-100">-{((tx.paidAmount as number) || 0).toLocaleString()}원</p>
-                            <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400">{tx.paymentMethodName as string}</p>
-                            {((tx.discountOrRewardAmount as number) || 0) > 0 && (
-                              <p className="text-[10px] sm:text-xs text-green-600 dark:text-green-400">+{((tx.discountOrRewardAmount as number) || 0).toLocaleString()}원</p>
-                            )}
+                      <p className="font-bold text-sm sm:text-base text-zinc-900 dark:text-zinc-100">-{(tx.paidAmount || 0).toLocaleString()}원</p>
+                      <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400">{tx.paymentMethodName}</p>
                         </div>
                     </div>
                 ))}

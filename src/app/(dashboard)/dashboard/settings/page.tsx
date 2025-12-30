@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { api } from "@/lib/api/client";
+
+import { deleteUserSession, loadUserSessions } from "./actions";
 
 import type { SessionData } from "@/lib/api/types";
 
@@ -36,8 +37,8 @@ export default function SettingsPage() {
   const loadSessions = async () => {
     setIsLoadingSessions(true);
     try {
-      const sessionList = await api.users.getSessions() as unknown as SessionData[];
-      setSessions(sessionList);
+      const sessionList = await loadUserSessions();
+      setSessions(sessionList ?? []);
       console.warn("[SETTINGS] Sessions loaded:", sessionList);
     } catch (error) {
       console.error("Failed to load sessions:", error);
@@ -49,7 +50,11 @@ export default function SettingsPage() {
   const handleLogoutSession = async (seq: string | number) => {
     if (window.confirm("이 기기에서 로그아웃하시겠습니까?")) {
       try {
-        await api.users.deleteSession(seq);
+        const result = await deleteUserSession(seq);
+        if (!result.success) {
+          alert(result.error ?? "기기 로그아웃에 실패했습니다.");
+          return;
+        }
         setSessions(prev => prev.filter(s => s.id !== seq));
         console.warn("[SETTINGS] Session deleted:", seq);
       } catch (error) {

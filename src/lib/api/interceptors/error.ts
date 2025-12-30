@@ -5,6 +5,12 @@
 
 import type { AxiosInstance } from 'axios';
 
+// Cloudflare challenge detection
+function isCloudflareChallenge(data: unknown): boolean {
+  if (typeof data !== 'string') return false;
+  return data.includes('challenge-platform') || data.includes('Just a moment');
+}
+
 export function setupErrorInterceptor(instance: AxiosInstance) {
   instance.interceptors.response.use(
     (response) => response,
@@ -13,6 +19,21 @@ export function setupErrorInterceptor(instance: AxiosInstance) {
       if (error.response) {
         // Server responded with error status
         const { status, data } = error.response;
+        
+        // Cloudflare DDoS protection detection
+        if (isCloudflareChallenge(data)) {
+          console.error('[API Error] Cloudflare Challenge detected - API may be protected by DDoS protection');
+          return Promise.reject({
+            ...error,
+            response: {
+              ...error.response,
+              data: {
+                message: 'API 서버가 보호 중입니다. 잠시 후 다시 시도해주세요.',
+                code: 'CLOUDFLARE_CHALLENGE',
+              },
+            },
+          });
+        }
         
         console.error(`[API Error] ${status}:`, {
           message: data?.message || data?.error?.message,

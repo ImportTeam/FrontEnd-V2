@@ -1,5 +1,5 @@
 /**
- * System API Client (1/9)
+ * System API Client (0/9)
  * 헬스체크, 버전 정보 등 시스템 관련
  * 
  * 특징: Server-only 유틸 객체

@@ -7,78 +7,92 @@
 
 import { getServerInstance } from '@/lib/api/http/http.server';
 
-import type { ApiResponse } from '@/lib/api/types';
-
-export interface Benefit {
-  id: string;
-  cardId: string;
-  category: string;
-  type: 'cashback' | 'points' | 'mileage' | 'discount';
-  percentage: number;
-  amount?: number;
+export interface BenefitItem {
+  type: 'PERCENT' | 'AMOUNT' | string;
+  value: number;
   description: string;
-  isActive: boolean;
-  startDate?: string;
-  endDate?: string;
 }
 
-export interface BenefitSummary {
-  totalCashback: number;
-  totalPoints: number;
-  totalMileage: number;
-  activeOffers: number;
+export interface BenefitCardResult {
+  cardUuid: string;
+  cardName: string;
+  last4: string;
+  benefits: BenefitItem[];
+  totalBenefit: number;
+}
+
+type DataWrapped<T> = { data: T };
+
+function unwrapData<T>(body: unknown): T {
+  if (body && typeof body === 'object' && 'data' in body) {
+    const maybe = body as { data?: T };
+    if (maybe.data !== undefined) return maybe.data;
+  }
+  return body as T;
 }
 
 export const benefitsClient = {
   /**
-   * 사용자의 모든 혜택 조회
+   * 국내 결제 혜택 비교
+   * GET /api/benefits/comparisons
    */
-  listBenefits: async (options?: { cardId?: string; category?: string }) => {
+  compareBenefits: async (options: {
+    amount: number;
+    category?: string;
+    merchant?: string;
+  }) => {
     const instance = await getServerInstance();
-    const response = await instance.get<ApiResponse<Benefit[]>>('/benefits', {
-      params: options,
-    });
-    return response.data.data ?? [];
+    const response = await instance.get<DataWrapped<BenefitCardResult[]>>(
+      '/benefits/comparisons',
+      { params: options }
+    );
+    return unwrapData<BenefitCardResult[]>(response.data) ?? [];
   },
 
   /**
-   * 혜택 상세 조회
+   * TOP3 결제수단 추천
+   * GET /api/benefits/recommendations/top-three
    */
-  getBenefit: async (id: string) => {
+  getTopThreeRecommendations: async (options: {
+    amount: number;
+    merchant?: string;
+  }) => {
     const instance = await getServerInstance();
-    const response = await instance.get<Benefit>(`/benefits/${id}`);
+    const response = await instance.get<DataWrapped<BenefitCardResult[]>>(
+      '/benefits/recommendations/top-three',
+      { params: options }
+    );
+    return unwrapData<BenefitCardResult[]>(response.data) ?? [];
+  },
+
+  /**
+   * HTML에서 혜택 추출
+   * GET /api/benefits/extractions
+   */
+  extractBenefitsFromHtml: async (html: string) => {
+    const instance = await getServerInstance();
+    const response = await instance.get<{ benefits: BenefitItem[] }>(
+      '/benefits/extractions',
+      { params: { html } }
+    );
     return response.data;
   },
 
   /**
-   * 혜택 요약 (캐시백, 포인트 통계)
+   * 페이지 HTML 반영 TOP3 추천
+   * POST /api/benefits/recommendations/from-html
    */
-  getBenefitSummary: async () => {
+  recommendFromHtml: async (data: {
+    userUuid: string;
+    merchant: string;
+    amount: number;
+    html: string;
+  }) => {
     const instance = await getServerInstance();
-    const response = await instance.get<BenefitSummary>('/benefits/summary');
-    return response.data;
-  },
-
-  /**
-   * 카드별 최적 혜택 추천
-   */
-  getRecommendedBenefits: async (amount: number, category: string) => {
-    const instance = await getServerInstance();
-    const response = await instance.get<ApiResponse<Benefit[]>>(
-      '/benefits/recommended',
-      { params: { amount, category } }
+    const response = await instance.post<DataWrapped<BenefitCardResult[]>>(
+      '/benefits/recommendations/from-html',
+      data
     );
-    return response.data.data ?? [];
-  },
-
-  /**
-   * 진행 중인 프로모션
-   */
-  getActivePromotions: async () => {
-    const instance = await getServerInstance();
-    const response = await instance.get<ApiResponse<Benefit[]>>(
-      '/benefits/promotions'
-    );
-    return response.data.data ?? [];
+    return unwrapData<BenefitCardResult[]>(response.data) ?? [];
   },
 };

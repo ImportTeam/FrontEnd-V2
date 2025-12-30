@@ -1,13 +1,12 @@
 "use server";
 
-import { analyticsClient } from "@/lib/api/clients/analytics.server";
 import { dashboardClient } from "@/lib/api/clients/dashboard.server";
 
 export async function loadDashboardChartsData() {
   try {
     const [monthlySavings, recommendations] = await Promise.all([
       dashboardClient.getMonthlySavingsChart(),
-      analyticsClient.getPersonalizedRecommendations(),
+      dashboardClient.getRecommendedCards(),
     ]);
 
     return {
@@ -26,7 +25,7 @@ export async function loadDashboardChartsData() {
 export async function loadSummaryCardsData(): Promise<Record<string, unknown> | null> {
   try {
     const summary = await dashboardClient.getSummary();
-    return summary as Record<string, unknown>;
+    return summary as unknown as Record<string, unknown>;
   } catch (error) {
     console.error("[SUMMARY_DATA] Failed to load:", error);
     return null;
@@ -35,8 +34,7 @@ export async function loadSummaryCardsData(): Promise<Record<string, unknown> | 
 
 export async function loadRecentActivityData() {
   try {
-    const transactions = await analyticsClient.getPersonalizedRecommendations();
-    return transactions || [];
+    return [];
   } catch (error) {
     console.error("[ACTIVITY_DATA] Failed to load:", error);
     return [];
@@ -45,11 +43,15 @@ export async function loadRecentActivityData() {
 
 export async function loadRecentTransactionsData(_limit = 10) {
   try {
-    const response = await analyticsClient.getSpendingAnalysis({
-      period: "monthly",
-    });
-    // 반환된 데이터 구조에 따라 처리
-    return response?.categoryBreakdown || [];
+    const items = await dashboardClient.getRecentBySite();
+    return items.map((item, index) => ({
+      id: `${item.merchantName}_${index}`,
+      merchant: item.merchantName,
+      date: item.paidAt,
+      amount: `${(item.paidAmount ?? 0).toLocaleString()}원`,
+      cardName: item.paymentMethodName,
+      benefit: `${(item.discountOrRewardAmount ?? 0).toLocaleString()}원`,
+    }));
   } catch (error) {
     console.error("[TRANSACTIONS_DATA] Failed to load:", error);
     return [];

@@ -7,29 +7,52 @@
 
 import { getServerInstance } from '@/lib/api/http/http.server';
 
-import type { ApiResponse } from '@/lib/api/types';
+import type { PaymentCard, PaymentCardsResponse } from '@/lib/api/types';
 
-export interface PaymentCard {
-  id: string;
-  cardName: string;
-  cardNumber: string;
-  cardBrand: string;
-  expiryDate: string;
-  isDefault: boolean;
-  isActive: boolean;
+export interface PaymentMethodStatisticsResponse {
+  totalCount: number;
+  byCardType: Record<string, number>;
+  primary: PaymentCard | null;
+}
+
+export interface PaymentMethodDetailsResponse {
+  seq: number;
+  uuid: string;
+  last4: string;
+  cardType: string;
+  alias: string;
+  isPrimary: boolean;
   createdAt: string;
 }
 
+function unwrapCards(body: PaymentCardsResponse | PaymentCard[]): PaymentCard[] {
+  if (Array.isArray(body)) return body;
+  return body.data ?? [];
+}
+
 export const paymentMethodClient = {
+  /**
+   * 새 카드 추가 (연동 시작)
+   * POST /api/payment-methods/cards/registration/start
+   */
+  startCardRegistration: async (returnUrl: string) => {
+    const instance = await getServerInstance();
+    const response = await instance.post<{ redirectUrl: string }>(
+      '/payment-methods/cards/registration/start',
+      { returnUrl }
+    );
+    return response.data;
+  },
+
   /**
    * 등록된 결제수단 목록 조회
    */
   listPaymentMethods: async () => {
     const instance = await getServerInstance();
-    const response = await instance.get<ApiResponse<PaymentCard[]>>(
+    const response = await instance.get<PaymentCardsResponse | PaymentCard[]>(
       '/payment-methods'
     );
-    return response.data.data ?? [];
+    return unwrapCards(response.data);
   },
 
   /**
@@ -37,7 +60,7 @@ export const paymentMethodClient = {
    */
   getPaymentMethod: async (id: string) => {
     const instance = await getServerInstance();
-    const response = await instance.get<PaymentCard>(
+    const response = await instance.get<PaymentMethodDetailsResponse>(
       `/payment-methods/${id}`
     );
     return response.data;
@@ -46,9 +69,13 @@ export const paymentMethodClient = {
   /**
    * 결제수단 추가
    */
-  addPaymentMethod: async (data: Omit<PaymentCard, 'id' | 'createdAt'>) => {
+  addPaymentMethod: async (data: {
+    alias: string;
+    cardToken: string;
+    isPrimary: boolean;
+  }) => {
     const instance = await getServerInstance();
-    const response = await instance.post<PaymentCard>(
+    const response = await instance.post<PaymentMethodDetailsResponse>(
       '/payment-methods',
       data
     );
@@ -58,9 +85,12 @@ export const paymentMethodClient = {
   /**
    * 결제수단 수정
    */
-  updatePaymentMethod: async (id: string, data: Partial<PaymentCard>) => {
+  updatePaymentMethod: async (
+    id: string,
+    data: Partial<Pick<PaymentMethodDetailsResponse, 'alias' | 'isPrimary'>>
+  ) => {
     const instance = await getServerInstance();
-    const response = await instance.patch<PaymentCard>(
+    const response = await instance.patch<PaymentMethodDetailsResponse>(
       `/payment-methods/${id}`,
       data
     );
@@ -78,11 +108,31 @@ export const paymentMethodClient = {
   /**
    * 기본 결제수단 설정
    */
-  setDefaultPaymentMethod: async (id: string) => {
+  setPrimaryPaymentMethod: async (id: string) => {
     const instance = await getServerInstance();
-    const response = await instance.patch<PaymentCard>(
-      `/payment-methods/${id}/default`,
-      {}
+    await instance.patch(`/payment-methods/${id}`, { isPrimary: true });
+  },
+
+  /**
+   * 결제수단 통계 조회
+   * GET /api/payment-methods/statistics
+   */
+  getStatistics: async () => {
+    const instance = await getServerInstance();
+    const response = await instance.get<PaymentMethodStatisticsResponse>(
+      '/payment-methods/statistics'
+    );
+    return response.data;
+  },
+
+  /**
+   * 결제수단 상세 정보 조회
+   * GET /api/payment-methods/{id}/details
+   */
+  getDetails: async (id: string) => {
+    const instance = await getServerInstance();
+    const response = await instance.get<Record<string, unknown>>(
+      `/payment-methods/${id}/details`
     );
     return response.data;
   },

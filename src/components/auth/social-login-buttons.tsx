@@ -8,7 +8,8 @@ interface SocialLoginButtonsProps {
 export function SocialLoginButtons({ mode }: SocialLoginButtonsProps) {
   // const actionText = mode === "login" ? "로그인" : "가입";
 
-  const apiBaseUrl = (process.env.NEXT_PUBLIC_API_URL || "https://api.picsel.kr/api").replace(/\/$/, "");
+  const rawBaseUrl = (process.env.NEXT_PUBLIC_API_URL || "https://api.picsel.kr").replace(/\/$/, "");
+  const apiBaseUrl = rawBaseUrl.endsWith("/api") ? rawBaseUrl : `${rawBaseUrl}/api`;
   const callbackUrl = typeof window !== "undefined" ? `${window.location.origin}/oauth-callback` : "";
 
   const handleSocialLogin = (provider: "google" | "kakao" | "naver") => {
