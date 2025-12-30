@@ -1,19 +1,19 @@
-"use client";
-
 import { Download, Plus, Sparkles } from "lucide-react";
 
 import { DashboardCharts } from "@/components/dashboard/dashboard-charts";
 import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 import { SummaryCards } from "@/components/dashboard/summary-cards";
 import { Button } from "@/components/ui/button";
-import { useAuthStore } from "@/store/use-auth-store";
+import { loadDashboardChartsData, loadSummaryCardsData, loadRecentTransactionsData } from "./data-actions";
 
+export default async function DashboardPage() {
+  // Load all data server-side
+  const [chartsData, summaryData, transactionsData] = await Promise.all([
+    loadDashboardChartsData(),
+    loadSummaryCardsData(),
+    loadRecentTransactionsData(10),
+  ]);
 
-// eslint-disable-next-line no-restricted-syntax
-export default function DashboardPage() {
-  const user = useAuthStore((state) => state.user);
-  const userName = user?.name || "사용자";
-  
   return (
     <div className="space-y-8">
       {/* Header Section */}
@@ -21,7 +21,7 @@ export default function DashboardPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                안녕하세요, {userName}님!
+                대시보드
             </h1>
             <span className="text-2xl sm:text-3xl">👋</span>
           </div>
@@ -47,15 +47,18 @@ export default function DashboardPage() {
 
       <h2 className="sr-only">요약 카드</h2>
       {/* Row 1: Summary Cards (KPIs) */}
-      <SummaryCards />
+      <SummaryCards summaryData={summaryData} />
 
       <h2 className="sr-only">차트와 추천 리스트</h2>
       {/* Row 2: Charts & Top Recommendations */}
-      <DashboardCharts />
+      <DashboardCharts
+        chartData={chartsData?.chartData}
+        recommendations={chartsData?.recommendations}
+      />
 
       <h2 className="sr-only">최근 결제 내역</h2>
       {/* Row 3: Recent Transactions */}
-      <RecentTransactions />
+      <RecentTransactions transactionsData={transactionsData} />
     </div>
   );
 }

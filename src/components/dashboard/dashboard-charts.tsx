@@ -1,57 +1,25 @@
 "use client";
 
 import { Sparkles } from "lucide-react";
-import { useEffect, useState } from "react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-
-
 
 import { DashboardCard } from "@/components/dashboard/dashboard-card";
 import { Badge } from "@/components/ui/badge";
 import { CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { api } from "@/lib/api/client";
 
-import type { RecommendationData , MonthlySavingsChartItem } from "@/lib/api/types";
 
-export function DashboardCharts() {
-  const [recommendations, setRecommendations] = useState<RecommendationData[]>([]);
-  const [chartData, setChartData] = useState<MonthlySavingsChartItem[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        console.warn("[CHARTS] Starting data load...");
-        const [topRecs, monthlyChart] = await Promise.all([
-          api.recommendations.getTop(3),
-          api.dashboard.getMonthlySavingsChart(),
-        ]);
-        console.warn("[CHARTS] Recommendations:", topRecs);
-        console.warn("[CHARTS] Monthly chart response:", monthlyChart);
-        
-        // Handle different response structures
-        let chartDataArray: MonthlySavingsChartItem[] = [];
-        if (Array.isArray(monthlyChart)) {
-          // Response is direct array
-          chartDataArray = monthlyChart as MonthlySavingsChartItem[];
-        } else if (monthlyChart?.data && Array.isArray(monthlyChart.data)) {
-          // Response has data property
-          chartDataArray = monthlyChart.data;
-        }
-        
-        console.warn("[CHARTS] Final chart data array:", chartDataArray);
-        console.warn("[CHARTS] Data length:", chartDataArray?.length);
-        
-        setRecommendations(topRecs);
-        setChartData(chartDataArray);
-      } catch (error) {
-        console.error("Failed to load recommendations:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadData();
-  }, []);
+interface DashboardChartsProps {
+  chartData?: unknown[];
+  recommendations?: unknown[];
+  loading?: boolean;
+}
+
+export function DashboardCharts({
+  chartData = [],
+  recommendations = [],
+  loading = false,
+}: DashboardChartsProps) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-7">
@@ -131,35 +99,81 @@ export function DashboardCharts() {
                 <div key={i} className="h-16 rounded-xl bg-muted/50 animate-pulse" />
                ))
             ) : (
-                recommendations.map((item, index) => (
-                    <div 
-                        key={item.id} 
-                        className={`flex items-center p-4 rounded-xl transition-colors ${
-                            index === 0 ? "bg-muted/50 hover:bg-muted" : "bg-background hover:bg-muted/50"
-                        }`}
+              recommendations.map((item: unknown, index: number) => {
+                const rec = item as Record<string, unknown>;
+                return (
+                  <div
+                    key={String((rec.id as string) || index)}
+                    className={`flex items-center p-4 rounded-xl transition-colors ${
+                      index === 0 ? "bg-muted/50 hover:bg-muted" : "bg-background hover:bg-muted/50"
+                    }`}
+                  >
+                    <div
+                      className={`flex h-9 w-9 items-center justify-center rounded-full font-bold text-sm mr-4 ${
+                        index === 0
+                          ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                          : "bg-muted text-zinc-700 dark:text-zinc-300"
+                      }`}
                     >
-                        <div className={`flex h-9 w-9 items-center justify-center rounded-full font-bold text-sm mr-4 ${
-                            index === 0 
-                            ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" 
-                            : "bg-muted text-zinc-700 dark:text-zinc-300"
-                        }`}>
-                            {item.rank}
-                        </div>
-                        <div className="flex-1 space-y-1">
-                            <p className="text-sm font-medium leading-none text-foreground">{item.cardName}</p>
-                            <p className="text-xs text-zinc-700 dark:text-zinc-300">{item.benefit}</p>
-                        </div>
-                        {!!item.isRecommended && (
-                            <Badge variant="secondary" className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50">추천</Badge>
-                        )}
+                      {String((rec.rank as number) || index + 1)}
                     </div>
-                ))
+                    <div className="flex-1 space-y-1">
+                      <p className="text-sm font-medium leading-none text-foreground">
+                        {String((rec.cardName as string) || "카드")}
+                      </p>
+                      <p className="text-xs text-zinc-700 dark:text-zinc-300">
+                        {String((rec.benefit as string) || "혜택")}
+                      </p>
+                    </div>
+                    {!!(rec.isRecommended as boolean) && (
+                      <Badge variant="secondary" className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50">
+                        추천
+                      </Badge>
+                    )}
+                  </div>
+                );
+              })
             )}
             
-            {!loading && recommendations.length === 0 && (
-                 <div className="text-center py-8 text-muted-foreground text-sm">
-                    추천 데이터가 없습니다.
-                 </div>
+            {recommendations.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground text-sm">
+                추천 데이터가 없습니다.
+              </div>
+            ) : (
+              recommendations.map((item: unknown, index: number) => {
+                const rec = item as Record<string, unknown>;
+                return (
+                  <div
+                    key={String((rec.id as string) || index)}
+                    className={`flex items-center p-4 rounded-xl transition-colors ${
+                      index === 0 ? "bg-muted/50 hover:bg-muted" : "bg-background hover:bg-muted/50"
+                    }`}
+                  >
+                    <div
+                      className={`flex h-9 w-9 items-center justify-center rounded-full font-bold text-sm mr-4 ${
+                        index === 0
+                          ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                          : "bg-muted text-zinc-700 dark:text-zinc-300"
+                      }`}
+                    >
+                      {String((rec.rank as number) || index + 1)}
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <p className="text-sm font-medium leading-none text-foreground">
+                        {String((rec.cardName as string) || "카드")}
+                      </p>
+                      <p className="text-xs text-zinc-700 dark:text-zinc-300">
+                        {String((rec.benefit as string) || "혜택")}
+                      </p>
+                    </div>
+                    {!!(rec.isRecommended as boolean) && (
+                      <Badge variant="secondary" className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50">
+                        추천
+                      </Badge>
+                    )}
+                  </div>
+                );
+              })
             )}
           </div>
         </CardContent>

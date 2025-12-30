@@ -2,77 +2,18 @@
 
 import { ShoppingBag } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { api } from "@/lib/api/client";
 import { getPaymentIconPath, getPaymentTypeAbbr } from "@/lib/payment-icon-mapping";
 
 import type { PaymentCard } from "@/lib/api/types";
 
-export function RecentActivity() {
-  const [paymentCards, setPaymentCards] = useState<PaymentCard[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface RecentActivityProps {
+  paymentCards?: PaymentCard[];
+  error?: string | null;
+}
 
-  useEffect(() => {
-    async function fetchPaymentMethods() {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await api.paymentMethods.list();
-
-        // Validate response is an array
-        if (!Array.isArray(response)) {
-          throw new Error("Invalid response format: expected array of payment cards");
-        }
-
-        // Validate each card has required fields
-        const validCards = response.filter((card): card is PaymentCard => {
-          if (!card || typeof card !== "object") {
-            console.warn("[RECENT_ACTIVITY] Skipping invalid card:", card);
-            return false;
-          }
-          return true;
-        });
-
-        if (validCards.length === 0 && response.length > 0) {
-          console.warn("[RECENT_ACTIVITY] No valid cards found in response");
-        }
-
-        setPaymentCards(validCards);
-      } catch (err) {
-        console.error("[RECENT_ACTIVITY] Error fetching payment methods:", err);
-        const errorMsg = err instanceof Error ? err.message : "결제 수단 조회 중 오류가 발생했습니다.";
-        setError(errorMsg);
-        setPaymentCards([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchPaymentMethods();
-  }, []);
-
-  // Loading state
-  if (loading) {
-    return (
-      <Card className="col-span-3">
-        <CardHeader>
-          <CardTitle>최근 이용 사이트별 결제수단</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-12 bg-muted/50 rounded-lg animate-pulse" />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
+export function RecentActivity({ paymentCards = [], error }: RecentActivityProps) {
   // Error state
   if (error) {
     return (

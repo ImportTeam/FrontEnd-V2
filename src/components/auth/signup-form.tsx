@@ -3,14 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 
+import { signupAction } from "@/app/(marketing)/(auth)/signup/actions";
 import { AuthFormField } from "@/components/auth/auth-form-field";
 import { SocialLoginButtons } from "@/components/auth/social-login-buttons";
 import { Button } from "@/components/ui/button";
 import { useAuthForm } from "@/hooks/use-auth-form";
-import { api } from "@/lib/api/client";
-import { parseApiError } from "@/lib/api/error-handler";
 import { signupSchema } from "@/lib/schemas/auth";
-import { useAuthStore } from "@/store/use-auth-store";
 
 import type { SignupSchema } from "@/lib/schemas/auth";
 import type { Route } from "next";
@@ -20,83 +18,16 @@ interface SignupFormState {
   success: boolean;
 }
 
-async function signupAction(
-  _prevState: SignupFormState | undefined,
-  formData: FormData
-): Promise<SignupFormState> {
-  try {
-    const name = formData.get("name") as string;
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-
-    // Validate inputs
-    if (!name || !email || !password) {
-      return {
-        error: "모든 필드를 입력해주세요.",
-        success: false,
-      };
-    }
-
-    // Parse and validate with Zod
-    const validationResult = signupSchema.safeParse({ name, email, password });
-    if (!validationResult.success) {
-      const errorMessage = validationResult.error.issues
-        .map((issue) => issue.message)
-        .join(", ");
-      return {
-        error: errorMessage,
-        success: false,
-      };
-    }
-
-    // Call API with timeout (10 seconds)
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-    try {
-      const response = await api.auth.signup(name, email, password);
-
-      clearTimeout(timeoutId);
-
-      // Validate response structure
-      if (!response?.user?.uuid) {
-        return {
-          error: "회원가입 응답이 불완전합니다. 잠시 후 다시 시도해주세요.",
-          success: false,
-        };
-      }
-
-      // Update auth store
-      useAuthStore.getState().login({
-        ...response.user,
-        id: response.user.uuid,
-      });
-
-      return {
-        error: null,
-        success: true,
-      };
-    } catch (err) {
-      clearTimeout(timeoutId);
-      throw err;
-    }
-  } catch (err) {
-    const errorDetails = parseApiError(err);
-    return {
-      error: errorDetails.message,
-      success: false,
-    };
-  }
-}
-
 export function SignupForm() {
   const router = useRouter();
-  const [state, formAction, isPending] = useActionState(
-    signupAction,
+  const [state, formAction, isPending] = useActionState<SignupFormState, FormData>(
+    async (prevState, formData) => {
+      return await signupAction(prevState, formData);
+    },
     {
       error: null,
       success: false,
-    } as SignupFormState
+    }
   );
 
   const {

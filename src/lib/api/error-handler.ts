@@ -48,15 +48,21 @@ export function parseApiError(error: unknown): ApiErrorDetails {
 
   // Axios error
   if (error && typeof error === "object" && "response" in error) {
-    const axiosError = error as any;
+    const axiosError = error as {
+      response?: {
+        status: number;
+        data: unknown;
+      };
+    };
     const status = axiosError.response?.status;
     const data = axiosError.response?.data;
 
     // Validation error (422)
     if (status === 422) {
+      const errorData = data as Record<string, unknown> | undefined;
       return {
         type: "VALIDATION_ERROR",
-        message: data?.message || "입력값이 올바르지 않습니다.",
+        message: (errorData?.message as string) || "입력값이 올바르지 않습니다.",
         statusCode: status,
         isRetryable: false,
         originalError: error,
@@ -98,9 +104,10 @@ export function parseApiError(error: unknown): ApiErrorDetails {
 
     // Server error (5xx)
     if (status && status >= 500) {
+      const errorData = data as Record<string, unknown> | undefined;
       return {
         type: "SERVER_ERROR",
-        message: data?.message || "서버에 일시적인 문제가 발생했습니다. 잠시 후 다시 시도해주세요.",
+        message: (errorData?.message as string) || "서버에 일시적인 문제가 발생했습니다. 잠시 후 다시 시도해주세요.",
         statusCode: status,
         isRetryable: true,
         originalError: error,
@@ -109,9 +116,10 @@ export function parseApiError(error: unknown): ApiErrorDetails {
 
     // Other 4xx errors
     if (status && status >= 400 && status < 500) {
+      const errorData = data as Record<string, unknown> | undefined;
       return {
         type: "UNKNOWN_ERROR",
-        message: data?.message || `요청 오류가 발생했습니다. (${status})`,
+        message: (errorData?.message as string) || `요청 오류가 발생했습니다. (${status})`,
         statusCode: status,
         isRetryable: false,
         originalError: error,

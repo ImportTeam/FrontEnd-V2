@@ -4,6 +4,7 @@ import { Bell, User as UserIcon, Settings, LogOut, Menu } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { logoutAction } from "@/app/(dashboard)/dashboard/layout/actions";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { IconButton } from "@/components/ui/icon-button";
-import { api } from "@/lib/api/client";
 import { useAuthStore } from "@/store/use-auth-store";
 import { useUIStore } from "@/store/use-ui-store";
 
@@ -27,12 +27,15 @@ export function DashboardHeader() {
 
   const handleLogout = async () => {
     try {
-      await api.auth.logout();
+      const result = await logoutAction();
+      if (result.success) {
+        logout();
+        router.push("/");
+      } else {
+        console.error("Logout failed:", result.error);
+      }
     } catch (error) {
       console.error("Logout failed:", error);
-    } finally {
-      logout();
-      router.push("/");
     }
   };
 
