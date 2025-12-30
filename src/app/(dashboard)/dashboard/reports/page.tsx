@@ -1,25 +1,93 @@
 "use client";
 
 import { FileJson, FileText } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { logger } from "@/lib/logger";
 
-import { loadTransactionsForMonth } from "./actions";
+import { loadCategorySpending, loadMonthlySpending, loadTransactionsForMonth } from "./actions";
 
-import type { TransactionListItem } from "@/lib/api/types";
+import type {
+  CategorySpendingItem,
+  CategorySpendingResponse,
+  MonthlySavingsChartItem,
+  MonthlySavingsChartResponse,
+  TransactionListItem,
+} from "@/lib/api/types";
+
+const CHART_COLORS = [
+  "var(--color-primary)",
+  "var(--color-secondary)",
+  "var(--color-accent-foreground)",
+  "var(--color-muted-foreground)",
+  "var(--color-foreground)",
+  "var(--color-border)",
+];
+
+function formatKrw(value: number): string {
+  return `${new Intl.NumberFormat("ko-KR").format(value)}원`;
+}
+
+function pickCategoryRange(
+  responses: CategorySpendingResponse[],
+  selectedMonth: string
+): CategorySpendingResponse | null {
+  if (responses.length === 0) return null;
+
+  const [year, month] = selectedMonth.split("-");
+  const monthNumber = Number(month);
+  const koreanLabel = `${year}년 ${monthNumber}월`;
+
+  return (
+    responses.find((r) => r.rangeLabel?.includes(selectedMonth)) ??
+    responses.find((r) => r.rangeLabel?.includes(koreanLabel)) ??
+    responses[0] ??
+    null
+  );
+}
+
+function normalizeMonthlyData(responses: MonthlySavingsChartResponse[]): Array<{ month: string; totalSpent: number }> {
+  const series: MonthlySavingsChartItem[] = responses[0]?.data ?? [];
+  return series.map((item) => {
+    const totalSpent =
+      (typeof item.totalSpent === "number" ? item.totalSpent : undefined) ??
+      (typeof item.spent === "number" ? item.spent : undefined) ??
+      (typeof item.value === "number" ? item.value : 0);
+
+    return {
+      month: item.month,
+      totalSpent,
+    };
+  });
+}
 
 // eslint-disable-next-line no-restricted-syntax
 export default function ReportsPage() {
-  const log = logger.scope("REPORTS_PAGE");
+  const log = useMemo(() => logger.scope("REPORTS_PAGE"), []);
   const [selectedMonth, setSelectedMonth] = useState<string>(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   });
   const [isDownloading, setIsDownloading] = useState(false);
   const [transactions, setTransactions] = useState<TransactionListItem[]>([]);
+  const [categoryResponses, setCategoryResponses] = useState<CategorySpendingResponse[]>([]);
+  const [monthlyResponses, setMonthlyResponses] = useState<MonthlySavingsChartResponse[]>([]);
+  const [isChartsLoading, setIsChartsLoading] = useState(false);
 
   useEffect(() => {
     async function loadTransactions() {
@@ -37,7 +105,38 @@ export default function ReportsPage() {
       }
     }
     void loadTransactions();
-  }, [selectedMonth]);
+  }, [selectedMonth, log]);
+
+  useEffect(() => {
+    async function loadCharts() {
+      setIsChartsLoading(true);
+      try {
+        const [categories, months] = await Promise.all([
+          loadCategorySpending(),
+          loadMonthlySpending(),
+        ]);
+        setCategoryResponses(categories ?? []);
+        setMonthlyResponses(months ?? []);
+      } catch (error) {
+        log.error("Failed to load charts:", error);
+        setCategoryResponses([]);
+        setMonthlyResponses([]);
+      } finally {
+        setIsChartsLoading(false);
+      }
+    }
+
+    void loadCharts();
+  }, [selectedMonth, log]);
+
+  const selectedCategory = pickCategoryRange(categoryResponses, selectedMonth);
+  const categoryData: CategorySpendingItem[] = selectedCategory?.data ?? [];
+  const categoryChartData = categoryData.map((item) => ({
+    label: item.label,
+    value: item.value,
+    ratioPercent: item.ratioPercent,
+  }));
+  const monthlyData = normalizeMonthlyData(monthlyResponses);
 
   const downloadJSON = () => {
     setIsDownloading(true);
@@ -156,8 +255,46 @@ export default function ReportsPage() {
                 <CardDescription className="text-xs sm:text-sm">어디에 가장 많이 썼을까요?</CardDescription>
             </CardHeader>
             <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
-                <div className="h-50 sm:h-62.5 md:h-75 flex items-center justify-center border-2 border-dashed border-zinc-100 dark:border-zinc-800 rounded-xl bg-zinc-50 dark:bg-zinc-900/50">
-                    <span className="text-zinc-400 text-xs sm:text-sm">Pie Chart Placeholder</span>
+                <div className="h-50 sm:h-62.5 md:h-75 rounded-xl bg-zinc-50 dark:bg-zinc-900/50">
+                  {isChartsLoading ? (
+                    <div className="h-full w-full bg-muted/50 animate-pulse rounded-xl" />
+                  ) : categoryChartData.length === 0 ? (
+                    <div className="h-full w-full flex items-center justify-center border-2 border-dashed border-zinc-100 dark:border-zinc-800 rounded-xl">
+                      <span className="text-zinc-400 text-xs sm:text-sm">차트 데이터가 없습니다.</span>
+                    </div>
+                  ) : (
+                    <ResponsiveContainer width="100%" height="100%" minHeight={260}>
+                      <PieChart>
+                        <Tooltip
+                          formatter={(value) => formatKrw(Number(value))}
+                          contentStyle={{
+                            borderRadius: "12px",
+                            border: "1px solid var(--color-border)",
+                            background: "var(--color-card)",
+                            color: "var(--color-card-foreground)",
+                          }}
+                        />
+                        <Legend wrapperStyle={{ fontSize: 12 }} />
+                        <Pie
+                          data={categoryChartData}
+                          dataKey="value"
+                          nameKey="label"
+                          innerRadius="55%"
+                          outerRadius="80%"
+                          paddingAngle={2}
+                          stroke="var(--color-card)"
+                          strokeWidth={2}
+                        >
+                          {categoryChartData.map((entry, index) => (
+                            <Cell
+                              key={`${entry.label}-${index}`}
+                              fill={CHART_COLORS[index % CHART_COLORS.length]}
+                            />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                  )}
                 </div>
             </CardContent>
         </Card>
@@ -168,8 +305,46 @@ export default function ReportsPage() {
                 <CardDescription className="text-xs sm:text-sm">지난 6개월간의 변화입니다.</CardDescription>
             </CardHeader>
             <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
-                <div className="h-50 sm:h-62.5 md:h-75 flex items-center justify-center border-2 border-dashed border-zinc-100 dark:border-zinc-800 rounded-xl bg-zinc-50 dark:bg-zinc-900/50">
-                    <span className="text-zinc-400 text-xs sm:text-sm">Bar Chart Placeholder</span>
+                <div className="h-50 sm:h-62.5 md:h-75 rounded-xl bg-zinc-50 dark:bg-zinc-900/50">
+                  {isChartsLoading ? (
+                    <div className="h-full w-full bg-muted/50 animate-pulse rounded-xl" />
+                  ) : monthlyData.length === 0 ? (
+                    <div className="h-full w-full flex items-center justify-center border-2 border-dashed border-zinc-100 dark:border-zinc-800 rounded-xl">
+                      <span className="text-zinc-400 text-xs sm:text-sm">차트 데이터가 없습니다.</span>
+                    </div>
+                  ) : (
+                    <ResponsiveContainer width="100%" height="100%" minHeight={260}>
+                      <BarChart data={monthlyData.slice(-6)} margin={{ top: 12, right: 12, left: -8, bottom: 4 }}>
+                        <CartesianGrid
+                          vertical={false}
+                          stroke="var(--color-border)"
+                          strokeDasharray="3 3"
+                        />
+                        <XAxis
+                          dataKey="month"
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 12, fill: "var(--color-muted-foreground)", fontWeight: 500 }}
+                        />
+                        <YAxis
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 12, fill: "var(--color-muted-foreground)", fontWeight: 500 }}
+                          tickFormatter={(value: number) => `${Math.round(value / 10000).toLocaleString()}만`}
+                        />
+                        <Tooltip
+                          formatter={(value) => formatKrw(Number(value))}
+                          contentStyle={{
+                            borderRadius: "12px",
+                            border: "1px solid var(--color-border)",
+                            background: "var(--color-card)",
+                            color: "var(--color-card-foreground)",
+                          }}
+                        />
+                        <Bar dataKey="totalSpent" fill="var(--color-primary)" radius={[8, 8, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
                 </div>
             </CardContent>
         </Card>
