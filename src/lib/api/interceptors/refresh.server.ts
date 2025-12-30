@@ -88,10 +88,10 @@ async function refreshAccessTokenFromServer(
       refresh_token: refreshToken 
     });
 
-    const data = response.data as any;
+    const data = response.data as Record<string, unknown>;
 
     // Support both camelCase (accessToken) and snake_case (access_token)
-    const accessToken = data?.accessToken ?? data?.access_token;
+    const accessToken = (data?.accessToken ?? data?.access_token) as string | undefined;
 
     if (accessToken) {
       // Refresh endpoint may not return a new refresh token.

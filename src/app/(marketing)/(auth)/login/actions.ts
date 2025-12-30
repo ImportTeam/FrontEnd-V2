@@ -69,7 +69,7 @@ export async function loginAction(formData: FormData): Promise<void> {
     // Call API through authClient (Server instance with interceptors)
     const response = await authClient.login(email, password);
 
-    console.log('[LOGIN] API Response:', {
+    console.warn('[LOGIN] API Response:', {
       hasUser: !!response?.user,
       user: response?.user,
       hasAccessToken: !!response?.accessToken,
@@ -83,9 +83,9 @@ export async function loginAction(formData: FormData): Promise<void> {
     }
 
     // Save tokens to HttpOnly Cookies
-    console.log('[LOGIN] Saving tokens to cookies...');
+    console.warn('[LOGIN] Saving tokens to cookies...');
     await saveTokensToCookies(response.accessToken, response.refreshToken);
-    console.log('[LOGIN] Tokens saved successfully');
+    console.warn('[LOGIN] Tokens saved successfully');
 
     // Update Zustand store
     useAuthStore.getState().login({

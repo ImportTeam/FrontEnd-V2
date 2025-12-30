@@ -74,7 +74,7 @@ export async function signupAction(formData: FormData): Promise<void> {
     // Call API through authClient (Server instance with interceptors)
     const response = await authClient.signup(name, email, password);
 
-    console.log('[SIGNUP] API Response:', {
+    console.warn('[SIGNUP] API Response:', {
       hasUser: !!response?.user,
       user: response?.user,
       hasAccessToken: !!response?.accessToken,

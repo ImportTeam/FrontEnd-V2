@@ -4,8 +4,14 @@ import { DashboardCharts } from "@/components/dashboard/dashboard-charts";
 import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 import { SummaryCards } from "@/components/dashboard/summary-cards";
 import { Button } from "@/components/ui/button";
-import { loadDashboardChartsData, loadSummaryCardsData, loadRecentTransactionsData } from "./data-actions";
 
+import {
+  loadDashboardChartsData,
+  loadRecentTransactionsData,
+  loadSummaryCardsData,
+} from "./data-actions";
+
+// eslint-disable-next-line no-restricted-syntax
 export default async function DashboardPage() {
   // Load all data server-side
   const [chartsData, summaryData, transactionsData] = await Promise.all([
