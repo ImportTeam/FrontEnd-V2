@@ -94,7 +94,13 @@ export async function loginAction(
       success: true,
     };
   } catch (err) {
+    console.error("[LOGIN] Error details:", {
+      error: err,
+      errorType: err instanceof Error ? err.constructor.name : typeof err,
+      errorMessage: err instanceof Error ? err.message : String(err),
+    });
     const errorDetails = parseApiError(err);
+    console.error("[LOGIN] Parsed error:", errorDetails);
     return {
       error: errorDetails.message,
       success: false,

@@ -71,9 +71,10 @@ export function parseApiError(error: unknown): ApiErrorDetails {
 
     // Unauthorized (401)
     if (status === 401) {
+      const errorData = data as Record<string, unknown> | undefined;
       return {
         type: "UNAUTHORIZED",
-        message: "인증이 필요합니다. 다시 로그인해주세요.",
+        message: (errorData?.message as string) || "인증이 필요합니다. 다시 로그인해주세요.",
         statusCode: status,
         isRetryable: false, // Interceptor handles retry
         originalError: error,
@@ -82,9 +83,10 @@ export function parseApiError(error: unknown): ApiErrorDetails {
 
     // Forbidden (403)
     if (status === 403) {
+      const errorData = data as Record<string, unknown> | undefined;
       return {
         type: "FORBIDDEN",
-        message: "접근 권한이 없습니다.",
+        message: (errorData?.message as string) || "접근 권한이 없습니다.",
         statusCode: status,
         isRetryable: false,
         originalError: error,
