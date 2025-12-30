@@ -15,14 +15,23 @@
 
 import { getServerInstance } from '@/lib/api/http/http.server';
 
-import type { ApiResponse, AuthResponse, RefreshTokenResponse, UserProfile } from '@/lib/api/types';
+import type { AuthResponse, AuthResponseNormalized, RefreshTokenResponse, UserProfile } from '@/lib/api/types';
 
-function unwrapApiResponse<T>(body: unknown): T {
-  if (body && typeof body === 'object' && 'data' in body) {
-    const maybe = body as { data?: T };
-    if (maybe.data !== undefined) return maybe.data;
-  }
-  return body as T;
+/**
+ * API snake_case 응답을 UI camelCase로 변환
+ */
+function normalizeAuthResponse(raw: AuthResponse): AuthResponseNormalized {
+  return {
+    accessToken: raw.access_token,
+    refreshToken: raw.refresh_token,
+    issuedAt: raw.issued_at,
+    user: {
+      id: raw.user.id,
+      uuid: raw.user.uuid,
+      email: raw.user.email,
+      name: raw.user.name,
+    },
+  };
 }
 
 export const authClient = {
@@ -32,12 +41,12 @@ export const authClient = {
    */
   signup: async (name: string, email: string, password: string) => {
     const instance = await getServerInstance();
-    const response = await instance.post<ApiResponse<AuthResponse> | AuthResponse>('/auth/register', {
+    const response = await instance.post<AuthResponse>('/auth/register', {
       name,
       email,
       password,
     });
-    return unwrapApiResponse<AuthResponse>(response.data);
+    return normalizeAuthResponse(response.data);
   },
 
   /**
@@ -46,11 +55,11 @@ export const authClient = {
    */
   login: async (email: string, password: string) => {
     const instance = await getServerInstance();
-    const response = await instance.post<ApiResponse<AuthResponse> | AuthResponse>('/auth/login', {
+    const response = await instance.post<AuthResponse>('/auth/login', {
       email,
       password,
     });
-    return unwrapApiResponse<AuthResponse>(response.data);
+    return normalizeAuthResponse(response.data);
   },
 
   /**
@@ -59,10 +68,10 @@ export const authClient = {
    */
   refreshToken: async (refreshToken: string) => {
     const instance = await getServerInstance();
-    const response = await instance.post<
-      ApiResponse<RefreshTokenResponse> | RefreshTokenResponse
-    >('/auth/refresh', { refresh_token: refreshToken });
-    return unwrapApiResponse<RefreshTokenResponse>(response.data);
+    const response = await instance.post<RefreshTokenResponse>('/auth/refresh', { 
+      refresh_token: refreshToken 
+    });
+    return response.data;
   },
 
   /**
@@ -98,7 +107,7 @@ export const authClient = {
       `/auth/${provider}/callback`,
       { code, state }
     );
-    return response.data;
+    return normalizeAuthResponse(response.data);
   },
 
   /**

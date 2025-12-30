@@ -11,7 +11,26 @@ export interface ApiResponse<T> {
 }
 
 // --- Auth Types ---
+/**
+ * API 응답 (snake_case, 래핑 없음)
+ */
 export interface AuthResponse {
+  message: string;
+  access_token: string;
+  refresh_token: string;
+  issued_at: string;
+  user: {
+    id: string;
+    uuid: string;
+    email: string;
+    name: string;
+  };
+}
+
+/**
+ * UI용 정규화된 타입 (camelCase)
+ */
+export interface AuthResponseNormalized {
   accessToken: string;
   refreshToken: string;
   issuedAt: string;
@@ -38,7 +57,9 @@ export interface ApiError {
   code?: string;
   details?: unknown;
 }
+
 export interface UserProfile {
+  id: string;
   uuid: string;
   email: string;
   name: string;

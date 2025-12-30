@@ -79,8 +79,16 @@ export async function loginAction(
     // Call API through authClient (Server instance with interceptors)
     const response = await authClient.login(email, password);
 
+    console.log('[LOGIN] API Response:', {
+      hasUser: !!response?.user,
+      user: response?.user,
+      hasAccessToken: !!response?.accessToken,
+      hasRefreshToken: !!response?.refreshToken,
+    });
+
     // Validate response structure
     if (!response?.user?.uuid) {
+      console.error('[LOGIN] Invalid response structure:', response);
       return {
         error: '로그인 응답이 불완전합니다. 잠시 후 다시 시도해주세요.',
         success: false,
@@ -88,12 +96,14 @@ export async function loginAction(
     }
 
     // Save tokens to HttpOnly Cookies
+    console.log('[LOGIN] Saving tokens to cookies...');
     await saveTokensToCookies(response.accessToken, response.refreshToken);
+    console.log('[LOGIN] Tokens saved successfully');
 
     // Update Zustand store
     useAuthStore.getState().login({
       ...response.user,
-      id: response.user.uuid,
+      id: response.user.id || response.user.uuid,
     });
 
     // 리다이렉트 (Server Action에서 자동 처리)

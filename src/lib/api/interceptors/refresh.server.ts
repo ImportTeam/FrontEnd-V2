@@ -10,7 +10,6 @@
 
 import { cookies } from 'next/headers';
 
-import type { ApiResponse, RefreshTokenResponse } from '@/lib/api/types';
 import type { AxiosInstance, AxiosResponse } from 'axios';
 
 const STORAGE_KEYS = {
@@ -85,19 +84,19 @@ async function refreshAccessTokenFromServer(
     }
 
     // refresh API 호출 (interceptor 미적용)
-    const response = await instance.post<
-      ApiResponse<RefreshTokenResponse> | RefreshTokenResponse
-    >('/auth/refresh', { refresh_token: refreshToken });
+    const response = await instance.post<unknown>('/auth/refresh', { 
+      refresh_token: refreshToken 
+    });
 
-    const data =
-      response.data && typeof response.data === 'object' && 'data' in response.data
-        ? (response.data as ApiResponse<RefreshTokenResponse>).data
-        : (response.data as RefreshTokenResponse);
+    const data = response.data as any;
 
-    if (data?.accessToken) {
+    // Support both camelCase (accessToken) and snake_case (access_token)
+    const accessToken = data?.accessToken ?? data?.access_token;
+
+    if (accessToken) {
       // Refresh endpoint may not return a new refresh token.
-      await saveTokens(data.accessToken, refreshToken);
-      return data.accessToken;
+      await saveTokens(accessToken, refreshToken);
+      return accessToken;
     }
 
     return null;

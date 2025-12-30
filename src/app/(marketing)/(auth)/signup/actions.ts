@@ -84,8 +84,16 @@ export async function signupAction(
     // Call API through authClient (Server instance with interceptors)
     const response = await authClient.signup(name, email, password);
 
+    console.log('[SIGNUP] API Response:', {
+      hasUser: !!response?.user,
+      user: response?.user,
+      hasAccessToken: !!response?.accessToken,
+      hasRefreshToken: !!response?.refreshToken,
+    });
+
     // Validate response structure
     if (!response?.user?.uuid) {
+      console.error('[SIGNUP] Invalid response structure:', response);
       return {
         error: '회원가입 응답이 불완전합니다. 잠시 후 다시 시도해주세요.',
         success: false,
@@ -93,12 +101,14 @@ export async function signupAction(
     }
 
     // Save tokens to HttpOnly Cookies
+    console.log('[SIGNUP] Saving tokens to cookies...');
     await saveTokensToCookies(response.accessToken, response.refreshToken);
+    console.log('[SIGNUP] Tokens saved successfully');
 
     // Update Zustand store
     useAuthStore.getState().login({
       ...response.user,
-      id: response.user.uuid,
+      id: response.user.id || response.user.uuid,
     });
 
     // 리다이렉트 (Server Action에서 자동 처리)
