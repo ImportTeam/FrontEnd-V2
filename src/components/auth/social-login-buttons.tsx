@@ -14,7 +14,7 @@ export function SocialLoginButtons({ mode }: SocialLoginButtonsProps) {
     try {
       log.info(`Starting ${provider} login`);
 
-      const callbackUrl = `${window.location.origin}/oauth-callback?provider=${provider}`;
+      const callbackUrl = `${window.location.origin}/oauth-callback/${provider}`;
       const startUrl = new URL(`/api/auth/oauth-start/${provider}`, window.location.origin);
       startUrl.searchParams.set("redirect_uri", callbackUrl);
 
