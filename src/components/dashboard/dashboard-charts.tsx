@@ -1,11 +1,10 @@
-"use client";
-
 import { Sparkles } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { DashboardCard } from "@/components/dashboard/dashboard-card";
 import { Badge } from "@/components/ui/badge";
 import { CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+
+import { DashboardSavingsChartClient } from "./dashboard-savings-chart-client";
 
 
 
@@ -20,7 +19,6 @@ export function DashboardCharts({
   recommendations = [],
   loading = false,
 }: DashboardChartsProps) {
-
   return (
     <div className="grid gap-6 lg:grid-cols-7">
       {/* Chart Section (Left 4/7) */}
@@ -30,54 +28,8 @@ export function DashboardCharts({
           <CardDescription className="text-sm">AI가 분석한 지난 6개월간의 혜택 적용 내역입니다.</CardDescription>
         </CardHeader>
         <CardContent className="pl-2">
-          <div className="h-75 w-full min-h-75">
-            {loading ? (
-              <div className="h-full w-full bg-muted/50 animate-pulse rounded-xl" />
-            ) : chartData.length === 0 ? (
-              <div className="h-full w-full flex items-center justify-center text-muted-foreground text-sm">
-                \ucc28\ud2b8 \ub370\uc774\ud130\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorSavings" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb dark:e5e7eb" />
-                  <XAxis 
-                    dataKey="month" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fontSize: 12, fill: "#71717a", fontWeight: 500 }}
-                    dy={10}
-                    className="dark:[&_text]:fill-zinc-200"
-                  />
-                  <YAxis 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fontSize: 12, fill: "#71717a", fontWeight: 500 }}
-                    tickFormatter={(value) => `${(value / 10000).toLocaleString()}만`}
-                    className="dark:[&_text]:fill-zinc-200"
-                  />
-                  <Tooltip 
-                    contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)", backgroundColor: "#fff", color: "#000" }}
-                    formatter={(value?: number) => [value ? `${value.toLocaleString()}원` : "0원", "절약 금액"]}
-                    labelStyle={{ color: "#000" }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="savingsAmount" 
-                    stroke="#2563eb" 
-                    strokeWidth={3}
-                    fillOpacity={1} 
-                    fill="url(#colorSavings)" 
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            )}
+          <div className="h-72 w-full min-h-72">
+            <DashboardSavingsChartClient chartData={chartData} loading={loading} />
           </div>
         </CardContent>
       </DashboardCard>
@@ -98,44 +50,7 @@ export function DashboardCharts({
                [1, 2, 3].map((i) => (
                 <div key={i} className="h-16 rounded-xl bg-muted/50 animate-pulse" />
                ))
-            ) : (
-              recommendations.map((item: unknown, index: number) => {
-                const rec = item as Record<string, unknown>;
-                return (
-                  <div
-                    key={String((rec.id as string) || index)}
-                    className={`flex items-center p-4 rounded-xl transition-colors ${
-                      index === 0 ? "bg-muted/50 hover:bg-muted" : "bg-background hover:bg-muted/50"
-                    }`}
-                  >
-                    <div
-                      className={`flex h-9 w-9 items-center justify-center rounded-full font-bold text-sm mr-4 ${
-                        index === 0
-                          ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
-                          : "bg-muted text-zinc-700 dark:text-zinc-300"
-                      }`}
-                    >
-                      {String((rec.rank as number) || index + 1)}
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <p className="text-sm font-medium leading-none text-foreground">
-                        {String((rec.cardName as string) || "카드")}
-                      </p>
-                      <p className="text-xs text-zinc-700 dark:text-zinc-300">
-                        {String((rec.benefit as string) || "혜택")}
-                      </p>
-                    </div>
-                    {!!(rec.isRecommended as boolean) && (
-                      <Badge variant="secondary" className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50">
-                        추천
-                      </Badge>
-                    )}
-                  </div>
-                );
-              })
-            )}
-            
-            {recommendations.length === 0 ? (
+            ) : recommendations.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground text-sm">
                 추천 데이터가 없습니다.
               </div>

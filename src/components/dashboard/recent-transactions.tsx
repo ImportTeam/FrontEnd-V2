@@ -1,11 +1,7 @@
-"use client";
-
 import { ShoppingBag, AlertCircle } from "lucide-react";
 
 import { DashboardCard } from "@/components/dashboard/dashboard-card";
 import { CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-
-
 
 interface RecentTransactionsProps {
   transactionsData?: unknown[];
