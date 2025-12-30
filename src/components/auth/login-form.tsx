@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 import { loginAction } from "@/app/(marketing)/(auth)/login/actions";
 import { AuthFormField } from "@/components/auth/auth-form-field";
@@ -24,7 +24,7 @@ function LoginFormContent() {
     register,
     formState: { errors, isValid },
     watch,
-    handleSubmit,
+    trigger,
   } = useAuthForm<typeof loginSchema>({
     schema: loginSchema,
     defaultValues: {
@@ -34,6 +34,7 @@ function LoginFormContent() {
   });
 
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   // Watch form values to enable button when fields have content
   const email = watch("email");
@@ -44,21 +45,22 @@ function LoginFormContent() {
     // If server returned fieldErrors, RHF already validates client-side.
     // Keep the server message rendered as a banner.
   }, [state.nonce]);
-
-  const onSubmit = handleSubmit(
-    (_values, event) => {
-      setSubmitAttempted(true);
-      log.info("submit (valid)");
-      const formEl = (event?.target as HTMLFormElement | null) ?? null;
-      if (!formEl) return;
-      const formData = new FormData(formEl);
-      formAction(formData);
-    },
-    (formErrors) => {
-      setSubmitAttempted(true);
-      log.warn("submit (invalid)", formErrors);
+  // Use trigger() for client-side validation, then use native submission
+  // so Server Action redirect() will perform a browser navigation.
+  const handleSubmitClick = async () => {
+    setSubmitAttempted(true);
+    log.info("submit (attempt)");
+    const valid = await trigger();
+    if (!valid) {
+      log.warn("submit (invalid)");
+      return;
     }
-  );
+
+    // Native submit so redirect() in Server Action navigates the browser.
+    if (formRef.current) {
+      formRef.current.requestSubmit();
+    }
+  };
 
   return (
     <div className="w-full space-y-6">
@@ -94,7 +96,7 @@ function LoginFormContent() {
         </div>
       ) : null}
 
-      <form action={formAction} onSubmit={onSubmit} noValidate className="space-y-4">
+      <form ref={formRef} action={formAction} noValidate className="space-y-4">
         <div className="space-y-4 text-left">
           <AuthFormField
             id="email"
@@ -127,19 +129,13 @@ function LoginFormContent() {
         </div>
 
         <Button
-          type="submit"
-          onClick={() => setSubmitAttempted(true)}
+          type="button"
+          onClick={handleSubmitClick}
           disabled={isPending}
           className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-base rounded-lg dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
         >
           {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-          <span>
-            {isPending
-              ? "로그인 중..."
-              : submitAttempted && (!isFormFilled || !isValid)
-                ? "입력 확인 필요"
-                : "로그인"}
-          </span>
+          <span>{isPending ? "로그인 중..." : submitAttempted && (!isFormFilled || !isValid) ? "입력 확인 필요" : "로그인"}</span>
         </Button>
 
         {submitAttempted && (!isFormFilled || !isValid) ? (
