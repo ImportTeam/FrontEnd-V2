@@ -21,11 +21,20 @@ import { logger } from "@/lib/logger";
 import { useAuthStore } from "@/store/use-auth-store";
 import { useUIStore } from "@/store/use-ui-store";
 
-export function DashboardHeader() {
+import type { UserCurrentResponse } from "@/lib/api/types";
+
+type DashboardHeaderProps = {
+  user?: Pick<UserCurrentResponse, "name" | "email">;
+};
+
+export function DashboardHeader({ user: initialUser }: DashboardHeaderProps) {
   const log = logger.scope("DASHBOARD_HEADER");
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
   const { user, logout } = useAuthStore();
   const router = useRouter();
+
+  const displayName = initialUser?.name ?? user?.name ?? "게스트";
+  const displayEmail = initialUser?.email ?? user?.email ?? "로그인이 필요합니다";
 
   const handleLogout = async () => {
     try {
@@ -69,7 +78,7 @@ export function DashboardHeader() {
               <Avatar className="h-9 w-9 border border-zinc-200 dark:border-zinc-800">
                 <AvatarImage src="/placeholder-avatar.jpg" alt="@picsel" />
                 <AvatarFallback className="bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100">
-                  {user?.name?.[0] || "U"}
+                  {displayName?.[0] || "U"}
                 </AvatarFallback>
               </Avatar>
             </Button>
@@ -78,10 +87,10 @@ export function DashboardHeader() {
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none text-zinc-900 dark:text-zinc-100">
-                  {user?.name || "게스트"} 님
+                  {displayName} 님
                 </p>
                 <p className="text-xs leading-none text-zinc-700 dark:text-zinc-300">
-                  {user?.email || "로그인이 필요합니다"}
+                  {displayEmail}
                 </p>
               </div>
             </DropdownMenuLabel>

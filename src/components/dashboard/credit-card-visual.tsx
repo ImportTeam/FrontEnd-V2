@@ -56,27 +56,27 @@ export function CreditCardVisual({
             <h3 className="font-bold tracking-wide">{cardName}</h3>
           </div>
 
-          {logo ? (
-            logo
-          ) : imageSrc ? (
-            <div className="relative h-7 w-12 dark:invert">
+          {logo ?? <CreditCard className="h-6 w-6 opacity-80" />}
+        </div>
+
+        {/* Chip & Contactless - Only for gradient cards */}
+        <div className="flex items-center gap-3">
+          <div className="relative h-12 w-12 rounded-xl bg-linear-to-br from-yellow-200 to-yellow-500 shadow-sm overflow-hidden">
+            {imageSrc ? (
               <Image
                 src={imageSrc}
                 alt={cardName}
                 fill
                 sizes="48px"
-                className="object-contain"
+                className="object-contain p-2"
                 priority={false}
+                onError={(e) => {
+                  const img = e.currentTarget as HTMLImageElement;
+                  img.src = imageSrc.replace(/\.webp$/, ".svg");
+                }}
               />
-            </div>
-          ) : (
-            <CreditCard className="h-6 w-6 opacity-80" />
-          )}
-        </div>
-
-        {/* Chip & Contactless - Only for gradient cards */}
-        <div className="flex items-center gap-3">
-          <div className="h-8 w-10 rounded-md bg-linear-to-br from-yellow-200 to-yellow-500 shadow-sm" />
+            ) : null}
+          </div>
           <Wifi className="h-5 w-5 rotate-90 opacity-60" />
         </div>
 

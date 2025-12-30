@@ -1,13 +1,14 @@
 import { Download, Plus, Sparkles } from "lucide-react";
 
 import { DashboardCharts } from "@/components/dashboard/dashboard-charts";
-import { RecentTransactions } from "@/components/dashboard/recent-transactions";
+import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { SummaryCards } from "@/components/dashboard/summary-cards";
 import { Button } from "@/components/ui/button";
+import { requireCurrentUser } from "@/lib/auth/current-user.server";
 
 import {
   loadDashboardChartsData,
-  loadRecentTransactionsData,
+  loadRecentActivityData,
   loadSummaryCardsData,
   loadAIBenefitsData,
 } from "./data-actions";
@@ -18,10 +19,11 @@ export const dynamic = 'force-dynamic';
 // eslint-disable-next-line no-restricted-syntax
 export default async function DashboardPage() {
   // Load all data server-side
-  const [chartsData, summaryData, transactionsData, aiBenefits] = await Promise.all([
+  const [user, chartsData, summaryData, recentActivityItems, aiBenefits] = await Promise.all([
+    requireCurrentUser(),
     loadDashboardChartsData(),
     loadSummaryCardsData(),
-    loadRecentTransactionsData(10),
+    loadRecentActivityData(),
     loadAIBenefitsData(),
   ]);
 
@@ -32,7 +34,7 @@ export default async function DashboardPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                대시보드
+                {user.name}
             </h1>
             <span className="text-2xl sm:text-3xl">👋</span>
           </div>
@@ -68,8 +70,8 @@ export default async function DashboardPage() {
       />
 
       <h2 className="sr-only">최근 결제 내역</h2>
-      {/* Row 3: Recent Transactions */}
-      <RecentTransactions transactionsData={transactionsData} />
+      {/* Row 3: Recent Activity (Recent by Site) */}
+      <RecentActivity items={recentActivityItems} />
     </div>
   );
 }

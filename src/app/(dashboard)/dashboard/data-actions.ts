@@ -62,7 +62,8 @@ export async function loadSummaryCardsData(): Promise<Record<string, unknown> | 
 export async function loadRecentActivityData() {
   const log = logger.scope("ACTIVITY_DATA");
   try {
-    return [];
+    const items = await dashboardClient.getRecentBySite();
+    return items;
   } catch (error) {
     log.error("Failed to load:", error);
     return [];

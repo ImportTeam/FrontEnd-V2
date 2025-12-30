@@ -1,131 +1,113 @@
-"use client";
+import { AlertCircle, ShoppingBag, Sparkles } from "lucide-react";
 
-import { ShoppingBag } from "lucide-react";
-import Image from "next/image";
+import { DashboardCard } from "@/components/dashboard/dashboard-card";
+import { CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { logger } from "@/lib/logger";
-import { getPaymentIconPath, getPaymentTypeAbbr } from "@/lib/payment-icon-mapping";
-
-import type { PaymentCard } from "@/lib/api/types";
+import type { RecentTransactionItem } from "@/lib/api/types";
 
 interface RecentActivityProps {
-  paymentCards?: PaymentCard[];
+  items?: RecentTransactionItem[];
   error?: string | null;
 }
 
-export function RecentActivity({ paymentCards = [], error }: RecentActivityProps) {
+function formatKrw(value: number) {
+  return `${(value ?? 0).toLocaleString()}원`;
+}
+
+function formatDate(value: string) {
+  try {
+    return new Date(value).toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  } catch {
+    return "-";
+  }
+}
+
+export function RecentActivity({ items = [], error }: RecentActivityProps) {
   // Error state
   if (error) {
     return (
-      <Card className="col-span-3">
+      <DashboardCard>
         <CardHeader>
-          <CardTitle>최근 이용 사이트별 결제수단</CardTitle>
+          <CardTitle className="text-lg font-bold">최근 이용 사이트별 결제수단</CardTitle>
+          <CardDescription className="text-sm">최근 결제 내역을 불러오지 못했습니다.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-sm text-muted-foreground text-center py-8">
-            {error}
+          <div className="flex flex-col items-center justify-center py-6 text-center text-muted-foreground">
+            <AlertCircle className="h-8 w-8 mb-2 opacity-50" />
+            <p className="text-sm">{error}</p>
           </div>
         </CardContent>
-      </Card>
+      </DashboardCard>
     );
   }
 
   // Empty state
-  if (!paymentCards || paymentCards.length === 0) {
+  if (!items || items.length === 0) {
     return (
-      <Card className="col-span-3">
+      <DashboardCard>
         <CardHeader>
-          <CardTitle>최근 이용 사이트별 결제수단</CardTitle>
-          <p className="text-sm text-muted-foreground">등록된 결제 수단이 없습니다.</p>
+          <CardTitle className="text-lg font-bold">최근 이용 사이트별 결제수단</CardTitle>
+          <CardDescription className="text-sm">최근 결제 내역이 없습니다.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-sm text-muted-foreground text-center py-8">결제 수단을 등록해주세요.</div>
+          <div className="flex flex-col items-center justify-center py-6 text-center text-muted-foreground">
+            <AlertCircle className="h-8 w-8 mb-2 opacity-50" />
+            <p className="text-sm">최근 결제 내역이 없습니다.</p>
+          </div>
         </CardContent>
-      </Card>
+      </DashboardCard>
     );
   }
 
   // Success state
   return (
-    <Card className="col-span-3">
+    <DashboardCard>
       <CardHeader>
-        <CardTitle>결제 수단</CardTitle>
-        <p className="text-sm text-muted-foreground">
-          등록된 결제 수단 목록입니다. {paymentCards.length}개의 카드가 등록되어 있습니다.
-        </p>
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-5 w-5 text-yellow-500" />
+          <CardTitle className="text-lg font-bold">최근 이용 사이트별 결제수단</CardTitle>
+        </div>
+        <CardDescription className="text-sm">최근 결제 내역과 사용된 결제수단입니다.</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {paymentCards.map((method) => (
-            <PaymentCardItem key={method.uuid} method={method} />
+        <div className="space-y-6">
+          {items.map((tx, index) => (
+            <div key={`${tx.merchantName}_${tx.paidAt}_${index}`}>
+              <div className="flex items-center justify-between group">
+                <div className="flex items-center gap-4 min-w-0">
+                  <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center group-hover:bg-muted/80 transition-colors shrink-0">
+                    <ShoppingBag className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <div className="space-y-1 min-w-0">
+                    <p className="text-sm font-medium leading-none text-foreground truncate">
+                      {tx.merchantName || "거래"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDate(tx.paidAt)}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right space-y-1 shrink-0">
+                  <p className="text-sm font-bold text-foreground">
+                    {formatKrw(tx.paidAmount)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {tx.paymentMethodName || "결제 수단"}
+                  </p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                    {formatKrw(tx.discountOrRewardAmount)}
+                  </p>
+                </div>
+              </div>
+              {index < items.length - 1 ? <div className="h-px w-full bg-border my-6" /> : null}
+            </div>
           ))}
         </div>
       </CardContent>
-    </Card>
-  );
-}
-
-interface PaymentCardItemProps {
-  method: PaymentCard;
-}
-
-function PaymentCardItem({ method }: PaymentCardItemProps) {
-  const log = logger.scope("RECENT_ACTIVITY");
-  const iconPath = getPaymentIconPath(method.cardType);
-  const createdDate = method.createdAt
-    ? new Date(method.createdAt).toLocaleDateString("ko-KR")
-    : "알 수 없음";
-  const isPrimary = method.isPrimary ?? false;
-
-  return (
-    <div className="flex items-center gap-4 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
-      {/* Icon */}
-      <div className="relative h-10 w-16 shrink-0 rounded bg-muted/30 flex items-center justify-center overflow-hidden">
-        {iconPath ? (
-          <div className="relative h-8 w-14 dark:invert">
-            <Image
-              src={iconPath.src}
-              alt={iconPath.alt}
-              fill
-              sizes="56px"
-              className="object-contain"
-              priority={false}
-              onError={(e) => {
-                log.warn("Failed to load image:", iconPath.src);
-                const img = e.currentTarget as HTMLImageElement;
-                const svgPath = iconPath.src.replace(/\.webp$/, ".svg");
-                img.src = svgPath;
-              }}
-            />
-          </div>
-        ) : (
-          <div className="text-xs font-semibold text-muted-foreground">
-            {getPaymentTypeAbbr(method.cardType)}
-          </div>
-        )}
-      </div>
-
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <p className="font-medium truncate">{method.alias}</p>
-          {isPrimary ? (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-xs font-medium text-blue-700 dark:text-blue-300 shrink-0">
-              주 결제수단
-            </span>
-          ) : null}
-        </div>
-        <p className="text-xs text-muted-foreground">
-          {method.cardType} •••• {method.last4}
-        </p>
-        <p className="text-xs text-muted-foreground">{createdDate}에 등록됨</p>
-      </div>
-
-      {/* Icon Badge */}
-      <div className="shrink-0">
-        <ShoppingBag className="h-5 w-5 text-muted-foreground" />
-      </div>
-    </div>
+    </DashboardCard>
   );
 }
